@@ -1,31 +1,401 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        /*Variáveis globais de cores*/
+        :root {
+            --verde: #009B3A;
+            --amarelo: #FEDF00;
+            --azul: #002776;
+            --branco: #ffffff;
+            --cinza-fundo: #f5f5f5;
+        }
+
+        /* Ajuste para resetar estilização da página*/
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Organiza o corpo da página lado a lado (Sidebar + Painel de Conteúdo) */
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: var(--cinza-fundo);
+        }
+
+        /* ESTILIZAÇÃO DO SIDEBAR */
+        #sidebar {
+            width: 20%;
+            height: 100%;
+            background-color: var(--amarelo);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* Empurra o rodapé para a base */
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Bloco do Título (Topo Verde) */
+        #sidebar h1 {
+            background-color: var(--verde);
+            color: var(--branco);
+            font-size: 1.2rem;
+            padding: 24px 16px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Bloco de Links (Centro Amarelo) */
+        #sidebar nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px 12px;
+        }
+
+        /* Links de navegação formatados como os botões do Figma */
+        #sidebar nav a {
+            display: block;
+            padding: 14px 16px;
+            color: var(--azul);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        /* Exemplo de destaque para a aba ativa (Placar Geral) */
+        #sidebar nav a:first-child {
+            background-color: var(--azul);
+            color: var(--branco);
+            border-radius: 12px;
+        }
+
+        /* Efeito hover suave nos links inativos */
+        #sidebar nav a:not(:first-child):hover {
+            background-color: rgba(0, 39, 118, 0.08);
+            padding-left: 20px;
+        }
+
+        /* Elemento simulando o rodapé verde "User_acessando" do seu Figma */
+        .sidebar-footer {
+            background-color: var(--verde);
+            color: var(--branco);
+            padding: 24px 16px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* ESTILIZAÇÃO DAS SEÇÕES DE CONTEÚDO (PAINEL DA DIREITA) */
+        section {
+            flex: 1;
+            padding: 30px;
+            display: none;
+            /* Esconde por padrão para o JS controlar depois */
+        }
+
+        /* Força a primeira aba (Placar Geral) a iniciar visível */
+        /* CONFIGURAÇÃO DO PAINEL PRINCIPAL DA DIREITA */
+        #tab1 {
+            display: block;
+            /* Mapeado para iniciar visível */
+            flex: 1;
+            padding: 24px;
+            background-color: #ffffff;
+            overflow-y: auto;
+            /* Permite rolar a página se a tabela crescer muito */
+        }
+
+        /* CARDS DO TOPO (PÓDIO) */
+        .podio-container {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-podio {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header-green {
+            background-color: var(--verde);
+            color: var(--branco);
+            padding: 12px 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body-yellow {
+            background-color: var(--amarelo);
+            padding: 16px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--azul);
+        }
+
+        .podio-nome {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .podio-pontos {
+            font-size: 1rem;
+        }
+
+        .podio-list {
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        /* LAYOUT DAS DUAS TABELAS DO MEIO */
+        .tabelas-meio-container {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .painel-tabela-box {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .painel-tabela-box h3 {
+            background-color: var(--verde);
+            color: var(--branco);
+            padding: 10px 16px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        /* TABELA DE ATENDIMENTOS (INFERIOR) */
+        .painel-atendimentos-box {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .atendimentos-header-blue {
+            background-color: var(--azul);
+            color: var(--branco);
+            padding: 12px 16px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* ESTILIZAÇÃO GERAL DE TABELAS */
+        .table-wrapper {
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            background: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            color: #333333;
+            border-bottom: 2px solid #333333;
+            background-color: #ffffff;
+        }
+
+        td {
+            padding: 12px;
+            font-size: 0.85rem;
+            color: #555555;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Alinhamentos utilitários */
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Estilo para as linhas de aviso padrão */
+        .row-placeholder td {
+            padding: 24px;
+            text-align: center;
+            color: #888888;
+            font-style: italic;
+            background-color: #fafafa;
+        }
+
+        section h2 {
+            color: var(--azul);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+    </style>
     <title>Campanhas</title>
 </head>
+
 <body>
-    <header>
+
+    <aside id="sidebar">
         <h1>Campanha Copa</h1>
         <nav>
-            <a href="">Placar Geral</a>
-            <a href="">Dados de Atendimento</a>
-            <a href="">Registro de Pontos</a>
-            <a href="">Configurações</a>
+            <a href="#tab1">Placar Geral</a>
+            <a href="#tab2">Dados de Atendimento</a>
+            <a href="#tab3">Registro de Pontos</a>
+            <a href="#tab4">Configurações</a>
         </nav>
-    </header>
-    <main id="tab1">
-        <h2>Placar geral</h2>
-    </main>
-    <main id="tab2">
+        <div class="sidebar-footer">User_acessando</div>
+    </aside>
+
+    <section id="tab1">
+        <h2>Placar Geral</h2>
+
+        <div class="podio-container">
+
+            <article class="card-podio">
+                <div class="card-header-green">
+                    <span>👑</span> Time com mais pontos
+                </div>
+                <div class="card-body-yellow">
+                    <p class="podio-nome">Nenhum time cadastrado</p>
+                    <p class="podio-pontos">0 pontos</p>
+                </div>
+            </article>
+
+            <article class="card-podio">
+                <div class="card-header-green">
+                    <span>🥇</span> Pódio de pontuação
+                </div>
+                <div class="card-body-yellow podio-list">
+                    <p><span>🥇</span> <strong class="podio-nome">Aguardando dados</strong> — <span
+                            class="podio-pontos">0 pts</span></p>
+                    <p><span>🥈</span> <strong class="podio-nome">Aguardando dados</strong> — <span
+                            class="podio-pontos">0 pts</span></p>
+                    <p><span>🥉</span> <strong class="podio-nome">Aguardando dados</strong> — <span
+                            class="podio-pontos">0 pts</span></p>
+                </div>
+            </article>
+
+        </div>
+
+        <div class="tabelas-meio-container">
+
+            <div class="painel-tabela-box">
+                <h3>Painel de pontuação dos times</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome do Time</th>
+                                <th class="text-right">Qtd pontos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-placeholder">
+                                <td colspan="2">Nenhuma pontuação computada para as equipes até o momento.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="painel-tabela-box">
+                <h3>Painel de pontuação individual</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome Colaborador</th>
+                                <th>Time</th>
+                                <th class="text-right">Qtd pontos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-placeholder">
+                                <td colspan="3">Nenhum colaborador pontuou nesta campanha ainda.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="painel-atendimentos-box">
+            <div class="atendimentos-header-blue">
+                <span>📋</span> Atendimentos auditados
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome Colaborador</th>
+                            <th>Cargo</th>
+                            <th>CPF</th>
+                            <th>Data do contato</th>
+                            <th>Nº da apólice</th>
+                            <th>R$ do prêmio</th>
+                            <th>Tipo de contato</th>
+                            <th>Foi retido?</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row-placeholder">
+                            <td colspan="9" class="text-center">Nenhum atendimento foi auditado ou registrado no banco
+                                de dados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="tab2">
         <h2>Dados de Atendimento</h2>
-    </main>
-    <main id="tab3">
+    </section>
+
+    <section id="tab3">
         <h2>Registro de Pontos</h2>
-    </main>
-    <main id="tab4">
+    </section>
+
+    <section id="tab4">
         <h2>Configurações</h2>
-    </main>
+    </section>
+
 </body>
+
 </html>
