@@ -1,280 +1,165 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campanhas</title>
 
     <style>
-        /*Variáveis globais de cores*/
+        /* =======================================================
+           1. VARIÁVEIS E CONFIGURAÇÕES GLOBAIS
+           ======================================================= */
         :root {
             --verde: #009B3A;
             --amarelo: #FEDF00;
             --azul: #002776;
             --branco: #ffffff;
             --cinza-fundo: #f5f5f5;
+            
+            /* Variáveis de Texto para Dark Mode */
+            --texto-titulos: #002776;
+            --texto-sidebar: #002776;
+            --texto-tabela: #555555;
+            --fundo-tabela: #ffffff;
         }
 
-        /* Ajuste para resetar estilização da página*/
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+        
+        body { display: flex; height: 100vh; background-color: var(--cinza-fundo); overflow: hidden; }
 
-        /* Organiza o corpo da página lado a lado (Sidebar + Painel de Conteúdo) */
-        body {
-            display: flex;
-            height: 100vh;
-            background-color: var(--cinza-fundo);
-        }
+        /* =======================================================
+           2. ESTRUTURA: SIDEBAR E NAVEGAÇÃO
+           ======================================================= */
+        #sidebar { width: 20%; height: 100%; background-color: var(--amarelo); display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid rgba(0, 0, 0, 0.1); }
+        #sidebar h1, .sidebar-footer { background-color: var(--verde); color: var(--branco); padding: 24px 16px; text-align: center; font-weight: bold; font-size: 1.2rem; }
+        #sidebar nav { flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 20px 12px; }
+        #sidebar nav a { display: flex; align-items: center; gap: 12px; padding: 14px 16px; color: var(--texto-sidebar); text-decoration: none; font-weight: bold; font-size: 0.9rem; border-radius: 8px; transition: all 0.2s; }
+        #sidebar nav a.ativo { background-color: var(--azul); color: var(--branco); border-radius: 12px; }
+        #sidebar nav a:not(.ativo):hover { background-color: rgba(255, 255, 255, 0.5); padding-left: 20px; }
 
-        /* ESTILIZAÇÃO DO SIDEBAR */
-        #sidebar {
-            width: 20%;
-            height: 100%;
-            background-color: var(--amarelo);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            /* Empurra o rodapé para a base */
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
-        }
+        /* =======================================================
+           3. ESTRUTURA: SEÇÕES E TABELAS
+           ======================================================= */
+        section { flex: 1; padding: 30px; display: none; overflow-y: auto; height: 100vh; }
+        #tab1 { display: block; } /* Aba inicial visível */
+        section h2 { color: var(--texto-titulos); font-size: 1.8rem; margin-bottom: 20px; }
 
-        /* Bloco do Título (Topo Verde) */
-        #sidebar h1 {
-            background-color: var(--verde);
-            color: var(--branco);
-            font-size: 1.2rem;
-            padding: 24px 16px;
-            text-align: center;
-            font-weight: bold;
-        }
+        .tabelas-meio-container { display: flex; gap: 24px; margin-bottom: 24px; }
+        .painel-tabela-box { flex: 1; margin-top: 12px; border-radius: 12px; overflow: hidden; background-color: var(--fundo-tabela); }
+        .painel-tabela-box h3, .atendimentos-header-blue { padding: 12px 16px; font-weight: bold; font-size: 1rem; color: var(--branco); }
+        .painel-tabela-box h3 { background-color: var(--verde); }
+        .atendimentos-header-blue { background-color: var(--azul); border-radius: 12px 12px 0 0; }
 
-        /* Bloco de Links (Centro Amarelo) */
-        #sidebar nav {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 20px 12px;
-        }
+        .table-wrapper { border: 1px solid #e0e0e0; border-top: none; background-color: var(--fundo-tabela); }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 12px; font-size: 0.85rem; color: var(--texto-titulos); border-bottom: 2px solid var(--texto-titulos); background-color: var(--fundo-tabela); }
+        td { padding: 12px; font-size: 0.85rem; color: var(--texto-tabela); border-bottom: 1px solid rgba(128, 128, 128, 0.2); }
+        tr:nth-child(even) { background-color: rgba(128, 128, 128, 0.05); }
+        .row-placeholder td { padding: 24px; text-align: center; color: #888888; font-style: italic; background-color: var(--fundo-tabela); }
+        
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
 
-        /* Links de navegação formatados como os botões do Figma */
-        #sidebar nav a {
-            display: block;
-            padding: 14px 16px;
-            color: var(--azul);
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
+        /* =======================================================
+           4. ABA 1: PLACAR GERAL E CARDS DE PÓDIO
+           ======================================================= */
+        .podio-container-wrapper { display: flex; justify-content: center; width: 100%; margin-bottom: 24px; }
+        .podio-container { display: flex; gap: 32px; width: 100%; max-width: 750px; }
+        .card-podio { flex: 1; display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+        .card-header-green { background-color: var(--verde); color: var(--branco); padding: 10px 16px; font-weight: bold; display: flex; align-items: center; gap: 10px; border-top-left-radius: 14px; border-top-right-radius: 14px; }
+        .card-body-yellow { background-color: var(--amarelo); padding: 18px 24px; display: flex; flex-direction: column; color: var(--texto-titulos); min-height: 95px; }
+        .card-time-lider { justify-content: flex-start; align-items: flex-start; gap: 14px; }
+        .podio-nome, .podio-pontos { font-weight: bold; font-size: 1.05rem; }
+        .podio-list { justify-content: center; align-items: flex-start; gap: 6px; width: 100%; }
+        .podio-list p { font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; gap: 8px; }
 
-        /* Exemplo de destaque para a aba ativa (Placar Geral) */
-        #sidebar nav a:first-child {
-            background-color: var(--azul);
-            color: var(--branco);
-            border-radius: 12px;
-        }
+        .icon-podio-blocos { display: inline-flex; align-items: flex-end; width: 24px; height: 18px; }
+        .icon-podio-blocos span { background-color: var(--branco); color: var(--verde); font-size: 8px; font-weight: bold; text-align: center; width: 7px; display: inline-block; border-radius: 1px 1px 0 0; }
+        .bloco-1 { height: 16px; line-height: 16px; margin: 0 1px; }
+        .bloco-2 { height: 11px; line-height: 11px; opacity: 0.9; }
+        .bloco-3 { height: 8px; line-height: 8px; opacity: 0.8; }
+        .icon-coroa { font-size: 1.1rem; }
 
-        /* Efeito hover suave nos links inativos */
-        #sidebar nav a:not(:first-child):hover {
-            background-color: rgba(0, 39, 118, 0.08);
-            padding-left: 20px;
-        }
+        /* =======================================================
+           5. ABA 2 E ABA 4: FORMULÁRIOS E CONFIGURAÇÕES
+           ======================================================= */
+        .form-container-blue, .config-box-blue { background-color: var(--azul); border-radius: 12px; padding: 32px; margin-top: 20px; color: var(--branco); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); }
+        .config-top-container { display: flex; gap: 24px; margin-bottom: 24px; }
+        .config-box-blue { flex: 1; padding: 24px; }
+        .config-box-blue h3 { margin-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 10px; }
 
-        /* Elemento simulando o rodapé verde "User_acessando" do seu Figma */
-        .sidebar-footer {
-            background-color: var(--verde);
-            color: var(--branco);
-            padding: 24px 16px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1rem;
-        }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 40px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 0.9rem; color: var(--branco); }
+        .form-group input, .form-group select { padding: 12px; border: none; border-radius: 6px; font-size: 1rem; width: 100%; outline: none; }
+        .date-inputs { display: flex; gap: 10px; }
+        .date-inputs input { width: 33.33%; text-align: center; }
+        
+        .form-actions { display: flex; justify-content: center; gap: 16px; margin-top: 32px; }
+        .btn-salvar, .btn-abrir-modal, .btn-limpar { padding: 10px 40px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; color: var(--branco); transition: opacity 0.2s; }
+        .btn-salvar { background-color: var(--verde); }
+        .btn-limpar { background-color: #E53935; }
+        .btn-abrir-modal { background-color: var(--verde); width: 100%; padding: 14px 20px; }
+        .btn-salvar:hover, .btn-limpar:hover, .btn-abrir-modal:hover { opacity: 0.9; }
 
-        /* ESTILIZAÇÃO DAS SEÇÕES DE CONTEÚDO (PAINEL DA DIREITA) */
-        section {
-            flex: 1;
-            padding: 30px;
-            display: none;
-            /* Esconde por padrão para o JS controlar depois */
-        }
+        /* =======================================================
+           6. ABA 3: CONTROLES DE PONTO E FILTROS
+           ======================================================= */
+        .barra-controle-pontos { display: flex; justify-content: space-between; align-items: center; background-color: var(--fundo-tabela); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); flex-wrap: wrap; gap: 16px; }
+        .grupo-busca { display: flex; align-items: center; background-color: var(--cinza-fundo); border-radius: 8px; padding: 8px 16px; flex: 1; min-width: 250px; }
+        .grupo-busca input { border: none; background: transparent; padding: 8px; width: 100%; outline: none; font-size: 0.95rem; }
+        .grupo-filtros { display: flex; gap: 12px; }
+        .grupo-filtros select { padding: 10px 16px; border-radius: 8px; border: 1px solid #ddd; outline: none; font-size: 0.95rem; }
+        .btn-limpar-filtros { background-color: #f1f1f1; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #555; }
+        .tabela-pontos-box { border-radius: 12px; overflow: hidden; background: var(--fundo-tabela); }
+        .header-tabela-verde th { background-color: var(--verde); color: var(--branco); border: none; padding: 16px; }
+        
+        .coluna-acao { text-align: center; padding: 8px 4px; }
+        .btn-ponto { color: var(--branco); border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; width: 100%; min-width: 110px; transition: opacity 0.2s; }
+        .btn-ponto:hover { opacity: 0.85; }
+        .btn-azul { background-color: #002776; }
+        .btn-verde-add { background-color: #00A65A; }
+        .btn-amarelo-add { background-color: #FFC107; color: #333; }
+        .btn-vermelho-sub { background-color: #FF0000; }
+        .btn-ciano-edit { background-color: #00BFFF; color: #333; }
 
-        /* Força a primeira aba (Placar Geral) a iniciar visível */
-        /* CONFIGURAÇÃO DO PAINEL PRINCIPAL DA DIREITA */
-        #tab1 {
-            display: block;
-            /* Mapeado para iniciar visível */
-            flex: 1;
-            padding: 24px;
-            background-color: #ffffff;
-            overflow-y: auto;
-            /* Permite rolar a página se a tabela crescer muito */
-        }
+        /* =======================================================
+           7. MODAIS FLUTUANTES (Escondidos por padrão)
+           ======================================================= */
+        .modal-overlay { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); align-items: center; justify-content: center; }
+        .modal-content-blue { background-color: var(--azul); width: 100%; max-width: 450px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: var(--branco); }
+        .close-modal { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-modal:hover { color: white; }
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 20px 24px; background-color: rgba(0, 0, 0, 0.1); border-radius: 0 0 12px 12px; margin-top: 0; }
 
-        /* CARDS DO TOPO (PÓDIO) */
-        .podio-container {
-            display: flex;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        .card-podio {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .card-header-green {
-            background-color: var(--verde);
-            color: var(--branco);
-            padding: 12px 16px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card-body-yellow {
-            background-color: var(--amarelo);
-            padding: 16px;
-            min-height: 100px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: var(--azul);
-        }
-
-        .podio-nome {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 4px;
-            text-align: center;
-        }
-
-        .podio-pontos {
-            font-size: 1rem;
-        }
-
-        .podio-list {
-            align-items: flex-start;
-            gap: 8px;
-        }
-
-        /* LAYOUT DAS DUAS TABELAS DO MEIO */
-        .tabelas-meio-container {
-            display: flex;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        .painel-tabela-box {
-            flex: 1;
-            background: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .painel-tabela-box h3 {
-            background-color: var(--verde);
-            color: var(--branco);
-            padding: 10px 16px;
-            font-size: 1rem;
-            font-weight: bold;
-        }
-
-        /* TABELA DE ATENDIMENTOS (INFERIOR) */
-        .painel-atendimentos-box {
-            background: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 12px;
-        }
-
-        .atendimentos-header-blue {
-            background-color: var(--azul);
-            color: var(--branco);
-            padding: 12px 16px;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        /* ESTILIZAÇÃO GERAL DE TABELAS */
-        .table-wrapper {
-            border: 1px solid #e0e0e0;
-            border-top: none;
-            background: #ffffff;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-            padding: 10px 12px;
-            font-size: 0.85rem;
-            color: #333333;
-            border-bottom: 2px solid #333333;
-            background-color: #ffffff;
-        }
-
-        td {
-            padding: 12px;
-            font-size: 0.85rem;
-            color: #555555;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        /* Alinhamentos utilitários */
-        .text-right {
-            text-align: right;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        /* Estilo para as linhas de aviso padrão */
-        .row-placeholder td {
-            padding: 24px;
-            text-align: center;
-            color: #888888;
-            font-style: italic;
-            background-color: #fafafa;
-        }
-
-        section h2 {
-            color: var(--azul);
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+        /* =======================================================
+           8. RESPONSIVIDADE
+           ======================================================= */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: auto; min-height: 100vh; overflow: auto; }
+            #sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid rgba(0, 0, 0, 0.1); }
+            #sidebar nav { flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 10px; gap: 8px; }
+            #sidebar nav a { padding: 8px 12px; font-size: 0.8rem; flex: 1 1 auto; justify-content: center; }
+            .sidebar-footer { display: none; }
+            section { padding: 16px; overflow-y: visible; height: auto; }
+            .podio-container, .tabelas-meio-container, .config-top-container { flex-direction: column; gap: 16px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .table-wrapper { overflow-x: auto; }
         }
     </style>
-    <title>Campanhas</title>
 </head>
-
 <body>
 
     <aside id="sidebar">
         <h1>Campanha Copa</h1>
         <nav>
-            <a href="#tab1">Placar Geral</a>
-            <a href="#tab2">Dados de Atendimento</a>
-            <a href="#tab3">Registro de Pontos</a>
-            <a href="#tab4">Configurações</a>
+            <a href="#tab1" class="ativo"><span>📊</span> Placar Geral</a>
+            <a href="#tab2"><span>🎧</span> Dados de Atendimento</a>
+            <a href="#tab3"><span>🎯</span> Registro de Pontos</a>
+            <a href="#tab4"><span>⚙️</span> Configurações</a>
         </nav>
         <div class="sidebar-footer">User_acessando</div>
     </aside>
@@ -282,36 +167,37 @@
     <section id="tab1">
         <h2>Placar Geral</h2>
 
-        <div class="podio-container">
+        <div class="podio-container-wrapper">
+            <div class="podio-container">
+                <article class="card-podio">
+                    <div class="card-header-green">
+                        <span class="icon-coroa">👑</span> Time com mais pontos
+                    </div>
+                    <div class="card-body-yellow card-time-lider">
+                        <p class="podio-nome">Nenhum time cadastrado</p>
+                        <p class="podio-pontos">0 pontos</p>
+                    </div>
+                </article>
 
-            <article class="card-podio">
-                <div class="card-header-green">
-                    <span>👑</span> Time com mais pontos
-                </div>
-                <div class="card-body-yellow">
-                    <p class="podio-nome">Nenhum time cadastrado</p>
-                    <p class="podio-pontos">0 pontos</p>
-                </div>
-            </article>
-
-            <article class="card-podio">
-                <div class="card-header-green">
-                    <span>🥇</span> Pódio de pontuação
-                </div>
-                <div class="card-body-yellow podio-list">
-                    <p><span>🥇</span> <strong class="podio-nome">Aguardando dados</strong> — <span
-                            class="podio-pontos">0 pts</span></p>
-                    <p><span>🥈</span> <strong class="podio-nome">Aguardando dados</strong> — <span
-                            class="podio-pontos">0 pts</span></p>
-                    <p><span>🥉</span> <strong class="podio-nome">Aguardando dados</strong> — <span
-                            class="podio-pontos">0 pts</span></p>
-                </div>
-            </article>
-
+                <article class="card-podio">
+                    <div class="card-header-green">
+                        <div class="icon-podio-blocos">
+                            <span class="bloco-2">2</span>
+                            <span class="bloco-1">1</span>
+                            <span class="bloco-3">3</span>
+                        </div>
+                        Pódio de pontuação
+                    </div>
+                    <div class="card-body-yellow podio-list">
+                        <p><span>🥇</span> <strong class="podio-nome">Aguardando dados</strong> — <span class="podio-pontos">0 pts</span></p>
+                        <p><span>🥈</span> <strong class="podio-nome">Aguardando dados</strong> — <span class="podio-pontos">0 pts</span></p>
+                        <p><span>🥉</span> <strong class="podio-nome">Aguardando dados</strong> — <span class="podio-pontos">0 pts</span></p>
+                    </div>
+                </article>
+            </div>
         </div>
 
         <div class="tabelas-meio-container">
-
             <div class="painel-tabela-box">
                 <h3>Painel de pontuação dos times</h3>
                 <div class="table-wrapper">
@@ -350,7 +236,6 @@
                     </table>
                 </div>
             </div>
-
         </div>
 
         <div class="painel-atendimentos-box">
@@ -374,28 +259,294 @@
                     </thead>
                     <tbody>
                         <tr class="row-placeholder">
-                            <td colspan="9" class="text-center">Nenhum atendimento foi auditado ou registrado no banco
-                                de dados.</td>
+                            <td colspan="9" class="text-center">Nenhum atendimento foi auditado ou registrado no banco de dados.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-
     </section>
 
     <section id="tab2">
         <h2>Dados de Atendimento</h2>
+        <div class="form-container-blue">
+            <form id="form-atendimento">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nome do colaborador</label>
+                        <input type="text" placeholder="text">
+                    </div>
+                    <div class="form-group">
+                        <label>Cargo</label>
+                        <select><option>Value</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>CPF</label>
+                        <input type="text" placeholder="Value">
+                    </div>
+                    <div class="form-group">
+                        <label>Data do contato</label>
+                        <div class="date-inputs">
+                            <input type="text" placeholder="DD" maxlength="2">
+                            <input type="text" placeholder="MM" maxlength="2">
+                            <input type="text" placeholder="YYYY" maxlength="4">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nº da apólice</label>
+                        <input type="text" placeholder="Value">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor do prêmio</label>
+                        <input type="text" placeholder="Value">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de contato</label>
+                        <select><option>Value</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Foi retido?</label>
+                        <select><option>Value</option></select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-salvar">Salvar</button>
+                    <button type="reset" class="btn-limpar">Limpar</button>
+                </div>
+            </form>
+        </div>
     </section>
 
     <section id="tab3">
         <h2>Registro de Pontos</h2>
+        <div class="barra-controle-pontos">
+            <div class="grupo-busca">
+                <span class="icon-busca">🔍</span>
+                <input type="text" id="busca-colaborador" placeholder="Buscar por Nome ou Matrícula...">
+            </div>
+            <div class="grupo-filtros">
+                <select id="filtro-time">
+                    <option value="">Todos os Times</option>
+                </select>
+                <button class="btn-limpar-filtros">Limpar</button>
+            </div>
+        </div>
+
+        <div class="tabela-pontos-box">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr class="header-tabela-verde">
+                            <th>Nome Colaborador</th>
+                            <th>Time</th>
+                            <th class="text-center" colspan="5">Ações de Pontuação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row-placeholder">
+                            <td colspan="7" class="text-center">Aguardando cadastro de colaboradores. Os operadores aparecerão aqui para atribuição de pontos.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </section>
 
     <section id="tab4">
-        <h2>Configurações</h2>
+        <h2>Configurações do Sistema</h2>
+        <div class="config-top-container">
+            <div class="config-box-blue">
+                <h3>Gerenciamento de Equipe</h3>
+                <p style="color: #ccc; margin-bottom: 20px; font-size: 0.9rem;">Adicione novos times ou colaboradores à campanha atual.</p>
+                <button class="btn-abrir-modal" onclick="abrirModalCadastro()">+ Cadastrar Equipe ou Colaborador</button>
+            </div>
+
+            <div class="config-box-blue">
+                <h3>Aparência e Sistema</h3>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Nome da Campanha (Menu)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="input-nome-campanha" value="Campanha Copa" style="flex: 1;">
+                        <button class="btn-verde-add" style="border-radius: 6px; padding: 0 20px;" onclick="alterarNomeCampanha()">Salvar</button>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Tema Visual</label>
+                    <select id="select-tema" onchange="mudarTemaVisual()">
+                        <option value="padrao">Padrão (Verde, Amarelo e Azul)</option>
+                        <option value="azul">Corporativo (Azul Claro e Escuro)</option>
+                        <option value="dark">Modo Escuro (Cinza e Preto)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabelas-meio-container" style="margin-top: 24px;">
+            <div class="painel-tabela-box">
+                <h3 style="background-color: var(--azul);">Equipes cadastradas</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome do Time</th>
+                                <th class="text-center">Edição</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-placeholder">
+                                <td colspan="2">Aguardando times serem cadastrados.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="painel-tabela-box">
+                <h3 style="background-color: var(--azul);">Colaboradores cadastrados</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome / Equipe</th>
+                                <th class="text-center">Edição</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-placeholder">
+                                <td colspan="2">Aguardando colaboradores serem cadastrados.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-cadastro" class="modal-overlay">
+            <div class="modal-content-blue">
+                <div class="modal-header">
+                    <h3>Cadastrar equipe/colaborador</h3>
+                    <span class="close-modal" onclick="fecharModalCadastro()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label>Tipo de Cadastro</label>
+                        <select id="tipo-cadastro-select" onchange="alternarFormularioCadastro()">
+                            <option value="equipe">Equipe</option>
+                            <option value="colaborador">Colaborador</option>
+                        </select>
+                    </div>
+                    <div id="form-cadastro-equipe">
+                        <div class="form-group">
+                            <label>Nome da equipe nova</label>
+                            <input type="text" placeholder="Ex: Os Sentinelas">
+                        </div>
+                    </div>
+                    <div id="form-cadastro-colaborador" style="display: none;">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label>Nome do colaborador</label>
+                            <input type="text" placeholder="Nome completo">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label>Cargo</label>
+                            <input type="text" placeholder="Cargo">
+                        </div>
+                        <div class="form-group">
+                            <label>Equipe</label>
+                            <select><option>Selecione a equipe...</option></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer form-actions">
+                    <button class="btn-salvar">Incluir</button>
+                    <button class="btn-limpar" onclick="fecharModalCadastro()">Cancelar</button>
+                </div>
+            </div>
+        </div>
     </section>
 
-</body>
+    <script>
+        // Navegação entre abas
+        document.addEventListener('DOMContentLoaded', () => {
+            const links = document.querySelectorAll('#sidebar nav a');
+            const sections = document.querySelectorAll('section');
 
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    links.forEach(l => l.classList.remove('ativo'));
+                    sections.forEach(s => s.style.display = 'none');
+                    this.classList.add('ativo');
+                    const abaAlvo = this.getAttribute('href');
+                    document.querySelector(abaAlvo).style.display = 'block';
+                });
+            });
+        });
+
+        // Modais
+        function abrirModalCadastro() { document.getElementById('modal-cadastro').style.display = 'flex'; }
+        function fecharModalCadastro() { document.getElementById('modal-cadastro').style.display = 'none'; }
+        
+        function alternarFormularioCadastro() {
+            const tipo = document.getElementById('tipo-cadastro-select').value;
+            if(tipo === 'equipe') {
+                document.getElementById('form-cadastro-equipe').style.display = 'block';
+                document.getElementById('form-cadastro-colaborador').style.display = 'none';
+            } else {
+                document.getElementById('form-cadastro-equipe').style.display = 'none';
+                document.getElementById('form-cadastro-colaborador').style.display = 'block';
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-cadastro');
+            if (event.target == modal) fecharModalCadastro();
+        }
+
+        // Temas e Aparência
+        function alterarNomeCampanha() {
+            const novoNome = document.getElementById('input-nome-campanha').value;
+            document.querySelector('#sidebar h1').innerText = novoNome;
+            alert("Nome da campanha atualizado com sucesso!");
+        }
+
+        function mudarTemaVisual() {
+            const tema = document.getElementById('select-tema').value;
+            const root = document.documentElement;
+
+            if(tema === 'padrao') {
+                root.style.setProperty('--verde', '#009B3A');
+                root.style.setProperty('--amarelo', '#FEDF00');
+                root.style.setProperty('--azul', '#002776');
+                root.style.setProperty('--branco', '#ffffff');
+                root.style.setProperty('--cinza-fundo', '#f5f5f5');
+                root.style.setProperty('--texto-titulos', '#002776');
+                root.style.setProperty('--texto-sidebar', '#002776');
+                root.style.setProperty('--texto-tabela', '#555555');
+                root.style.setProperty('--fundo-tabela', '#ffffff');
+            } 
+            else if(tema === 'azul') {
+                root.style.setProperty('--verde', '#007BFF'); 
+                root.style.setProperty('--amarelo', '#E6F2FF'); 
+                root.style.setProperty('--azul', '#003366'); 
+                root.style.setProperty('--branco', '#ffffff');
+                root.style.setProperty('--cinza-fundo', '#F0F4F8');
+                root.style.setProperty('--texto-titulos', '#003366');
+                root.style.setProperty('--texto-sidebar', '#003366');
+                root.style.setProperty('--texto-tabela', '#444444');
+                root.style.setProperty('--fundo-tabela', '#ffffff');
+            } 
+            else if(tema === 'dark') {
+                root.style.setProperty('--verde', '#2c2c2c'); 
+                root.style.setProperty('--amarelo', '#1f1f1f'); 
+                root.style.setProperty('--azul', '#121212'); 
+                root.style.setProperty('--branco', '#ffffff'); 
+                root.style.setProperty('--cinza-fundo', '#0a0a0a'); 
+                root.style.setProperty('--texto-titulos', '#e0e0e0'); 
+                root.style.setProperty('--texto-sidebar', '#cccccc'); 
+                root.style.setProperty('--texto-tabela', '#bbbbbb'); 
+                root.style.setProperty('--fundo-tabela', '#1f1f1f'); 
+            }
+        }
+    </script>
+</body>
 </html>
