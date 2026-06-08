@@ -2,1146 +2,1686 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campanhas</title>
-
-    <style>
-        /* =======================================================
-           1. VARIÁVEIS E CONFIGURAÇÕES GLOBAIS
-           ======================================================= */
-        :root {
-            --verde: #009B3A;
-            --amarelo: #FEDF00;
-            --azul: #002776;
-            --branco: #ffffff;
-            --cinza-fundo: #f5f5f5;
-
-            /* Variáveis de Texto para Dark Mode */
-            --texto-titulos: #002776;
-            --texto-sidebar: #002776;
-            --texto-tabela: #555555;
-            --fundo-tabela: #ffffff;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-
-        body {
-            display: flex;
-            height: 100vh;
-            background-color: var(--cinza-fundo);
-            overflow: hidden;
-        }
-
-        /* =======================================================
-           2. ESTRUTURA: SIDEBAR E NAVEGAÇÃO
-           ======================================================= */
-        #sidebar {
-            width: 20%;
-            height: 100%;
-            background-color: var(--amarelo);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        #sidebar h1,
-        .sidebar-footer {
-            background-color: var(--verde);
-            color: var(--branco);
-            padding: 24px 16px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        #sidebar nav {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 20px 12px;
-        }
-
-        #sidebar nav a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 16px;
-            color: var(--texto-sidebar);
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-
-        #sidebar nav a.ativo {
-            background-color: var(--azul);
-            color: var(--branco);
-            border-radius: 12px;
-        }
-
-        #sidebar nav a:not(.ativo):hover {
-            background-color: rgba(255, 255, 255, 0.5);
-            padding-left: 20px;
-        }
-
-        /* =======================================================
-           3. ESTRUTURA: SEÇÕES E TABELAS
-           ======================================================= */
-        section {
-            flex: 1;
-            padding: 30px;
-            display: none;
-            overflow-y: auto;
-            height: 100vh;
-        }
-
-        #tab1 {
-            display: block;
-        }
-
-        /* Aba inicial visível */
-        section h2 {
-            color: var(--texto-titulos);
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-        }
-
-        .tabelas-meio-container {
-            display: flex;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        .painel-tabela-box {
-            flex: 1;
-            margin-top: 12px;
-            border-radius: 12px;
-            overflow: hidden;
-            background-color: var(--fundo-tabela);
-        }
-
-        .painel-tabela-box h3,
-        .atendimentos-header-blue {
-            padding: 12px 16px;
-            font-weight: bold;
-            font-size: 1rem;
-            color: var(--branco);
-        }
-
-        .painel-tabela-box h3 {
-            background-color: var(--verde);
-        }
-
-        .atendimentos-header-blue {
-            background-color: var(--azul);
-            border-radius: 12px 12px 0 0;
-        }
-
-        .table-wrapper {
-            border: 1px solid #e0e0e0;
-            border-top: none;
-            background-color: var(--fundo-tabela);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-            padding: 10px 12px;
-            font-size: 0.85rem;
-            color: var(--texto-titulos);
-            border-bottom: 2px solid var(--texto-titulos);
-            background-color: var(--fundo-tabela);
-        }
-
-        td {
-            padding: 12px;
-            font-size: 0.85rem;
-            color: var(--texto-tabela);
-            border-bottom: 1px solid rgba(128, 128, 128, 0.2);
-        }
-
-        tr:nth-child(even) {
-            background-color: rgba(128, 128, 128, 0.05);
-        }
-
-        .row-placeholder td {
-            padding: 24px;
-            text-align: center;
-            color: #888888;
-            font-style: italic;
-            background-color: var(--fundo-tabela);
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        /* =======================================================
-           4. ABA 1: PLACAR GERAL E CARDS DE PÓDIO
-           ======================================================= */
-        .podio-container-wrapper {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            margin-bottom: 24px;
-        }
-
-        .podio-container {
-            display: flex;
-            gap: 32px;
-            width: 100%;
-            max-width: 750px;
-        }
-
-        .card-podio {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-            background-color: var(--amarelo);
-            border-bottom: 6px solid var(--verde);
-
-        }
-
-        .card-header-green {
-            background-color: var(--verde);
-            color: var(--branco);
-            padding: 10px 16px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-top-left-radius: 14px;
-            border-top-right-radius: 14px;
-        }
-
-        .card-body-yellow {
-            background-color: var(--amarelo);
-            padding: 18px 24px;
-            display: flex;
-            flex-direction: column;
-            color: var(--texto-titulos);
-            min-height: 95px;
-        }
-
-        .card-time-lider {
-            justify-content: center;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .podio-nome,
-        .podio-pontos {
-            font-weight: bold;
-            font-size: 1.05rem;
-        }
-
-        .podio-list {
-            justify-content: center;
-            align-items: flex-start;
-            gap: 6px;
-            width: 100%;
-        }
-
-        .podio-list p {
-            font-size: 0.9rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .icon-podio-blocos {
-            display: inline-flex;
-            align-items: flex-end;
-            width: 24px;
-            height: 18px;
-        }
-
-        .icon-podio-blocos span {
-            background-color: var(--branco);
-            color: var(--verde);
-            font-size: 8px;
-            font-weight: bold;
-            text-align: center;
-            width: 7px;
-            display: inline-block;
-            border-radius: 1px 1px 0 0;
-        }
-
-        .bloco-1 {
-            height: 16px;
-            line-height: 16px;
-            margin: 0 1px;
-        }
-
-        .bloco-2 {
-            height: 11px;
-            line-height: 11px;
-            opacity: 0.9;
-        }
-
-        .bloco-3 {
-            height: 8px;
-            line-height: 8px;
-            opacity: 0.8;
-        }
-
-        .icon-coroa {
-            font-size: 1.1rem;
-        }
-
-        /* =======================================================
-           5. ABA 2 E ABA 4: FORMULÁRIOS E CONFIGURAÇÕES
-           ======================================================= */
-        .form-container-blue,
-        .config-box-blue {
-            flex: 1;
-            background-color: var(--azul);
-            border-radius: 12px;
-            padding: 24px;
-            color: var(--branco);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .config-top-container {
-            display: flex;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        .config-box-blue {
-            flex: 1;
-            padding: 24px;
-        }
-
-        .config-box-blue h3 {
-            margin-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 10px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px 40px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-group label {
-            font-size: 0.9rem;
-            color: var(--branco);
-        }
-
-        .form-group input,
-        .form-group select {
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            width: 100%;
-            outline: none;
-        }
-
-        .date-inputs {
-            display: flex;
-            gap: 10px;
-        }
-
-        .date-inputs input {
-            width: 33.33%;
-            text-align: center;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 32px;
-        }
-
-        .btn-salvar,
-        .btn-abrir-modal,
-        .btn-limpar {
-            padding: 10px 40px;
-            border-radius: 6px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1rem;
-            color: var(--branco);
-            transition: opacity 0.2s;
-        }
-
-        .btn-salvar {
-            background-color: var(--verde);
-        }
-
-        .btn-limpar {
-            background-color: #E53935;
-        }
-
-        .btn-abrir-modal {
-            background-color: var(--verde);
-            width: 100%;
-            padding: 14px 20px;
-        }
-
-        .btn-salvar:hover,
-        .btn-limpar:hover,
-        .btn-abrir-modal:hover {
-            opacity: 0.9;
-        }
-
-        /* =======================================================
-           6. ABA 3: CONTROLES DE PONTO E FILTROS
-           ======================================================= */
-        .barra-controle-pontos {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--fundo-tabela);
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .grupo-busca {
-            display: flex;
-            align-items: center;
-            background-color: var(--cinza-fundo);
-            border-radius: 8px;
-            padding: 8px 16px;
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .grupo-busca input {
-            border: none;
-            background: transparent;
-            padding: 8px;
-            width: 100%;
-            outline: none;
-            font-size: 0.95rem;
-        }
-
-        .grupo-filtros {
-            display: flex;
-            gap: 12px;
-        }
-
-        .grupo-filtros select {
-            padding: 10px 16px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            outline: none;
-            font-size: 0.95rem;
-        }
-
-        .btn-limpar-filtros {
-            background-color: #f1f1f1;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .tabela-pontos-box {
-            border-radius: 12px;
-            overflow: hidden;
-            background: var(--fundo-tabela);
-        }
-
-        .header-tabela-verde th {
-            background-color: var(--verde);
-            color: var(--branco);
-            border: none;
-            padding: 16px;
-        }
-
-        .coluna-acao {
-            text-align: center;
-            padding: 8px 4px;
-        }
-
-        .btn-ponto {
-            color: var(--branco);
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            min-width: 110px;
-            transition: opacity 0.2s;
-        }
-
-        .btn-ponto:hover {
-            opacity: 0.85;
-        }
-
-        .btn-azul {
-            background-color: #002776;
-        }
-
-        .btn-verde-add {
-            background-color: #00A65A;
-        }
-
-        .btn-amarelo-add {
-            background-color: #FFC107;
-            color: #333;
-        }
-
-        .btn-vermelho-sub {
-            background-color: #FF0000;
-        }
-
-        .btn-ciano-edit {
-            background-color: #00BFFF;
-            color: #333;
-        }
-
-        /* =======================================================
-           7. MODAIS FLUTUANTES (Escondidos por padrão)
-           ======================================================= */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            z-index: 999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(3px);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content-blue {
-            background-color: var(--azul);
-            width: 100%;
-            max-width: 450px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-30px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--branco);
-        }
-
-        .close-modal {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close-modal:hover {
-            color: white;
-        }
-
-        .modal-body {
-            padding: 24px;
-        }
-
-        .modal-footer {
-            padding: 20px 24px;
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 0 0 12px 12px;
-            margin-top: 0;
-        }
-
-        /* =======================================================
-           8. RESPONSIVIDADE
-           ======================================================= */
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-                height: auto;
-                min-height: 100vh;
-                overflow: auto;
-            }
-
-            #sidebar {
-                width: 100%;
-                height: auto;
-                border-right: none;
-                border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-            }
-
-            #sidebar nav {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-                padding: 10px;
-                gap: 8px;
-            }
-
-            #sidebar nav a {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-                flex: 1 1 auto;
-                justify-content: center;
-            }
-
-            .sidebar-footer {
-                display: none;
-            }
-
-            section {
-                padding: 16px;
-                overflow-y: visible;
-                height: auto;
-            }
-
-            .podio-container,
-            .tabelas-meio-container,
-            .config-top-container {
-                flex-direction: column;
-                gap: 16px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .table-wrapper {
-                overflow-x: auto;
-            }
-        }
-
-        .modal-content-feedback {
-            background-color: var(--azul);
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            color: var(--branco);
-            width: 90%;
-            max-width: 300px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-content-feedback h3 {
-            margin-bottom: 15px;
-        }
-
-        .modal-content-feedback p {
-            margin-bottom: 25px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campanhas</title>
+
+  <style>
+    /* =======================================================
+       1. VARIÁVEIS E CONFIGURAÇÕES GLOBAIS
+       ======================================================= */
+    :root {
+      --verde: #009B3A;
+      --amarelo: #FEDF00;
+      --azul: #002776;
+      --branco: #ffffff;
+      --cinza-fundo: #f5f5f5;
+      --vermelho: #E53935;
+
+      /* Variáveis de Texto para Dark Mode */
+      --texto-titulos: #002776;
+      --texto-sidebar: #002776;
+      --texto-tabela: #555555;
+      --fundo-tabela: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      background-color: var(--cinza-fundo);
+      overflow: hidden;
+    }
+
+    /* =======================================================
+       2. ESTRUTURA: SIDEBAR E NAVEGAÇÃO
+       ======================================================= */
+    #sidebar {
+      width: 20%;
+      height: 100%;
+      background-color: var(--amarelo);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    #sidebar h1,
+    .sidebar-footer {
+      background-color: var(--verde);
+      color: var(--branco);
+      padding: 24px 16px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      font-size: 0.75rem !important;
+      text-overflow: ellipsis;
+    }
+
+    #sidebar nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px 12px;
+    }
+
+    #sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      color: var(--texto-sidebar);
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    #sidebar nav a.ativo {
+      background-color: var(--azul);
+      color: var(--branco);
+      border-radius: 12px;
+    }
+
+    #sidebar nav a:not(.ativo):hover {
+      background-color: rgba(255, 255, 255, 0.5);
+      padding-left: 20px;
+    }
+
+    /* =======================================================
+       3. ESTRUTURA: SEÇÕES E TABELAS
+       ======================================================= */
+    section {
+      flex: 1;
+      padding: 30px;
+      display: none;
+      overflow-y: auto;
+      height: 100vh;
+    }
+
+    #tab1 {
+      display: block;
+    }
+
+    section h2 {
+      color: var(--texto-titulos);
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    .tabelas-meio-container {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .painel-tabela-box {
+      flex: 1;
+      margin-top: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: var(--fundo-tabela);
+    }
+
+    .painel-tabela-box h3,
+    .atendimentos-header-blue {
+      padding: 12px 16px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: var(--branco);
+    }
+
+    .painel-tabela-box h3 {
+      background-color: var(--verde);
+    }
+
+    .atendimentos-header-blue {
+      background-color: var(--azul);
+      border-radius: 12px 12px 0 0;
+    }
+
+    .table-wrapper {
+      border: 1px solid #e0e0e0;
+      border-top: none;
+      background-color: var(--fundo-tabela);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      color: var(--texto-titulos);
+      border-bottom: 2px solid var(--texto-titulos);
+      background-color: var(--fundo-tabela);
+    }
+
+    td {
+      padding: 12px;
+      font-size: 0.85rem;
+      color: var(--texto-tabela);
+      border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(128, 128, 128, 0.05);
+    }
+
+    .row-placeholder td {
+      padding: 24px;
+      text-align: center;
+      color: #888888;
+      font-style: italic;
+      background-color: var(--fundo-tabela);
+    }
+
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+
+    /* =======================================================
+       4. ABA 1: PLACAR GERAL E CARDS DE PÓDIO
+       ======================================================= */
+    .podio-container-wrapper {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: 24px;
+    }
+
+    .podio-container {
+      display: flex;
+      gap: 32px;
+      width: 100%;
+      max-width: 750px;
+    }
+
+    .card-podio {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      background-color: var(--amarelo);
+      border-bottom: 6px solid var(--verde);
+    }
+
+    .card-header-green {
+      background-color: var(--verde);
+      color: var(--branco);
+      padding: 10px 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-top-left-radius: 14px;
+      border-top-right-radius: 14px;
+    }
+
+    .card-body-yellow {
+      background-color: var(--amarelo);
+      padding: 18px 24px;
+      display: flex;
+      flex-direction: column;
+      color: var(--texto-titulos);
+      min-height: 95px;
+    }
+
+    .card-time-lider {
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .podio-nome,
+    .podio-pontos {
+      font-weight: bold;
+      font-size: 1.05rem;
+    }
+
+    .podio-list {
+      justify-content: center;
+      align-items: flex-start;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .podio-list p {
+      font-size: 0.9rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-podio-blocos {
+      display: inline-flex;
+      align-items: flex-end;
+      width: 24px;
+      height: 18px;
+    }
+
+    .icon-podio-blocos span {
+      background-color: var(--branco);
+      color: var(--verde);
+      font-size: 8px;
+      font-weight: bold;
+      text-align: center;
+      width: 7px;
+      display: inline-block;
+      border-radius: 1px 1px 0 0;
+    }
+
+    .bloco-1 { height: 16px; line-height: 16px; margin: 0 1px; }
+    .bloco-2 { height: 11px; line-height: 11px; opacity: 0.9; }
+    .bloco-3 { height: 8px; line-height: 8px; opacity: 0.8; }
+    .icon-coroa { font-size: 1.1rem; }
+
+    /* =======================================================
+       5. FORMULÁRIOS, BOTÕES E CONFIGURAÇÕES
+       ======================================================= */
+    .form-container-blue,
+    .config-box-blue {
+      flex: 1;
+      background-color: var(--azul);
+      border-radius: 12px;
+      padding: 24px;
+      color: var(--branco);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .config-top-container {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .config-box-blue h3 {
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 40px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 0.9rem;
+      color: var(--branco);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      width: 100%;
+      outline: none;
+    }
+
+    .date-inputs {
+      display: flex;
+      gap: 10px;
+    }
+
+    .date-inputs input {
+      width: 33.33%;
+      text-align: center;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .btn-salvar,
+    .btn-abrir-modal,
+    .btn-limpar {
+      padding: 10px 40px;
+      border-radius: 6px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--branco);
+      transition: opacity 0.2s;
+    }
+
+    .btn-salvar { background-color: var(--verde); }
+    .btn-limpar { background-color: var(--vermelho); }
+   
+    .btn-abrir-modal {
+      background-color: var(--verde);
+      width: 100%;
+      padding: 14px 20px;
+    }
+
+    .btn-salvar:hover, .btn-limpar:hover, .btn-abrir-modal:hover {
+      opacity: 0.9;
+    }
+
+    /* =======================================================
+       6. CONTROLES DE PONTO, FILTROS E BUSCA PLACAR
+       ======================================================= */
+    .barra-controle-pontos {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--fundo-tabela);
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .grupo-busca {
+      display: flex;
+      align-items: center;
+      background-color: var(--cinza-fundo);
+      border-radius: 8px;
+      padding: 4px 16px;
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .grupo-busca input {
+      border: none;
+      background: transparent;
+      padding: 8px;
+      width: 100%;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .grupo-filtros {
+      display: flex;
+      gap: 12px;
+    }
+
+    .grupo-filtros select {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .btn-limpar-filtros {
+      background-color: #f1f1f1;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .tabela-pontos-box {
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--fundo-tabela);
+    }
+
+    .header-tabela-verde th {
+      background-color: var(--verde);
+      color: var(--branco);
+      border: none;
+      padding: 16px;
+    }
+
+    /* =======================================================
+       7. CLASSES DOS BOTÕES CUSTOMIZADOS (ABA 3 E CONFIGS)
+       ======================================================= */
+    .btn-azul-brasil { background-color: var(--azul); color: white; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; margin: 2px;}
+    .btn-verde-brasil { background-color: var(--verde); color: white; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; margin: 2px;}
+    .btn-amarelo-brasil { background-color: var(--amarelo); color: #002776; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; margin: 2px;}
+    .btn-vermelho { background-color: var(--vermelho); color: white; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; margin: 2px;}
+    .btn-acao { padding: 6px 14px; font-size: 0.85rem; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+   
+    .btn-azul-brasil:hover, .btn-verde-brasil:hover, .btn-amarelo-brasil:hover, .btn-vermelho:hover {
+        opacity: 0.85;
+    }
+
+    /* =======================================================
+       8. MODAIS FLUTUANTES (Gerais e Pop-ups Estilizados)
+       ======================================================= */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(3px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content-blue {
+      background-color: var(--azul);
+      width: 100%;
+      max-width: 480px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.3s ease-out;
+      color: var(--branco);
+    }
+
+    .modal-content-feedback {
+      background-color: var(--azul);
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      color: var(--branco);
+      width: 90%;
+      max-width: 320px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.2s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--branco);
+    }
+
+    .close-modal {
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close-modal:hover { color: white; }
+    .modal-body { padding: 24px; }
+   
+    .modal-footer {
+      padding: 20px 24px;
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 0 0 12px 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .modal-content-feedback h3 { margin-bottom: 15px; font-size: 1.4rem; }
+    .modal-content-feedback p { margin-bottom: 25px; font-size: 1rem; opacity: 0.9; }
+
+    /* =======================================================
+       9. RESPONSIVIDADE
+       ======================================================= */
+    @media (max-width: 768px) {
+      body { flex-direction: column; height: auto; min-height: 100vh; overflow: auto; }
+      #sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid rgba(0, 0, 0, 0.1); }
+      #sidebar nav { flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 10px; gap: 8px; }
+      #sidebar nav a { padding: 8px 12px; font-size: 0.8rem; flex: 1 1 auto; justify-content: center; }
+      .sidebar-footer { display: none; }
+      section { padding: 16px; overflow-y: visible; height: auto; }
+      .podio-container, .tabelas-meio-container, .config-top-container { flex-direction: column; gap: 16px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .table-wrapper { overflow-x: auto; }
+    }
+
+    /* =======================================================
+   Modais Específicos para Edição da Aba 4 (Configurações)
+   ======================================================= */
+#modal-editar-equipe,
+#modal-editar-colaborador {
+  z-index: 1000; /* Fica acima de tudo, outras propriedades vêm da .modal-overlay */
+}
+
+/* Força a exibição correta via JavaScript usando flex */
+.modal-overlay.active {
+  display: flex !important;
+}
+</style>
 </head>
-
 <body>
+<aside id="sidebar">
+    <h1>Campanha Copa</h1>
+    <nav>
+      <a href="#tab1" class="ativo"><span>📊</span> Placar Geral</a>
+      <a href="#tab2"><span>🎧</span> Dados de Atendimento</a>
+      <a href="#tab3"><span>🎯</span> Registro de Pontos</a>
+      <a href="#tab4"><span>⚙️</span> Configurações</a>
+    </nav>
+    <div class="sidebar-footer">User_acessando</div>
+  </aside>
 
-    <aside id="sidebar">
-        <h1>Campanha Copa</h1>
-        <nav>
-            <a href="#tab1" class="ativo"><span>📊</span> Placar Geral</a>
-            <a href="#tab2"><span>🎧</span> Dados de Atendimento</a>
-            <a href="#tab3"><span>🎯</span> Registro de Pontos</a>
-            <a href="#tab4"><span>⚙️</span> Configurações</a>
-        </nav>
-        <div class="sidebar-footer">User_acessando</div>
-    </aside>
+  <div id="modal-sucesso" class="modal-overlay" style="display:none;">
+    <div class="modal-content-feedback" style="border-top: 6px solid var(--verde);">
+      <h3>Sucesso!</h3>
+      <p id="msg-sucesso">Ação realizada com sucesso.</p>
+      <button class="btn-salvar" onclick="fecharFeedback('modal-sucesso')">OK</button>
+    </div>
+  </div>
 
-    <div id="modal-sucesso" class="modal-overlay">
-        <div class="modal-content-feedback" style="border-top: 6px solid var(--verde);">
-            <h3>Sucesso!</h3>
-            <p id="msg-sucesso">Ação realizada com sucesso.</p>
-            <button class="btn-salvar" onclick="fecharFeedback('modal-sucesso')">OK</button>
+  <div id="modal-erro" class="modal-overlay" style="display:none;">
+    <div class="modal-content-feedback" style="border-top: 6px solid var(--vermelho);">
+      <h3>Atenção</h3>
+      <p id="msg-erro">Por favor, preencha todos os campos obrigatórios.</p>
+      <button class="btn-limpar" onclick="fecharFeedback('modal-erro')">Fechar</button>
+    </div>
+  </div>
+
+  <div id="modal-confirmacao" class="modal-overlay" style="display:none;">
+    <div class="modal-content-feedback" style="border-top: 6px solid var(--amarelo); max-width: 380px;">
+      <h3 style="color: var(--amarelo);">Confirmação</h3>
+      <p id="msg-confirmacao">Tem certeza de que deseja realizar esta exclusão?</p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+          <button id="btn-confirmar-acao" class="btn-salvar" style="padding: 10px 20px;">Confirmar</button>
+          <button class="btn-limpar" style="padding: 10px 20px;" onclick="fecharModalConfirmacao()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-editar-atendimento" class="modal-overlay" style="display:none;">
+      <div class="modal-content-blue" style="max-height: 90vh; overflow-y: auto; border-top: 6px solid var(--amarelo);">
+          <div class="modal-header">
+              <h3>Editar Atendimento</h3>
+              <span class="close-modal" onclick="fecharModalEditarAtendimento()">&times;</span>
+          </div>
+          <div class="modal-body">
+              <form id="form-editar-atendimento">
+                  <input type="hidden" id="edit-atend-linha">
+                  <div class="form-group" style="margin-bottom: 12px;">
+                      <label>Nome do Colaborador</label>
+                      <input type="text" id="edit-atend-nome" required style="color:#333;">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 12px;">
+                      <label>Cargo</label>
+                      <select id="edit-atend-cargo" required style="color:#333;">
+                          <option value="Técnico">Técnico</option>
+                          <option value="Atendente">Atendente</option>
+                      </select>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 12px;">
+                      <label>CPF</label>
+                      <input type="text" id="edit-atend-cpf" required style="color:#333;">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 12px;">
+                      <label>Data do Contato</label>
+                      <div style="display: flex; gap: 5px;">
+                          <input type="text" id="edit-atend-dia" placeholder="DD" maxlength="2" required style="width: 30%; color:#333; text-align:center;">
+                          <input type="text" id="edit-atend-mes" placeholder="MM" maxlength="2" required style="width: 30%; color:#333; text-align:center;">
+                          <input type="text" id="edit-atend-ano" placeholder="AAAA" maxlength="4" required style="width: 40%; color:#333; text-align:center;">
+                      </div>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 12px;">
+                      <label>Nº da Apólice</label>
+                      <input type="text" id="edit-atend-apolice" required style="color:#333;">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 12px;">
+                      <label>Valor do Prêmio</label>
+                      <input type="text" id="edit-atend-premio" required style="color:#333;">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 12px;">
+                      <label>Tipo de Contato</label>
+                      <select id="edit-atend-tipo" required style="color:#333;">
+                          <option value="Potencial">Potencial</option>
+                          <option value="Não potencial">Não potencial</option>
+                      </select>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 12px;">
+                      <label>Foi Retido?</label>
+                      <select id="edit-atend-retido" required style="color:#333;">
+                          <option value="Sim">Sim</option>
+                          <option value="Não">Não</option>
+                      </select>
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer form-actions">
+              <button class="btn-azul" style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;" onclick="salvarEdicaoAtendimento()">Salvar Alterações</button>
+              <button class="btn-limpar" onclick="fecharModalEditarAtendimento()">Cancelar</button>
+          </div>
+      </div>
+  </div>
+
+  <div id="modal-pontos-manual" class="modal-overlay" style="display:none;">
+    <div class="modal-content-blue" style="border-top: 6px solid var(--verde);">
+        <div class="modal-header">
+            <h3>Lançamento Manual de Pontos</h3>
+            <span class="close-modal" onclick="fecharModalPontosManual()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="manual-pontos-nome">
+            <input type="hidden" id="manual-pontos-equipe">
+            <p style="margin-bottom: 16px; font-size: 1.1rem;">Operador: <strong id="display-pontos-nome" style="color:var(--amarelo);"></strong></p>
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label>Quantidade de Pontos</label>
+                <input type="number" id="manual-pontos-valor" placeholder="Ex: 50 ou -20" required style="color:#333;">
+            </div>
+            <div class="form-group">
+                <label>Motivo do Lançamento</label>
+                <input type="text" id="manual-pontos-motivo" placeholder="Ex: Bônus / Erro operacional" required style="color:#333;">
+            </div>
+        </div>
+        <div class="modal-footer form-actions">
+            <button class="btn-salvar" onclick="lancarPontosManuais()">Salvar Pontuação</button>
+            <button class="btn-limpar" onclick="fecharModalPontosManual()">Cancelar</button>
         </div>
     </div>
+  </div>
 
-    <div id="modal-erro" class="modal-overlay">
-        <div class="modal-content-feedback" style="border-top: 6px solid #E53935;">
-            <h3>Atenção</h3>
-            <p id="msg-erro">Por favor, preencha todos os campos obrigatórios.</p>
-            <button class="btn-limpar" onclick="fecharFeedback('modal-erro')">Fechar</button>
+  <div id="modal-cadastro" class="modal-overlay" style="display:none;">
+      <div class="modal-content-blue">
+          <div class="modal-header">
+              <h3>Cadastrar equipe/colaborador</h3>
+              <span class="close-modal" onclick="fecharModalCadastro()">&times;</span>
+          </div>
+          <div class="modal-body">
+              <div class="form-group" style="margin-bottom: 20px;">
+                  <label>Tipo de Cadastro</label>
+                  <select id="tipo-cadastro-select" onchange="alternarFormularioCadastro()">
+                      <option value="equipe">Equipe</option>
+                      <option value="colaborador">Colaborador</option>
+                  </select>
+              </div>
+              <div id="form-cadastro-equipe">
+                  <div class="form-group">
+                      <label>Nome da equipe nova</label>
+                      <input type="text" id="cad-equipe-nome" placeholder="Ex: Os Sentinelas">
+                  </div>
+              </div>
+              <div id="form-cadastro-colaborador" style="display: none;">
+                  <div class="form-group" style="margin-bottom: 15px;">
+                      <label>Nome do colaborador</label>
+                      <input type="text" id="cad-colab-nome" placeholder="Nome completo">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 15px;">
+                      <label>Cargo</label>
+                      <select id="cad-colab-cargo" required>
+                          <option value="" disabled selected>Selecione o cargo</option>
+                          <option value="Técnico">Técnico</option>
+                          <option value="Atendente">Atendente</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label>Equipe</label>
+                      <select id="cad-colab-equipe">
+                          <option>Selecione a equipe...</option>
+                      </select>
+                  </div>
+              </div>
+          </div>
+          <div class="modal-footer form-actions">
+              <button class="btn-salvar" onclick="processarCadastro()">Incluir</button>
+              <button class="btn-limpar" onclick="fecharModalCadastro()">Cancelar</button>
+          </div>
+      </div>
+  </div>
+
+  <div id="modal-editar-equipe" class="modal-overlay" style="display:none;">
+    <div class="modal-content-blue" style="border-top: 6px solid var(--amarelo); max-width: 400px;">
+      <div class="modal-header">
+        <h3>Editar Nome da Equipe</h3>
+        <span class="close-modal" onclick="fecharModalEditarEquipe()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-equipe-index">
+        <div class="form-group">
+          <label for="edit-equipe-nome">Nome da Equipe</label>
+          <input type="text" id="edit-equipe-nome" required style="color: #333;">
         </div>
+      </div>
+      <div class="modal-footer form-actions">
+        <button class="btn-azul" style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;" onclick="salvarEdicaoEquipe()">Salvar</button>
+        <button class="btn-limpar" onclick="fecharModalEditarEquipe()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-editar-colaborador" class="modal-overlay" style="display:none;">
+    <div class="modal-content-blue" style="border-top: 6px solid var(--verde); max-width: 450px;">
+      <div class="modal-header">
+        <h3>Editar Colaborador</h3>
+        <span class="close-modal" onclick="fecharModalEditarColaborador()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-colab-index">
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="edit-colab-nome">Nome do Colaborador</label>
+          <input type="text" id="edit-colab-nome" required style="color: #333;">
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="edit-colab-cargo">Cargo / Função</label>
+          <select id="edit-colab-cargo" required style="color: #333;">
+            <option value="Atendente">Atendente</option>
+            <option value="Técnico">Técnico</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-colab-equipe">Equipe Integrada</label>
+          <select id="edit-colab-equipe" required style="color: #333;"></select>
+        </div>
+      </div>
+      <div class="modal-footer form-actions">
+        <button class="btn-azul" style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;" onclick="salvarEdicaoColaborador()">Salvar</button>
+        <button class="btn-limpar" onclick="fecharModalEditarColaborador()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <section id="tab1">
+    <h2>Placar Geral</h2>
+    <div class="podio-container-wrapper">
+      <div class="podio-container">
+        <article class="card-podio">
+          <div class="card-header-green">
+            <span class="icon-coroa">👑</span> Time com mais pontos
+          </div>
+          <div class="card-body-yellow card-time-lider">
+            <p class="podio-nome">Nenhum time cadastrado</p>
+            <p class="podio-pontos">0 pontos</p>
+          </div>
+        </article>
+
+        <article class="card-podio">
+          <div class="card-header-green">
+            <div class="icon-podio-blocos">
+              <span class="bloco-2">2</span>
+              <span class="bloco-1">1</span>
+              <span class="bloco-3">3</span>
+            </div>
+            Pódio de pontuação
+          </div>
+          <div class="card-body-yellow podio-list">
+            <p><span>🥇</span> <strong class="podio-nome">Aguardando dados</strong> — <span class="podio-pontos">0 pts</span></p>
+            <p><span>🥈</span> <strong class="podio-nome">Aguardando dados</strong> — <span class="podio-pontos">0 pts</span></p>
+            <p><span>🥉</span> <strong class="podio-nome">Aguardando dados</strong> — <span class="podio-pontos">0 pts</span></p>
+          </div>
+        </article>
+      </div>
     </div>
 
-    <section id="tab1">
-        <h2>Placar Geral</h2>
-
-        <div class="podio-container-wrapper">
-            <div class="podio-container">
-                <article class="card-podio">
-                    <div class="card-header-green">
-                        <span class="icon-coroa">👑</span> Time com mais pontos
-                    </div>
-                    <div class="card-body-yellow card-time-lider">
-                        <p class="podio-nome">Nenhum time cadastrado</p>
-                        <p class="podio-pontos">0 pontos</p>
-                    </div>
-                </article>
-
-                <article class="card-podio">
-                    <div class="card-header-green">
-                        <div class="icon-podio-blocos">
-                            <span class="bloco-2">2</span>
-                            <span class="bloco-1">1</span>
-                            <span class="bloco-3">3</span>
-                        </div>
-                        Pódio de pontuação
-                    </div>
-                    <div class="card-body-yellow podio-list">
-                        <p><span>🥇</span> <strong class="podio-nome">Aguardando dados</strong> — <span
-                                class="podio-pontos">0 pts</span></p>
-                        <p><span>🥈</span> <strong class="podio-nome">Aguardando dados</strong> — <span
-                                class="podio-pontos">0 pts</span></p>
-                        <p><span>🥉</span> <strong class="podio-nome">Aguardando dados</strong> — <span
-                                class="podio-pontos">0 pts</span></p>
-                    </div>
-                </article>
-            </div>
+    <div class="tabelas-meio-container">
+      <div class="painel-tabela-box">
+        <h3>Painel de pontuação dos times</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome do Time</th>
+                <th class="text-right">Qtd pontos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-placeholder">
+                <td colspan="2" id="msg-pontuacao-times">Nenhuma pontuação computada.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
 
-        <div class="tabelas-meio-container">
-            <div class="painel-tabela-box">
-                <h3>Painel de pontuação dos times</h3>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nome do Time</th>
-                                <th class="text-right">Qtd pontos</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="row-placeholder">
-                                <td colspan="2" id="msg-pontuacao-times">Nenhuma pontuação computada para as equipes até
-                                    o momento.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="painel-tabela-box">
-                <h3>Painel de pontuação individual</h3>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nome Colaborador</th>
-                                <th>Time</th>
-                                <th class="text-right">Qtd pontos</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="row-placeholder">
-                                <td colspan="3" id="msg-pontuacao-colab">Nenhum colaborador pontuou nesta campanha
-                                    ainda.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+      <div class="painel-tabela-box">
+        <h3>Painel de pontuação individual</h3>
+        <div class="grupo-busca" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; margin: 12px;">
+            <span class="icon-busca">🔍</span>
+            <input type="text" id="busca-placar-individual" placeholder="Buscar por colaborador..." style="border: none; outline: none; width: 100%; color: #333;">
         </div>
-
-        <div class="painel-atendimentos-box">
-            <div class="atendimentos-header-blue">
-                <span>📋</span> Atendimentos auditados
-            </div>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome Colaborador</th>
-                            <th>Cargo</th>
-                            <th>CPF</th>
-                            <th>Data do contato</th>
-                            <th>Nº da apólice</th>
-                            <th>R$ do prêmio</th>
-                            <th>Tipo de contato</th>
-                            <th>Foi retido?</th>
-                            <th class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="row-placeholder">
-                            <td colspan="9" class="text-center">Nenhum atendimento foi auditado ou registrado no banco
-                                de dados.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="table-wrapper scrollable-table" style="max-height: 420px; overflow-y: auto;">
+          <table>
+            <thead style="position: sticky; top: 0; background: var(--fundo-tabela); z-index: 1;">
+              <tr>
+                <th>Nome Colaborador</th>
+                <th>Time</th>
+                <th class="text-right">Qtd pontos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-placeholder">
+                <td colspan="3" id="msg-pontuacao-colab">Nenhum colaborador pontuou.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-    </section>
+      </div>
+    </div>
 
-    <section id="tab2">
+    <div class="painel-atendimentos-box">
+      <div class="atendimentos-header-blue">
+        <span>📋</span> Atendimentos auditados
+      </div>
+      <div class="table-wrapper" style="max-height: 500px; overflow-y: auto;">
+        <table>
+          <thead style="position: sticky; top: 0; background: var(--fundo-tabela); z-index: 1;">
+            <tr>
+              <th>Nome Colaborador</th>
+              <th>Cargo</th>
+              <th>CPF</th>
+              <th>Data do contato</th>
+              <th>Nº da apólice</th>
+              <th>R$ do prêmio</th>
+              <th>Tipo de contato</th>
+              <th>Foi retido?</th>
+              <th class="text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-placeholder">
+              <td colspan="9" class="text-center">Nenhum atendimento foi auditado.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab2">
         <h2>Dados de Atendimento</h2>
         <div class="form-container-blue">
             <form id="form-atendimento">
                 <div class="form-grid">
-
                     <div class="form-group">
                         <label>Nome do colaborador</label>
-                        <input type="text" placeholder="Digite o nome completo">
+                        <select id="atend-nome" required></select>
                     </div>
-
                     <div class="form-group">
                         <label>Cargo</label>
-                        <select required>
+                        <select id="atend-cargo" required>
                             <option value="" disabled selected>Selecione o cargo</option>
                             <option value="Técnico">Técnico</option>
                             <option value="Atendente">Atendente</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label>CPF</label>
-                        <input type="text" placeholder="000.000.000-00" maxlength="14">
+                        <input type="text" id="atend-cpf" placeholder="000.000.000-00" maxlength="14" required>
                     </div>
-
                     <div class="form-group">
                         <label>Data do contato</label>
-                        <div class="date-inputs">
-                            <input type="text" placeholder="DD" maxlength="2">
-                            <input type="text" placeholder="MM" maxlength="2">
-                            <input type="text" placeholder="AAAA" maxlength="4">
+                        <div class="date-inputs" style="display: flex; gap: 5px;">
+                            <input type="text" id="atend-dia" placeholder="DD" maxlength="2" required style="width: 30%;">
+                            <input type="text" id="atend-mes" placeholder="MM" maxlength="2" required style="width: 30%;">
+                            <input type="text" id="atend-ano" placeholder="AAAA" maxlength="4" required style="width: 40%;">
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label>Nº da apólice</label>
-                        <input type="text" placeholder="Ex: 123456789">
+                        <input type="text" id="atend-apolice" placeholder="Ex: 123456789" required>
                     </div>
-
                     <div class="form-group">
                         <label>Valor do prêmio</label>
-                        <input type="text" placeholder="R$ 0,00">
+                        <input type="text" id="atend-premio" placeholder="R$ 0,00" required>
                     </div>
-
                     <div class="form-group">
                         <label>Tipo de contato</label>
-                        <select required>
+                        <select id="atend-tipo" required>
                             <option value="" disabled selected>Selecione o tipo</option>
                             <option value="Potencial">Potencial</option>
                             <option value="Não potencial">Não potencial</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label>Foi retido?</label>
-                        <select required>
+                        <select id="atend-retido" required>
                             <option value="" disabled selected>Selecione</option>
                             <option value="Sim">Sim</option>
                             <option value="Não">Não</option>
                         </select>
                     </div>
-
                 </div>
-
                 <div class="form-actions">
-                    <button type="submit" class="btn-salvar">Salvar</button>
+                    <button type="submit" class="btn-salvar">Salvar Novo Atendimento</button>
                     <button type="reset" class="btn-limpar">Limpar</button>
                 </div>
             </form>
         </div>
     </section>
 
-    <section id="tab3">
-        <h2>Registro de Pontos</h2>
-        <div class="barra-controle-pontos">
-            <div class="grupo-busca">
-                <span class="icon-busca">🔍</span>
-                <input type="text" id="busca-colaborador" placeholder="Buscar por Nome ou Matrícula...">
-            </div>
-            <div class="grupo-filtros">
-                <select id="filtro-time">
-                    <option value="">Todos os Times</option>
-                </select>
-                <button class="btn-limpar-filtros">Limpar</button>
-            </div>
+  <section id="tab3">
+    <h2>Registro de Pontos</h2>
+    <div class="barra-controle-pontos">
+      <div class="grupo-busca">
+        <span class="icon-busca">🔍</span>
+        <input type="text" id="busca-colaborador" placeholder="Buscar por Nome ou Matrícula...">
+      </div>
+      <div class="grupo-filtros">
+        <select id="filtro-time">
+          <option value="">Todos os Times</option>
+        </select>
+        <button class="btn-limpar-filtros">Limpar</button>
+      </div>
+    </div>
+
+    <div class="tabela-pontos-box">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr class="header-tabela-verde">
+              <th>Nome Colaborador</th>
+              <th>Time</th>
+              <th class="text-center">Ações de Pontuação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-placeholder">
+              <td colspan="3" class="text-center">Aguardando cadastro de colaboradores.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab4">
+    <h2>Configurações do Sistema</h2>
+    <div class="config-top-container">
+      <div class="config-box-blue">
+        <h3>Gerenciamento de Equipe</h3>
+        <p style="color: #ccc; margin-bottom: 20px; font-size: 0.9rem;">Adicione novos times ou colaboradores à campanha.</p>
+        <button class="btn-abrir-modal" onclick="abrirModalCadastro()">+ Cadastrar Equipe ou Colaborador</button>
+      </div>
+
+      <div class="config-box-blue">
+        <h3>Aparência e Sistema</h3>
+        <div class="form-group" style="margin-top: 15px;">
+          <label>Nome da Campanha</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="input-nome-campanha" value="Campanha Copa" style="flex: 1; color:#333;">
+            <button class="btn-salvar" style="border-radius: 6px; border:none; padding: 0 20px; color:#fff; cursor:pointer;" onclick="alterarNomeCampanha()">Salvar</button>
+          </div>
         </div>
-
-        <div class="tabela-pontos-box">
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr class="header-tabela-verde">
-                            <th>Nome Colaborador</th>
-                            <th>Time</th>
-                            <th class="text-center" colspan="5">Ações de Pontuação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="row-placeholder">
-                            <td colspan="7" class="text-center">Aguardando cadastro de colaboradores. Os operadores
-                                aparecerão aqui para atribuição de pontos.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="form-group" style="margin-top: 15px;">
+            <label>Tema Visual</label>
+            <select id="select-tema" style="color:#333;" onchange="mudarTemaVisual()">
+                <option value="padrao">Padrão (Verde, Amarelo e Azul)</option>
+                <option value="azul">Corporativo (Azul Claro e Escuro)</option>
+                <option value="dark">Modo Escuro (Cinza e Preto)</option>
+            </select>
         </div>
-    </section>
+      </div>
+    </div>
 
-    <section id="tab4">
-        <h2>Configurações do Sistema</h2>
-        <div class="config-top-container">
-            <div class="config-box-blue">
-                <h3>Gerenciamento de Equipe</h3>
-                <p style="color: #ccc; margin-bottom: 20px; font-size: 0.9rem;">Adicione novos times ou colaboradores à
-                    campanha atual.</p>
-                <button class="btn-abrir-modal" onclick="abrirModalCadastro()">+ Cadastrar Equipe ou
-                    Colaborador</button>
-            </div>
-
-            <div class="config-box-blue">
-                <h3>Aparência e Sistema</h3>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Nome da Campanha (Menu)</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="input-nome-campanha" value="Campanha Copa" style="flex: 1;">
-                        <button class="btn-verde-add" style="border-radius: 6px; padding: 0 20px;"
-                            onclick="alterarNomeCampanha()">Salvar</button>
-                    </div>
-                </div>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Tema Visual</label>
-                    <select id="select-tema" onchange="mudarTemaVisual()">
-                        <option value="padrao">Padrão (Verde, Amarelo e Azul)</option>
-                        <option value="azul">Corporativo (Azul Claro e Escuro)</option>
-                        <option value="dark">Modo Escuro (Cinza e Preto)</option>
-                    </select>
-                </div>
-            </div>
+    <div class="tabelas-meio-container" style="margin-top: 24px;">
+      <div class="painel-tabela-box">
+        <h3 style="background-color: var(--azul);">Equipes cadastradas</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome do Time</th>
+                <th class="text-center">Edição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-placeholder">
+                <td colspan="2">Aguardando times serem cadastrados.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
 
-        <div class="tabelas-meio-container" style="margin-top: 24px;">
-            <div class="painel-tabela-box">
-                <h3 style="background-color: var(--azul);">Equipes cadastradas</h3>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nome do Time</th>
-                                <th class="text-center">Edição</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="row-placeholder">
-                                <td colspan="2">Aguardando times serem cadastrados.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="painel-tabela-box">
-                <h3 style="background-color: var(--azul);">Colaboradores cadastrados</h3>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Cargo</th>
-                                <th>Equipe</th>
-                                <th class="text-center">Edição</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="row-placeholder">
-                                <td colspan="4">Aguardando colaboradores serem cadastrados.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+      <div class="painel-tabela-box">
+        <h3 style="background-color: var(--azul);">Colaboradores cadastrados</h3>
+        <div class="grupo-busca" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; margin: 12px;">
+            <span class="icon-busca">🔍</span>
+            <input type="text" id="busca-tab4-colab" placeholder="Buscar por colaborador..." style="border: none; outline: none; width: 100%; color: #333;">
         </div>
-
-
-        <div id="modal-cadastro" class="modal-overlay">
-            <div class="modal-content-blue">
-                <div class="modal-header">
-                    <h3>Cadastrar equipe/colaborador</h3>
-                    <span class="close-modal" onclick="fecharModalCadastro()">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group" style="margin-bottom: 20px;">
-                        <label>Tipo de Cadastro</label>
-                        <select id="tipo-cadastro-select" onchange="alternarFormularioCadastro()">
-                            <option value="equipe">Equipe</option>
-                            <option value="colaborador">Colaborador</option>
-                        </select>
-                    </div>
-                    <div id="form-cadastro-equipe">
-                        <div class="form-group">
-                            <label>Nome da equipe nova</label>
-                            <input type="text" placeholder="Ex: Os Sentinelas">
-                        </div>
-                    </div>
-                    <div id="form-cadastro-colaborador" style="display: none;">
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label>Nome do colaborador</label>
-                            <input type="text" placeholder="Nome completo">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label>Cargo</label>
-                            <input type="text" placeholder="Cargo">
-                        </div>
-                        <div class="form-group">
-                            <label>Equipe</label>
-                            <select>
-                                <option>Selecione a equipe...</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer form-actions">
-                    <button class="btn-salvar">Incluir</button>
-                    <button class="btn-limpar" onclick="fecharModalCadastro()">Cancelar</button>
-                </div>
-            </div>
+        <div class="table-wrapper scrollable-table" style="max-height: 420px; overflow-y: auto;">
+          <table>
+            <thead style="position: sticky; top: 0; background: var(--fundo-tabela); z-index: 1;">
+              <tr>
+                <th>Nome</th>
+                <th>Cargo</th>
+                <th>Equipe</th>
+                <th class="text-center">Edição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-placeholder">
+                <td colspan="4">Aguardando colaboradores serem cadastrados.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <script>
-    // 1. Navegação entre abas
-    document.addEventListener('DOMContentLoaded', () => {
-        const links = document.querySelectorAll('#sidebar nav a');
-        const sections = document.querySelectorAll('section');
+<script>
+  // =====================================
+  // ESTADO GLOBAL DO SISTEMA
+  // =====================================
+  var cacheDadosApp = {
+      equipes: [],
+      colaboradores: [],
+      atendimentos: [],
+      rankingTimes: [],
+      rankingIndividual: []
+  };
 
-        links.forEach(link => {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                links.forEach(l => l.classList.remove('ativo'));
-                sections.forEach(s => s.style.display = 'none');
-                this.classList.add('ativo');
-                document.querySelector(this.getAttribute('href')).style.display = 'block';
-            });
-        });
-        verificarStatusDados(); // Inicia verificação ao carregar
-    });
+  document.addEventListener('DOMContentLoaded', () => {
+      const links = document.querySelectorAll('#sidebar nav a');
+      const sections = document.querySelectorAll('section');
 
-    // 2. Modais de Cadastro (Aba 4)
-    function abrirModalCadastro() { document.getElementById('modal-cadastro').style.display = 'flex'; }
-    function fecharModalCadastro() { document.getElementById('modal-cadastro').style.display = 'none'; }
+      sections.forEach((s, index) => { s.style.display = (index === 0) ? 'block' : 'none'; });
 
-    function alternarFormularioCadastro() {
-        const tipo = document.getElementById('tipo-cadastro-select').value;
-        document.getElementById('form-cadastro-equipe').style.display = (tipo === 'equipe') ? 'block' : 'none';
-        document.getElementById('form-cadastro-colaborador').style.display = (tipo === 'colaborador') ? 'block' : 'none';
-    }
+      links.forEach(link => {
+          link.addEventListener('click', function (e) {
+              e.preventDefault();
+              links.forEach(l => l.classList.remove('ativo'));
+              sections.forEach(s => s.style.display = 'none');
+              this.classList.add('ativo');
+              const target = document.querySelector(this.getAttribute('href'));
+              if(target) target.style.display = 'block';
+          });
+      });
 
-    // 3. Modais de Feedback (Sucesso/Erro)
-    function abrirFeedback(id, mensagem) {
-        document.getElementById(id).style.display = 'flex';
-        const msgElement = id === 'modal-sucesso' ? 'msg-sucesso' : 'msg-erro';
-        document.getElementById(msgElement).innerText = mensagem;
-    }
+      carregarDadosSistema();
 
-    function fecharFeedback(id) { document.getElementById(id).style.display = 'none'; }
+      const formAtend = document.getElementById('form-atendimento');
+      if(formAtend) {
+          formAtend.addEventListener('submit', function(e) { e.preventDefault(); salvarDadosAtendimento(); });
+      }
 
-    // 4. Validação Universal de Formulários
-    function validarFormulario(formId) {
-        const form = document.getElementById(formId);
-        const inputs = form.querySelectorAll('input[type="text"], select');
-        let valido = true;
+      // Buscas
+      const buscaPlacarInd = document.getElementById('busca-placar-individual');
+      if(buscaPlacarInd) buscaPlacarInd.addEventListener('input', filtrarPlacarIndividual);
 
-        inputs.forEach(input => { if (input.value.trim() === "") valido = false; });
+      const buscaColabTab3 = document.getElementById('busca-colaborador');
+      const filtroTimeTab3 = document.getElementById('filtro-time');
+      const btnLimparTab3 = document.querySelector('.btn-limpar-filtros');
+      
+      const buscaColabTab4 = document.getElementById('busca-tab4-colab');
+      if(buscaColabTab4) buscaColabTab4.addEventListener('input', filtrarTab4Colaboradores);
 
-        if (valido) {
-            abrirFeedback('modal-sucesso', 'Dados salvos com sucesso!');
-            form.reset();
-            if(formId !== 'form-atendimento') fecharModalCadastro(); // Fecha o modal se for cadastro
-        } else {
-            abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios.');
-        }
-    }
+      if(buscaColabTab3) buscaColabTab3.addEventListener('input', filtrarTabelaPontos);
+      if(filtroTimeTab3) filtroTimeTab3.addEventListener('change', filtrarTabelaPontos);
+      if(btnLimparTab3) {
+          btnLimparTab3.addEventListener('click', () => {
+              if(buscaColabTab3) buscaColabTab3.value = '';
+              if(filtroTimeTab3) filtroTimeTab3.value = '';
+              filtrarTabelaPontos();
+          });
+      }
+  });
 
-    // 5. Lógica de Pontos (Aba 3)
-    function registrarPonto(tipo, nome) {
-        // Futuro google.script.run aqui
-        console.log(`Pontuação processada para ${nome}`);
-        abrirFeedback('modal-sucesso', `Pontuação de ${tipo} atribuída a ${nome}!`);
-    }
+  // =====================================
+  // FUNÇÕES DE MODAL E FEEDBACK
+  // =====================================
+  function abrirModalCadastro() { document.getElementById('modal-cadastro').style.display = 'flex'; }
+  function fecharModalCadastro() { document.getElementById('modal-cadastro').style.display = 'none'; }
 
-    // 6. Configurações de Sistema
-    function alterarNomeCampanha() {
-        const novoNome = document.getElementById('input-nome-campanha').value;
-        document.querySelector('#sidebar h1').innerText = novoNome;
-        abrirFeedback('modal-sucesso', 'Nome da campanha atualizado!');
-    }
+  function abrirModalEditarAtendimento() { document.getElementById('modal-editar-atendimento').style.display = 'flex'; }
+  function fecharModalEditarAtendimento() { document.getElementById('modal-editar-atendimento').style.display = 'none'; }
 
-    function mudarTemaVisual() {
-        const tema = document.getElementById('select-tema').value;
-        const root = document.documentElement;
+  function abrirModalPontosManual(nome, equipe) {
+      document.getElementById('manual-pontos-nome').value = nome;
+      document.getElementById('manual-pontos-equipe').value = equipe;
+      document.getElementById('display-pontos-nome').innerText = nome;
+      document.getElementById('manual-pontos-valor').value = '';
+      document.getElementById('manual-pontos-motivo').value = '';
+      document.getElementById('modal-pontos-manual').style.display = 'flex';
+  }
+  function fecharModalPontosManual() { document.getElementById('modal-pontos-manual').style.display = 'none'; }
 
-        const temas = {
-            'padrao': { v: '#009B3A', a: '#FEDF00', az: '#002776', br: '#ffffff', ci: '#f5f5f5', tt: '#002776', ts: '#002776', ttab: '#555555', ftab: '#ffffff' },
-            'azul': { v: '#007BFF', a: '#E6F2FF', az: '#003366', br: '#ffffff', ci: '#F0F4F8', tt: '#003366', ts: '#003366', ttab: '#444444', ftab: '#ffffff' },
-            'dark': { v: '#2c2c2c', a: '#1f1f1f', az: '#121212', br: '#ffffff', ci: '#0a0a0a', tt: '#e0e0e0', ts: '#cccccc', ttab: '#bbbbbb', ftab: '#1f1f1f' }
-        };
+  function alternarFormularioCadastro() {
+      const tipo = document.getElementById('tipo-cadastro-select').value;
+      document.getElementById('form-cadastro-equipe').style.display = (tipo === 'equipe') ? 'block' : 'none';
+      document.getElementById('form-cadastro-colaborador').style.display = (tipo === 'colaborador') ? 'block' : 'none';
+  }
 
-        const t = temas[tema];
-        root.style.setProperty('--verde', t.v); root.style.setProperty('--amarelo', t.a);
-        root.style.setProperty('--azul', t.az); root.style.setProperty('--branco', t.br);
-        root.style.setProperty('--cinza-fundo', t.ci); root.style.setProperty('--texto-titulos', t.tt);
-        root.style.setProperty('--texto-sidebar', t.ts); root.style.setProperty('--texto-tabela', t.ttab);
-        root.style.setProperty('--fundo-tabela', t.ftab);
-    }
+  function abrirFeedback(id, mensagem) {
+      document.getElementById(id).style.display = 'flex';
+      const targetMsg = id === 'modal-sucesso' ? document.getElementById('msg-sucesso') : document.getElementById('msg-erro');
+      if(targetMsg) targetMsg.innerText = mensagem;
+  }
+  function fecharFeedback(id) { document.getElementById(id).style.display = 'none'; }
 
-    // 7. Status de Dados
-    function verificarStatusDados() {
-        let dbTimes = [], dbPontuacoes = [], dbColaboradores = []; // Simulação
-        if (dbTimes.length === 0) {
-            const el = document.getElementById('msg-pontuacao-times');
-            if(el) el.innerText = "Nenhum time cadastrado para pontuar.";
-        }
-    }
+  let acaoPendente = null;
+  function confirmarAcao(mensagem, callback) {
+      document.getElementById('msg-confirmacao').innerText = mensagem;
+      document.getElementById('modal-confirmacao').style.display = 'flex';
+      acaoPendente = callback;
+  }
+  function fecharModalConfirmacao() {
+      document.getElementById('modal-confirmacao').style.display = 'none';
+      acaoPendente = null;
+  }
+  document.getElementById('btn-confirmar-acao').addEventListener('click', () => {
+      if(acaoPendente) acaoPendente();
+      fecharModalConfirmacao();
+  });
+
+  // =====================================
+  // CARREGAR E RENDERIZAR DADOS
+  // =====================================
+  function carregarDadosSistema() {
+      if(typeof google !== 'undefined') {
+          google.script.run
+              .withSuccessHandler(renderizarPainelCompleto)
+              .withFailureHandler(erro => abrirFeedback('modal-erro', 'Erro ao carregar banco: ' + erro))
+              .buscarDadosIniciais();
+      }
+  }
+
+  function renderizarPainelCompleto(dados) {
+      if(!dados) return;
+      cacheDadosApp = dados;
+
+      const footer = document.querySelector('.sidebar-footer');
+      if(footer) footer.innerText = dados.usuario || "Acesso";
+
+      const listaEquipes = dados.equipes || [];
+      const listaColaboradores = dados.colaboradores || [];
+      let listaRankingTimes = dados.rankingTimes || [];
+      let listaRankingIndiv = dados.rankingIndividual || [];
+      const listaAtendimentos = dados.atendimentos || [];
+
+      // Processar Ranking Faltantes
+      listaEquipes.forEach(eq => {
+          if (!listaRankingTimes.some(t => t.nome.toLowerCase() === eq.toLowerCase())) {
+              listaRankingTimes.push({ nome: eq, pontos: 0 });
+          }
+      });
+      listaRankingTimes.sort((a, b) => b.pontos - a.pontos);
+
+      listaColaboradores.forEach(c => {
+          if (!listaRankingIndiv.some(ind => ind.nome.toLowerCase() === c.nome.toLowerCase())) {
+              listaRankingIndiv.push({ nome: c.nome, equipe: c.equipe, pontos: 0 });
+          }
+      });
+      listaRankingIndiv.sort((a, b) => b.pontos - a.pontos);
+
+      // Popula Selects de Equipes e Colaboradores (Aba 2 e Aba 4)
+      const selectColabEquipe = document.getElementById('cad-colab-equipe');
+      const selectFiltroTime = document.getElementById('filtro-time');
+      const selectAtendNome = document.getElementById('atend-nome');
+      
+      let optionsHtml = '<option value="" disabled selected>Selecione a equipe...</option>';
+      let filterOptionsHtml = '<option value="">Todos os Times</option>';
+      let atendNomeHtml = '<option value="" disabled selected>Selecione o colaborador...</option>';
+      
+      listaEquipes.forEach(eq => {
+          optionsHtml += `<option value="${eq}">${eq}</option>`;
+          filterOptionsHtml += `<option value="${eq}">${eq}</option>`;
+      });
+      listaColaboradores.forEach(c => {
+          atendNomeHtml += `<option value="${c.nome}">${c.nome}</option>`;
+      });
+
+      if(selectColabEquipe) selectColabEquipe.innerHTML = optionsHtml;
+      if(selectFiltroTime) selectFiltroTime.innerHTML = filterOptionsHtml;
+      if(selectAtendNome) {
+          selectAtendNome.innerHTML = atendNomeHtml;
+          selectAtendNome.onchange = function() {
+              const colabEncontrado = listaColaboradores.find(col => col.nome === this.value);
+              if (colabEncontrado && document.getElementById('atend-cargo')) {
+                  document.getElementById('atend-cargo').value = colabEncontrado.cargo;
+              }
+          };
+      }
+
+      // ABA 4 - Tabela Equipes
+      const tbodyEq = document.querySelector('#tab4 .painel-tabela-box:first-of-type table tbody');
+      if(tbodyEq) {
+          tbodyEq.innerHTML = listaEquipes.length === 0
+              ? '<tr><td colspan="2" class="text-center">Aguardando times.</td></tr>'
+              : listaEquipes.map((eq, index) => `
+                  <tr>
+                      <td>${eq}</td>
+                      <td class="text-center">
+                          <div style="display:flex; gap:8px; justify-content:center;">
+                              <button class="btn-azul" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="abrirModalEditarEquipe(${index})">Editar</button>
+                              <button class="btn-limpar" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="excluirItem('equipe', '${eq}')">Excluir</button>
+                          </div>
+                      </td>
+                  </tr>`).join('');
+      }
+
+      // ABA 4 - Tabela Colaboradores
+      const tbodyColab = document.querySelector('#tab4 .painel-tabela-box:nth-of-type(2) table tbody');
+      if(tbodyColab) {
+          tbodyColab.innerHTML = listaColaboradores.length === 0
+              ? '<tr><td colspan="4" class="text-center">Aguardando colaboradores.</td></tr>'
+              : listaColaboradores.map((c, index) => `
+                  <tr class="item-tab4-colab" data-nome="${c.nome.toLowerCase()}">
+                      <td>${c.nome}</td>
+                      <td>${c.cargo}</td>
+                      <td>${c.equipe}</td>
+                      <td class="text-center">
+                          <div style="display:flex; gap:8px; justify-content:center;">
+                              <button class="btn-azul" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="abrirModalEditarColaborador(${index})">Editar</button>
+                              <button class="btn-limpar" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="excluirItem('colaborador', '${c.nome}')">Excluir</button>
+                          </div>
+                      </td>
+                  </tr>`).join('');
+      }
+
+      // ABA 1 - Placar Geral e Podio
+      const cardLiderNome = document.querySelector('.card-time-lider .podio-nome');
+      const cardLiderPontos = document.querySelector('.card-time-lider .podio-pontos');
+      if (listaRankingTimes.length > 0) {
+          if(cardLiderNome) cardLiderNome.innerText = listaRankingTimes[0].nome;
+          if(cardLiderPontos) cardLiderPontos.innerText = `${listaRankingTimes[0].pontos} pontos`;
+      }
+
+      const podioP = document.querySelectorAll('.podio-list p');
+      for (let i = 0; i < 3; i++) {
+          if (podioP[i] && listaRankingIndiv[i]) {
+              podioP[i].querySelector('.podio-nome').innerText = listaRankingIndiv[i].nome;
+              podioP[i].querySelector('.podio-pontos').innerText = `${listaRankingIndiv[i].pontos} pts`;
+          }
+      }
+
+      const tbodyTimesPlacar = document.querySelector('#tab1 .painel-tabela-box:first-of-type table tbody');
+      if(tbodyTimesPlacar) {
+          tbodyTimesPlacar.innerHTML = listaRankingTimes.length === 0
+              ? '<tr><td colspan="2" class="text-center">Nenhuma equipe cadastrada.</td></tr>'
+              : listaRankingTimes.map(t => `<tr><td>${t.nome}</td><td class="text-right" style="font-weight:bold;">${t.pontos}</td></tr>`).join('');
+      }
+
+      const tbodyIndividualPlacar = document.querySelector('#tab1 .painel-tabela-box:nth-of-type(2) table tbody');
+      if(tbodyIndividualPlacar) {
+          tbodyIndividualPlacar.innerHTML = listaRankingIndiv.length === 0
+              ? '<tr><td colspan="3" class="text-center">Nenhum colaborador cadastrado.</td></tr>'
+              : listaRankingIndiv.map(c => `<tr class="item-placar-individual" data-nome="${c.nome.toLowerCase()}"><td>${c.nome}</td><td>${c.equipe}</td><td class="text-right" style="font-weight:bold;">${c.pontos}</td></tr>`).join('');
+      }
+
+      const tbodyAtend = document.querySelector('#tab1 .painel-atendimentos-box table tbody');
+      if(tbodyAtend) {
+          if (listaAtendimentos.length === 0) {
+              tbodyAtend.innerHTML = '<tr><td colspan="9" class="text-center">Nenhum atendimento registrado no banco de dados.</td></tr>';
+          } else {
+              tbodyAtend.innerHTML = listaAtendimentos.map(a => `
+                  <tr>
+                      <td>${a.nome}</td><td>${a.cargo}</td><td>${a.cpf}</td><td>${a.dataContato}</td>
+                      <td>${a.apolice}</td><td>${a.premio}</td><td>${a.tipoContato}</td><td>${a.retido}</td>
+                      <td class="text-center">
+                          <div style="display:flex; gap:8px; justify-content:center;">
+                              <button class="btn-azul" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="acionarEdicaoAtendimentoNoModal(${a.linha})">Editar</button>
+                              <button class="btn-limpar" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="excluirAtendimentoUnico(${a.linha})">Excluir</button>
+                          </div>
+                      </td>
+                  </tr>
+              `).join('');
+          }
+      }
+
+      // ABA 3 - Registro de Pontos
+      const tbodyPontosReg = document.querySelector('#tab3 .tabela-pontos-box table tbody');
+      if(tbodyPontosReg) {
+          if (listaColaboradores.length === 0) {
+              tbodyPontosReg.innerHTML = '<tr><td colspan="3" class="text-center">Aguardando cadastro de colaboradores.</td></tr>';
+          } else {
+              tbodyPontosReg.innerHTML = listaColaboradores.map(c => `
+                  <tr class="item-colaborador-ponto" data-nome="${c.nome.toLowerCase()}" data-equipe="${c.equipe.toLowerCase()}">
+                      <td><strong>${c.nome}</strong></td>
+                      <td><span class="tag-time">${c.equipe}</span></td>
+                      <td class="text-center">
+                          <div style="display:flex; gap:8px; justify-content:center;">
+                              <button class="btn-azul" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="abrirModalPontosManual('${c.nome}', '${c.equipe}')">Atribuir Ponto</button>
+                          </div>
+                      </td>
+                  </tr>
+              `).join('');
+          }
+      }
+  }
+
+  // =====================================
+  // AÇÕES DE DADOS (C, U, D)
+  // =====================================
+  function excluirAtendimentoUnico(linha) {
+      confirmarAcao('Tem certeza que deseja excluir permanentemente este atendimento?', () => {
+          google.script.run
+              .withSuccessHandler(() => {
+                  abrirFeedback('modal-sucesso', 'Atendimento excluído com sucesso!');
+                  carregarDadosSistema();
+              })
+              .withFailureHandler((e) => abrirFeedback('modal-erro', 'Erro ao excluir: ' + e))
+              .excluirAtendimentoSheets(linha);
+      });
+  }
+
+  function acionarEdicaoAtendimentoNoModal(linha) {
+      const atend = cacheDadosApp.atendimentos.find(a => a.linha === parseInt(linha));
+      if(!atend) return;
+      
+      document.getElementById('edit-atend-linha').value = linha;
+      document.getElementById('edit-atend-nome').value = atend.nome;
+      document.getElementById('edit-atend-cargo').value = atend.cargo;
+      document.getElementById('edit-atend-cpf').value = atend.cpf;
+      
+      if (atend.dataContato) {
+          const partes = atend.dataContato.split('/');
+          if (partes.length === 3) {
+              document.getElementById('edit-atend-dia').value = partes[0];
+              document.getElementById('edit-atend-mes').value = partes[1];
+              document.getElementById('edit-atend-ano').value = partes[2];
+          }
+      }
+      
+      document.getElementById('edit-atend-nome').value = atend.nome !== "-" ? atend.nome : "";
+      document.getElementById('edit-atend-apolice').value = atend.apolice !== "-" ? atend.apolice : "";
+      document.getElementById('edit-atend-premio').value = atend.premio !== "0,00" ? atend.premio : "";
+      document.getElementById('edit-atend-tipo').value = atend.tipoContato !== "-" ? atend.tipoContato : "Potencial";
+      document.getElementById('edit-atend-retido').value = atend.retido !== "" ? atend.retido : "Sim";
+
+      abrirModalEditarAtendimento();
+  }
+
+  function salvarEdicaoAtendimento() {
+      const linhaParaEditar = document.getElementById('edit-atend-linha').value;
+      const nome = document.getElementById('edit-atend-nome').value;
+      const cargo = document.getElementById('edit-atend-cargo').value;
+      const cpf = document.getElementById('edit-atend-cpf').value;
+      const dia = document.getElementById('edit-atend-dia').value;
+      const mes = document.getElementById('edit-atend-mes').value;
+      const ano = document.getElementById('edit-atend-ano').value;
+      const apolice = document.getElementById('edit-atend-apolice').value;
+      const premio = document.getElementById('edit-atend-premio').value;
+      const tipoContato = document.getElementById('edit-atend-tipo').value;
+      const retido = document.getElementById('edit-atend-retido').value;
+
+      if (!cpf || !dia || !mes || !ano || !apolice || !premio) {
+          return abrirFeedback('modal-erro', 'Por favor, preencha todos os campos.');
+      }
+
+      const dataContato = `${dia}/${mes}/${ano}`;
+      const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido };
+
+      google.script.run
+          .withSuccessHandler(() => {
+              fecharModalEditarAtendimento();
+              abrirFeedback('modal-sucesso', 'Atendimento editado com sucesso!');
+              carregarDadosSistema();
+          })
+          .withFailureHandler((e) => abrirFeedback('modal-erro', 'Erro: ' + e))
+          .salvarAtendimento(payload, parseInt(linhaParaEditar));
+  }
+
+  function processarCadastro() {
+      const tipo = document.getElementById('tipo-cadastro-select').value;
+      if (tipo === 'equipe') {
+          const nomeEquipe = document.getElementById('cad-equipe-nome').value.trim();
+          if(!nomeEquipe) return abrirFeedback('modal-erro', 'Digite o nome da equipe.');
+          google.script.run
+              .withSuccessHandler(() => {
+                  fecharModalCadastro();
+                  abrirFeedback('modal-sucesso', 'Equipe cadastrada com sucesso!');
+                  document.getElementById('cad-equipe-nome').value = '';
+                  carregarDadosSistema();
+              }).incluirEquipe(nomeEquipe);
+      } else {
+          const nome = document.getElementById('cad-colab-nome').value.trim();
+          const cargo = document.getElementById('cad-colab-cargo').value;
+          const equipe = document.getElementById('cad-colab-equipe').value;
+
+          if(!nome || !cargo || !equipe || equipe === 'Selecione a equipe...') {
+              return abrirFeedback('modal-erro', 'Preencha todos os dados do colaborador.');
+          }
+          google.script.run
+              .withSuccessHandler(() => {
+                  fecharModalCadastro();
+                  abrirFeedback('modal-sucesso', 'Colaborador cadastrado com sucesso!');
+                  document.getElementById('cad-colab-nome').value = '';
+                  carregarDadosSistema();
+              }).incluirColaborador(nome, cargo, equipe);
+      }
+  }
+
+  function excluirItem(tipo, nomeItem) {
+      confirmarAcao(`Tem certeza que deseja excluir permanentemente [${nomeItem}] do sistema?`, () => {
+          if (tipo === 'equipe') {
+              google.script.run.withSuccessHandler(() => {
+                  abrirFeedback('modal-sucesso', 'Equipe excluída com sucesso!');
+                  carregarDadosSistema();
+              }).excluirEquipeSheets(nomeItem);
+          } else {
+              google.script.run.withSuccessHandler(() => {
+                  abrirFeedback('modal-sucesso', 'Colaborador excluído com sucesso!');
+                  carregarDadosSistema();
+              }).excluirColaboradorSheets(nomeItem);
+          }
+      });
+  }
+
+  function salvarDadosAtendimento() {
+      const nome = document.getElementById('atend-nome').value;
+      const cargo = document.getElementById('atend-cargo').value;
+      const cpf = document.getElementById('atend-cpf').value;
+      const dia = document.getElementById('atend-dia').value;
+      const mes = document.getElementById('atend-mes').value;
+      const ano = document.getElementById('atend-ano').value;
+      const apolice = document.getElementById('atend-apolice').value;
+      const premio = document.getElementById('atend-premio').value;
+      const tipoContato = document.getElementById('atend-tipo').value;
+      const retido = document.getElementById('atend-retido').value;
+
+      if (!nome || !cargo || !cpf || !dia || !mes || !ano || !apolice || !premio || !tipoContato || !retido) {
+          return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios.');
+      }
+
+      const dataContato = `${dia}/${mes}/${ano}`;
+      const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido };
+
+      google.script.run
+          .withSuccessHandler(() => {
+              abrirFeedback('modal-sucesso', 'Novo Atendimento salvo com sucesso!');
+              document.getElementById('form-atendimento').reset();
+              carregarDadosSistema();
+          })
+          .salvarAtendimento(payload, null);
+  }
+
+  function atribuirPontoSheets(nome, equipe, pontos, motivo) {
+      google.script.run
+          .withSuccessHandler(() => {
+              abrirFeedback('modal-sucesso', `Pontuação (${pontos > 0 ? '+' : ''}${pontos} pts) atribuída a ${nome}!`);
+              carregarDadosSistema();
+          }).lancarPontuacao(nome, equipe, pontos, motivo);
+  }
+
+  function lancarPontosManuais() {
+      const nome = document.getElementById('manual-pontos-nome').value;
+      const equipe = document.getElementById('manual-pontos-equipe').value;
+      const pontos = document.getElementById('manual-pontos-valor').value;
+      const motivo = document.getElementById('manual-pontos-motivo').value;
+
+      if(!pontos || !motivo) {
+          return abrirFeedback('modal-erro', 'Informe a quantidade e o motivo.');
+      }
+
+      fecharModalPontosManual();
+      atribuirPontoSheets(nome, equipe, parseInt(pontos), motivo);
+  }
+
+  // =======================================================
+  // EDIÇÃO DE EQUIPES (ABA 4)
+  // =======================================================
+  function abrirModalEditarEquipe(index) {
+      const nomeAtual = cacheDadosApp.equipes[index];
+      if(!nomeAtual) return;
+      document.getElementById('edit-equipe-index').value = index;
+      document.getElementById('edit-equipe-nome').value = nomeAtual;
+      document.getElementById('modal-editar-equipe').style.display = 'flex';
+  }
+
+  function fecharModalEditarEquipe() {
+      document.getElementById('modal-editar-equipe').style.display = 'none';
+  }
+
+  function salvarEdicaoEquipe() {
+      const index = document.getElementById('edit-equipe-index').value;
+      const novoNome = document.getElementById('edit-equipe-nome').value.trim();
+
+      if (!novoNome) return abrirFeedback('modal-erro', 'O nome da equipe não pode ficar vazio!');
+
+      const nomeAntigo = cacheDadosApp.equipes[index];
+      
+      google.script.run
+          .withSuccessHandler(function(response) {
+              fecharModalEditarEquipe();
+              abrirFeedback('modal-sucesso', response.mensagem || 'Equipe Editada com Sucesso');
+              carregarDadosSistema();
+          })
+          .withFailureHandler(function(err) {
+              abrirFeedback('modal-erro', "Erro ao salvar no Google Sheets: " + err);
+          })
+          .atualizarEquipeNoSheets(nomeAntigo, novoNome);
+  }
+
+  // =======================================================
+  // EDIÇÃO DE COLABORADOR (ABA 4)
+  // =======================================================
+  function abrirModalEditarColaborador(index) {
+      const colab = cacheDadosApp.colaboradores[index];
+      if (!colab) return abrirFeedback('modal-erro', 'Colaborador não encontrado.');
+
+      document.getElementById('edit-colab-index').value = index;
+      document.getElementById('edit-colab-nome').value = colab.nome;
+      document.getElementById('edit-colab-cargo').value = colab.cargo;
+
+      const selectEquipe = document.getElementById('edit-colab-equipe');
+      selectEquipe.innerHTML = '';
+      
+      if (cacheDadosApp.equipes && cacheDadosApp.equipes.length > 0) {
+          cacheDadosApp.equipes.forEach(equipe => {
+              const option = document.createElement('option');
+              option.value = equipe;
+              option.textContent = equipe;
+              if (equipe === colab.equipe) option.selected = true;
+              selectEquipe.appendChild(option);
+          });
+      } else {
+          selectEquipe.innerHTML = `<option value="${colab.equipe}">${colab.equipe}</option>`;
+      }
+
+      document.getElementById('modal-editar-colaborador').style.display = 'flex';
+  }
+
+  function fecharModalEditarColaborador() {
+      document.getElementById('modal-editar-colaborador').style.display = 'none';
+  }
+
+  function salvarEdicaoColaborador() {
+      const index = document.getElementById('edit-colab-index').value;
+      const nomeNovo = document.getElementById('edit-colab-nome').value.trim();
+      const cargoNovo = document.getElementById('edit-colab-cargo').value;
+      const equipeNova = document.getElementById('edit-colab-equipe').value;
+
+      if (!nomeNovo) return abrirFeedback('modal-erro', 'O nome do colaborador é obrigatório!');
+
+      const nomeAntigo = cacheDadosApp.colaboradores[index].nome;
+
+      google.script.run
+          .withSuccessHandler(function(response) {
+              fecharModalEditarColaborador();
+              abrirFeedback('modal-sucesso', response.mensagem || 'Colaborador Editado!');
+              carregarDadosSistema();
+          })
+          .withFailureHandler(function(err) {
+              abrirFeedback('modal-erro', "Erro ao salvar no Google Sheets: " + err);
+          })
+          .atualizarColaboradorNoSheets(nomeAntigo, nomeNovo, cargoNovo, equipeNova);
+  }
+
+  // =======================================================
+  // FILTROS
+  // =======================================================
+  function filtrarPlacarIndividual() {
+      const elBusca = document.getElementById('busca-placar-individual');
+      const busca = elBusca ? elBusca.value.toLowerCase() : "";
+      const rows = document.querySelectorAll('.item-placar-individual');
+      rows.forEach(row => {
+          const nome = row.getAttribute('data-nome') || "";
+          row.style.display = nome.includes(busca) ? '' : 'none';
+      });
+  }
+
+  function filtrarTabelaPontos() {
+      const elBusca = document.getElementById('busca-colaborador');
+      const elTime = document.getElementById('filtro-time');
+      const busca = elBusca ? elBusca.value.toLowerCase() : "";
+      const timeFiltro = elTime ? elTime.value.toLowerCase() : "";
+      const rows = document.querySelectorAll('.item-colaborador-ponto');
+
+      rows.forEach(row => {
+          const nome = row.getAttribute('data-nome') || "";
+          const equipe = row.getAttribute('data-equipe') || "";
+          const matchBusca = nome.includes(busca);
+          const matchTime = timeFiltro === '' || equipe === timeFiltro;
+          row.style.display = (matchBusca && matchTime) ? '' : 'none';
+      });
+  }
+
+  function filtrarTab4Colaboradores() {
+      const elBusca = document.getElementById('busca-tab4-colab');
+      const busca = elBusca ? elBusca.value.toLowerCase() : "";
+      const rows = document.querySelectorAll('.item-tab4-colab');
+      rows.forEach(row => {
+          const nome = row.getAttribute('data-nome') || "";
+          row.style.display = nome.includes(busca) ? '' : 'none';
+      });
+  }
+
+  function alterarNomeCampanha() {
+      const input = document.getElementById('input-nome-campanha');
+      const novoNome = input ? input.value : "";
+      const title = document.querySelector('#sidebar h1');
+      if(title && novoNome) title.innerText = novoNome;
+      abrirFeedback('modal-sucesso', 'Nome da campanha atualizado!');
+  }
+
+  function mudarTemaVisual() {
+      const tema = document.getElementById('select-tema').value;
+      const root = document.documentElement;
+
+      const temas = {
+          'padrao': { v: '#009B3A', a: '#FEDF00', az: '#002776', br: '#ffffff', ci: '#f5f5f5', tt: '#002776', ts: '#002776', ttab: '#555555', ftab: '#ffffff' },
+          'azul': { v: '#007BFF', a: '#E6F2FF', az: '#003366', br: '#ffffff', ci: '#F0F4F8', tt: '#003366', ts: '#003366', ttab: '#444444', ftab: '#ffffff' },
+          'dark': { v: '#2c2c2c', a: '#1f1f1f', az: '#121212', br: '#ffffff', ci: '#0a0a0a', tt: '#e0e0e0', ts: '#cccccc', ttab: '#bbbbbb', ftab: '#1f1f1f' }
+      };
+
+      const t = temas[tema];
+      root.style.setProperty('--verde', t.v); root.style.setProperty('--amarelo', t.a);
+      root.style.setProperty('--azul', t.az); root.style.setProperty('--branco', t.br);
+      root.style.setProperty('--cinza-fundo', t.ci); root.style.setProperty('--texto-titulos', t.tt);
+      root.style.setProperty('--texto-sidebar', t.ts); root.style.setProperty('--texto-tabela', t.ttab);
+      root.style.setProperty('--fundo-tabela', t.ftab);
+  }
 </script>
 </body>
-
 </html>
