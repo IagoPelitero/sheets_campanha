@@ -187,8 +187,13 @@
       background-color: var(--fundo-tabela);
     }
 
-    .text-right { text-align: right; }
-    .text-center { text-align: center; }
+    .text-right {
+      text-align: right;
+    }
+
+    .text-center {
+      text-align: center;
+    }
 
     /* =======================================================
        4. ABA 1: PLACAR GERAL E CARDS DE PÓDIO
@@ -284,10 +289,27 @@
       border-radius: 1px 1px 0 0;
     }
 
-    .bloco-1 { height: 16px; line-height: 16px; margin: 0 1px; }
-    .bloco-2 { height: 11px; line-height: 11px; opacity: 0.9; }
-    .bloco-3 { height: 8px; line-height: 8px; opacity: 0.8; }
-    .icon-coroa { font-size: 1.1rem; }
+    .bloco-1 {
+      height: 16px;
+      line-height: 16px;
+      margin: 0 1px;
+    }
+
+    .bloco-2 {
+      height: 11px;
+      line-height: 11px;
+      opacity: 0.9;
+    }
+
+    .bloco-3 {
+      height: 8px;
+      line-height: 8px;
+      opacity: 0.8;
+    }
+
+    .icon-coroa {
+      font-size: 1.1rem;
+    }
 
     /* =======================================================
        5. FORMULÁRIOS, BOTÕES E CONFIGURAÇÕES
@@ -372,16 +394,23 @@
       transition: opacity 0.2s;
     }
 
-    .btn-salvar { background-color: var(--verde); }
-    .btn-limpar { background-color: var(--vermelho); }
-   
+    .btn-salvar {
+      background-color: var(--verde);
+    }
+
+    .btn-limpar {
+      background-color: var(--vermelho);
+    }
+
     .btn-abrir-modal {
       background-color: var(--verde);
       width: 100%;
       padding: 14px 20px;
     }
 
-    .btn-salvar:hover, .btn-limpar:hover, .btn-abrir-modal:hover {
+    .btn-salvar:hover,
+    .btn-limpar:hover,
+    .btn-abrir-modal:hover {
       opacity: 0.9;
     }
 
@@ -459,14 +488,68 @@
     /* =======================================================
        7. CLASSES DOS BOTÕES CUSTOMIZADOS (ABA 3 E CONFIGS)
        ======================================================= */
-    .btn-azul-brasil { background-color: var(--azul); color: white; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; margin: 2px;}
-    .btn-verde-brasil { background-color: var(--verde); color: white; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; margin: 2px;}
-    .btn-amarelo-brasil { background-color: var(--amarelo); color: #002776; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; margin: 2px;}
-    .btn-vermelho { background-color: var(--vermelho); color: white; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; margin: 2px;}
-    .btn-acao { padding: 6px 14px; font-size: 0.85rem; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-   
-    .btn-azul-brasil:hover, .btn-verde-brasil:hover, .btn-amarelo-brasil:hover, .btn-vermelho:hover {
-        opacity: 0.85;
+    .btn-azul-brasil {
+      background-color: var(--azul);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: opacity 0.2s;
+      margin: 2px;
+    }
+
+    .btn-verde-brasil {
+      background-color: var(--verde);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: opacity 0.2s;
+      margin: 2px;
+    }
+
+    .btn-amarelo-brasil {
+      background-color: var(--amarelo);
+      color: #002776;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: opacity 0.2s;
+      margin: 2px;
+    }
+
+    .btn-vermelho {
+      background-color: var(--vermelho);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: opacity 0.2s;
+      margin: 2px;
+    }
+
+    .btn-acao {
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-azul-brasil:hover,
+    .btn-verde-brasil:hover,
+    .btn-amarelo-brasil:hover,
+    .btn-vermelho:hover {
+      opacity: 0.85;
     }
 
     /* =======================================================
@@ -509,8 +592,15 @@
     }
 
     @keyframes slideIn {
-      from { transform: translateY(-30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      from {
+        transform: translateY(-30px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     .modal-header {
@@ -529,9 +619,14 @@
       cursor: pointer;
     }
 
-    .close-modal:hover { color: white; }
-    .modal-body { padding: 24px; }
-   
+    .close-modal:hover {
+      color: white;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
     .modal-footer {
       padding: 20px 24px;
       background-color: rgba(0, 0, 0, 0.1);
@@ -541,40 +636,153 @@
       gap: 12px;
     }
 
-    .modal-content-feedback h3 { margin-bottom: 15px; font-size: 1.4rem; }
-    .modal-content-feedback p { margin-bottom: 25px; font-size: 1rem; opacity: 0.9; }
+    .modal-content-feedback h3 {
+      margin-bottom: 15px;
+      font-size: 1.4rem;
+    }
+
+    .modal-content-feedback p {
+      margin-bottom: 25px;
+      font-size: 1rem;
+      opacity: 0.9;
+    }
 
     /* =======================================================
        9. RESPONSIVIDADE
        ======================================================= */
     @media (max-width: 768px) {
-      body { flex-direction: column; height: auto; min-height: 100vh; overflow: auto; }
-      #sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid rgba(0, 0, 0, 0.1); }
-      #sidebar nav { flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 10px; gap: 8px; }
-      #sidebar nav a { padding: 8px 12px; font-size: 0.8rem; flex: 1 1 auto; justify-content: center; }
-      .sidebar-footer { display: none; }
-      section { padding: 16px; overflow-y: visible; height: auto; }
-      .podio-container, .tabelas-meio-container, .config-top-container { flex-direction: column; gap: 16px; }
-      .form-grid { grid-template-columns: 1fr; }
-      .table-wrapper { overflow-x: auto; }
+      body {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        overflow: auto;
+      }
+
+      #sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+      }
+
+      #sidebar nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 10px;
+        gap: 8px;
+      }
+
+      #sidebar nav a {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        flex: 1 1 auto;
+        justify-content: center;
+      }
+
+      .sidebar-footer {
+        display: none;
+      }
+
+      section {
+        padding: 16px;
+        overflow-y: visible;
+        height: auto;
+      }
+
+      .podio-container,
+      .tabelas-meio-container,
+      .config-top-container {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
     }
 
     /* =======================================================
    Modais Específicos para Edição da Aba 4 (Configurações)
    ======================================================= */
-#modal-editar-equipe,
-#modal-editar-colaborador {
-  z-index: 1000; /* Fica acima de tudo, outras propriedades vêm da .modal-overlay */
+    #modal-editar-equipe,
+    #modal-editar-colaborador {
+      z-index: 1000;
+      /* Fica acima de tudo, outras propriedades vêm da .modal-overlay */
+    }
+
+    /* Força a exibição correta via JavaScript usando flex */
+    .modal-overlay.active {
+      display: flex !important;
+    }
+
+/* =======================================================
+   Modal de Filtro de Atendimentos por Data (Aba 1) - Ajustado
+   ======================================================= */
+
+/* Container com rolagem vertical (limite de 10 linhas) e horizontal (para as 9 colunas) */
+.tabela-scroll-container {
+  max-height: 380px;
+  overflow-y: auto;
+  overflow-x: auto; /* Permite rolagem lateral se faltar espaço para as colunas */
+  margin-top: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
 }
 
-/* Força a exibição correta via JavaScript usando flex */
-.modal-overlay.active {
-  display: flex !important;
+.tabela-scroll-container table {
+  min-width: 850px; /* Garante espaço confortável para todas as colunas */
 }
-</style>
+
+/* Blocos de estatísticas e rankings */
+.card-estatistica-filtro {
+  background-color: #f9f9f9;
+  border-left: 5px solid var(--azul-brasil);
+  padding: 12px 16px;
+  margin-top: 15px;
+  border-radius: 4px;
+}
+
+.card-estatistica-filtro h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.ranking-atendentes-list {
+  margin: 0;
+  padding-left: 20px;
+  color: #444;
+}
+
+/* =======================================================
+   Modal de Filtro de Atendimentos por Data (Aba 1) - Ajustado
+   ======================================================= */
+#modal-filtro-data-aba1 {
+  display: none;        /* Inicialmente oculto */
+  position: fixed;      /* Fixado na tela independente do scroll */
+  z-index: 10000;       /* Valor alto para garantir que fique por cima de tudo */
+  left: 0;
+  top: 0;
+  width: 100vw;         /* Força cobrir toda a largura visível */
+  height: 100vh;        /* Força cobrir toda a altura visível */
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+ 
+  /* Garante o alinhamento central perfeito do conteúdo interno de 450px */
+  display: none;        /* Controlado via JS para virar 'flex' */
+  align-items: center;
+  justify-content: center;
+}
+  </style>
 </head>
+
 <body>
-<aside id="sidebar">
+  <aside id="sidebar">
     <h1>Campanha Copa</h1>
     <nav>
       <a href="#tab1" class="ativo"><span>📊</span> Placar Geral</a>
@@ -606,147 +814,153 @@
       <h3 style="color: var(--amarelo);">Confirmação</h3>
       <p id="msg-confirmacao">Tem certeza de que deseja realizar esta exclusão?</p>
       <div style="display: flex; gap: 10px; justify-content: center;">
-          <button id="btn-confirmar-acao" class="btn-salvar" style="padding: 10px 20px;">Confirmar</button>
-          <button class="btn-limpar" style="padding: 10px 20px;" onclick="fecharModalConfirmacao()">Cancelar</button>
+        <button id="btn-confirmar-acao" class="btn-verde-brasil" style="padding: 10px 20px;">Confirmar</button>
+        <button class="btn-limpar" style="padding: 10px 20px;" onclick="fecharModalConfirmacao()">Cancelar</button>
       </div>
     </div>
   </div>
 
   <div id="modal-editar-atendimento" class="modal-overlay" style="display:none;">
-      <div class="modal-content-blue" style="max-height: 90vh; overflow-y: auto; border-top: 6px solid var(--amarelo);">
-          <div class="modal-header">
-              <h3>Editar Atendimento</h3>
-              <span class="close-modal" onclick="fecharModalEditarAtendimento()">&times;</span>
+    <div class="modal-content-blue" style="max-height: 90vh; overflow-y: auto; border-top: 6px solid var(--amarelo);">
+      <div class="modal-header">
+        <h3>Editar Atendimento</h3>
+        <span class="close-modal" onclick="fecharModalEditarAtendimento()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="form-editar-atendimento">
+          <input type="hidden" id="edit-atend-linha">
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>Nome do Colaborador</label>
+            <input type="text" id="edit-atend-nome" required style="color:#333;">
           </div>
-          <div class="modal-body">
-              <form id="form-editar-atendimento">
-                  <input type="hidden" id="edit-atend-linha">
-                  <div class="form-group" style="margin-bottom: 12px;">
-                      <label>Nome do Colaborador</label>
-                      <input type="text" id="edit-atend-nome" required style="color:#333;">
-                  </div>
-                  <div class="form-group" style="margin-bottom: 12px;">
-                      <label>Cargo</label>
-                      <select id="edit-atend-cargo" required style="color:#333;">
-                          <option value="Técnico">Técnico</option>
-                          <option value="Atendente">Atendente</option>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>Cargo</label>
+            <select id="edit-atend-cargo" required style="color:#333;">
+                          <option value="Técnico">Emissão VI</option>
+                          <option value="Atendente">Central Vida</option>
                       </select>
-                  </div>
-                  <div class="form-group" style="margin-bottom: 12px;">
-                      <label>CPF</label>
-                      <input type="text" id="edit-atend-cpf" required style="color:#333;">
-                  </div>
-                  <div class="form-group" style="margin-bottom: 12px;">
-                      <label>Data do Contato</label>
-                      <div style="display: flex; gap: 5px;">
-                          <input type="text" id="edit-atend-dia" placeholder="DD" maxlength="2" required style="width: 30%; color:#333; text-align:center;">
-                          <input type="text" id="edit-atend-mes" placeholder="MM" maxlength="2" required style="width: 30%; color:#333; text-align:center;">
-                          <input type="text" id="edit-atend-ano" placeholder="AAAA" maxlength="4" required style="width: 40%; color:#333; text-align:center;">
-                      </div>
-                  </div>
-                  <div class="form-group" style="margin-bottom: 12px;">
-                      <label>Nº da Apólice</label>
-                      <input type="text" id="edit-atend-apolice" required style="color:#333;">
-                  </div>
-                  <div class="form-group" style="margin-bottom: 12px;">
-                      <label>Valor do Prêmio</label>
-                      <input type="text" id="edit-atend-premio" required style="color:#333;">
-                  </div>
-                  <div class="form-group" style="margin-bottom: 12px;">
-                      <label>Tipo de Contato</label>
-                      <select id="edit-atend-tipo" required style="color:#333;">
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>CPF do segurado</label>
+            <input type="text" id="edit-atend-cpf" required style="color:#333;">
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>Data do Contato</label>
+            <div style="display: flex; gap: 5px;">
+              <input type="text" id="edit-atend-dia" placeholder="DD" maxlength="2" required style="width: 30%; color:#333; text-align:center;">
+              <input type="text" id="edit-atend-mes" placeholder="MM" maxlength="2" required style="width: 30%; color:#333; text-align:center;">
+              <input type="text" id="edit-atend-ano" placeholder="AAAA" maxlength="4" required style="width: 40%; color:#333; text-align:center;">
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>Nº da Apólice</label>
+            <input type="text" id="edit-atend-apolice" required style="color:#333;">
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>Valor do prêmio retido/anual</label>
+            <input type="text" id="edit-atend-premio" required style="color:#333;">
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>Tipo de Contato</label>
+            <select id="edit-atend-tipo" required style="color:#333;">
                           <option value="Potencial">Potencial</option>
                           <option value="Não potencial">Não potencial</option>
                       </select>
-                  </div>
-                  <div class="form-group" style="margin-bottom: 12px;">
-                      <label>Foi Retido?</label>
-                      <select id="edit-atend-retido" required style="color:#333;">
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>Foi Retido?</label>
+            <select id="edit-atend-retido" required style="color:#333;">
                           <option value="Sim">Sim</option>
                           <option value="Não">Não</option>
                       </select>
-                  </div>
-              </form>
           </div>
-          <div class="modal-footer form-actions">
-              <button class="btn-azul" style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;" onclick="salvarEdicaoAtendimento()">Salvar Alterações</button>
-              <button class="btn-limpar" onclick="fecharModalEditarAtendimento()">Cancelar</button>
-          </div>
+        </form>
+          <div class="form-group" style="margin-bottom: 12px;">
+  <label>Pontuação do Atendimento (Calculado)</label>
+  <input type="text" id="edit-atend-pontos" style="color:#555; width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background-color: #e9ecef; cursor: not-allowed; font-weight: bold;" readonly>
+</div>
+        </form>
       </div>
+      <div class="modal-footer form-actions">
+        <button class="btn-verde-brasil" style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;" onclick="salvarEdicaoAtendimento()">Salvar Alterações</button>
+        <button class="btn-limpar" onclick="fecharModalEditarAtendimento()">Cancelar</button>
+      </div>
+    </div>
   </div>
 
   <div id="modal-pontos-manual" class="modal-overlay" style="display:none;">
     <div class="modal-content-blue" style="border-top: 6px solid var(--verde);">
-        <div class="modal-header">
-            <h3>Lançamento Manual de Pontos</h3>
-            <span class="close-modal" onclick="fecharModalPontosManual()">&times;</span>
+      <div class="modal-header">
+        <h3>Lançamento Manual de Pontos</h3>
+        <span class="close-modal" onclick="fecharModalPontosManual()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="manual-pontos-nome">
+        <input type="hidden" id="manual-pontos-equipe">
+        <p style="margin-bottom: 16px; font-size: 1.1rem;">Operador:
+          <strong id="display-pontos-nome" style="color:var(--amarelo);"></strong></p>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label>Quantidade de Pontos</label>
+          <input type="number" id="manual-pontos-valor" placeholder="Ex: 50 ou -20" required style="color:#333;">
         </div>
-        <div class="modal-body">
-            <input type="hidden" id="manual-pontos-nome">
-            <input type="hidden" id="manual-pontos-equipe">
-            <p style="margin-bottom: 16px; font-size: 1.1rem;">Operador: <strong id="display-pontos-nome" style="color:var(--amarelo);"></strong></p>
-            <div class="form-group" style="margin-bottom: 16px;">
-                <label>Quantidade de Pontos</label>
-                <input type="number" id="manual-pontos-valor" placeholder="Ex: 50 ou -20" required style="color:#333;">
-            </div>
-            <div class="form-group">
-                <label>Motivo do Lançamento</label>
-                <input type="text" id="manual-pontos-motivo" placeholder="Ex: Bônus / Erro operacional" required style="color:#333;">
-            </div>
+        <div class="form-group">
+          <label>Motivo do Lançamento</label>
+          <input type="text" id="manual-pontos-motivo" placeholder="Ex: Bônus / Erro operacional" required style="color:#333;">
         </div>
-        <div class="modal-footer form-actions">
-            <button class="btn-salvar" onclick="lancarPontosManuais()">Salvar Pontuação</button>
-            <button class="btn-limpar" onclick="fecharModalPontosManual()">Cancelar</button>
-        </div>
+      </div>
+      <div class="modal-footer form-actions">
+        <button class="btn-salvar" onclick="lancarPontosManuais()">Salvar Pontuação</button>
+        <button class="btn-limpar" onclick="fecharModalPontosManual()">Cancelar</button>
+      </div>
     </div>
   </div>
 
   <div id="modal-cadastro" class="modal-overlay" style="display:none;">
-      <div class="modal-content-blue">
-          <div class="modal-header">
-              <h3>Cadastrar equipe/colaborador</h3>
-              <span class="close-modal" onclick="fecharModalCadastro()">&times;</span>
-          </div>
-          <div class="modal-body">
-              <div class="form-group" style="margin-bottom: 20px;">
-                  <label>Tipo de Cadastro</label>
-                  <select id="tipo-cadastro-select" onchange="alternarFormularioCadastro()">
+    <div class="modal-content-blue">
+      <div class="modal-header">
+        <h3>Cadastrar equipe/colaborador</h3>
+        <span class="close-modal" onclick="fecharModalCadastro()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label>Tipo de Cadastro</label>
+          <select id="tipo-cadastro-select" onchange="alternarFormularioCadastro()">
                       <option value="equipe">Equipe</option>
                       <option value="colaborador">Colaborador</option>
                   </select>
-              </div>
-              <div id="form-cadastro-equipe">
-                  <div class="form-group">
-                      <label>Nome da equipe nova</label>
-                      <input type="text" id="cad-equipe-nome" placeholder="Ex: Os Sentinelas">
-                  </div>
-              </div>
-              <div id="form-cadastro-colaborador" style="display: none;">
-                  <div class="form-group" style="margin-bottom: 15px;">
-                      <label>Nome do colaborador</label>
-                      <input type="text" id="cad-colab-nome" placeholder="Nome completo">
-                  </div>
-                  <div class="form-group" style="margin-bottom: 15px;">
-                      <label>Cargo</label>
-                      <select id="cad-colab-cargo" required>
+        </div>
+        <div id="form-cadastro-equipe">
+          <div class="form-group">
+            <label>Nome da equipe nova</label>
+            <input type="text" id="cad-equipe-nome" placeholder="Ex: Os Sentinelas">
+          </div>
+        </div>
+        <div id="form-cadastro-colaborador" style="display: none;">
+          <div class="form-group" style="margin-bottom: 15px;">
+            <label>Nome do colaborador</label>
+            <input type="text" id="cad-colab-nome" placeholder="Nome completo">
+          </div>
+          <div class="form-group" style="margin-bottom: 15px;">
+            <label>Cargo</label>
+            <select id="cad-colab-cargo" required>
                           <option value="" disabled selected>Selecione o cargo</option>
-                          <option value="Técnico">Técnico</option>
-                          <option value="Atendente">Atendente</option>
+                          <option value="Técnico">Emissão VI</option>
+                          <option value="Atendente">Central Vida</option>
                       </select>
-                  </div>
-                  <div class="form-group">
-                      <label>Equipe</label>
-                      <select id="cad-colab-equipe">
+          </div>
+          <div class="form-group">
+            <label>Equipe</label>
+            <select id="cad-colab-equipe">
                           <option>Selecione a equipe...</option>
                       </select>
-                  </div>
-              </div>
           </div>
-          <div class="modal-footer form-actions">
-              <button class="btn-salvar" onclick="processarCadastro()">Incluir</button>
-              <button class="btn-limpar" onclick="fecharModalCadastro()">Cancelar</button>
-          </div>
+        </div>
       </div>
+      <div class="modal-footer form-actions">
+        <button class="btn-salvar" onclick="processarCadastro()">Incluir</button>
+        <button class="btn-limpar" onclick="fecharModalCadastro()">Cancelar</button>
+      </div>
+    </div>
   </div>
 
   <div id="modal-editar-equipe" class="modal-overlay" style="display:none;">
@@ -763,7 +977,7 @@
         </div>
       </div>
       <div class="modal-footer form-actions">
-        <button class="btn-azul" style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;" onclick="salvarEdicaoEquipe()">Salvar</button>
+        <button class="btn-verde-brasil" style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;" onclick="salvarEdicaoEquipe()">Salvar</button>
         <button class="btn-limpar" onclick="fecharModalEditarEquipe()">Cancelar</button>
       </div>
     </div>
@@ -784,8 +998,9 @@
         <div class="form-group" style="margin-bottom: 16px;">
           <label for="edit-colab-cargo">Cargo / Função</label>
           <select id="edit-colab-cargo" required style="color: #333;">
-            <option value="Atendente">Atendente</option>
-            <option value="Técnico">Técnico</option>
+            <option value="Técnico">Emissão VI</option>
+            <option value="Atendente">Central Vida</option>
+           
           </select>
         </div>
         <div class="form-group">
@@ -794,14 +1009,56 @@
         </div>
       </div>
       <div class="modal-footer form-actions">
-        <button class="btn-azul" style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;" onclick="salvarEdicaoColaborador()">Salvar</button>
+        <button class="btn-verde-brasil" style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;" onclick="salvarEdicaoColaborador()">Salvar</button>
         <button class="btn-limpar" onclick="fecharModalEditarColaborador()">Cancelar</button>
       </div>
     </div>
   </div>
 
+  <div id="modal-filtro-data-aba1">
+  <div class="modal-content-blue" style="border-top: 6px solid #00a859; max-width: 450px; width: 95%; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
+   
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #002266; color: #fff; border-top-left-radius: 2px; border-top-right-radius: 2px;">
+      <h3 style="margin: 0; font-size: 1.2rem;">Filtrar Ranking de Pontuações</h3>
+      <span class="close-modal" onclick="fecharModalFiltroAba1()" style="cursor: pointer; font-size: 1.5rem; font-weight: bold; color: #fff;">&times;</span>
+    </div>
+   
+    <div class="modal-body" style="padding: 15px; background-color: #f8f9fa;">
+      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <div class="form-group" style="flex: 1;">
+          <label for="filtro-data-inicio" style="display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #333;">Data Inicial</label>
+          <input type="date" id="filtro-data-inicio" style="width: 100%; padding: 8px; box-sizing: border-box; color: #333; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label for="filtro-data-fim" style="display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #333;">Data Final</label>
+          <input type="date" id="filtro-data-fim" style="width: 100%; padding: 8px; box-sizing: border-box; color: #333; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+      </div>
+     
+      <button class="btn-salvar" style="width: 100%; margin-bottom: 15px; padding: 12px; font-weight: bold; cursor: pointer; background-color: #00a859; color: #fff; border: none; border-radius: 4px; font-size: 1rem;" onclick="processarFiltroPorData()">Buscar Dados</button>
+       
+      <div class="card-estatistica-filtro" style="background: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; border-left: 5px solid #002266;">
+        <h4 style="margin-top: 0; margin-bottom: 15px; text-align: center; font-size: 1rem; color: #333;"><i class="fas fa-medal"></i> Top 3 Colaboradores</h4>
+        <ol id="top-atendentes-lista" class="ranking-atendentes-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+          </ol>
+      </div>
+      <p id="tbody-filtro-aba1">Aguardando filtro</p>
+    </div>
+   
+    <div class="modal-footer" style="padding: 12px 15px; display: flex; justify-content: flex-end; border-top: 1px solid #dee2e6; background-color: #f1f3f5;">
+      <button class="btn-vermelho" style="padding: 8px 18px; cursor: pointer; background-color: #dc3545; color: white; border: none; border-radius: 4px; font-weight: bold;" onclick="fecharModalFiltroAba1()">Fechar</button>
+    </div>
+  </div>
+</div>
+
   <section id="tab1">
-    <h2>Placar Geral</h2>
+     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; width: 100%;">
+  <h2 style="margin: 0;">Placar Geral</h2>
+  <button class="btn-acao btn-azul-brasil" onclick="abrirModalFiltroAba1()">
+    <i class="fas fa-calendar-alt"></i> Filtro de campanha semanal
+  </button>
+</div>
+
     <div class="podio-container-wrapper">
       <div class="podio-container">
         <article class="card-podio">
@@ -824,14 +1081,16 @@
             Pódio de pontuação
           </div>
           <div class="card-body-yellow podio-list">
-            <p><span>🥇</span> <strong class="podio-nome">Aguardando dados</strong> — <span class="podio-pontos">0 pts</span></p>
-            <p><span>🥈</span> <strong class="podio-nome">Aguardando dados</strong> — <span class="podio-pontos">0 pts</span></p>
-            <p><span>🥉</span> <strong class="podio-nome">Aguardando dados</strong> — <span class="podio-pontos">0 pts</span></p>
+            <p><span>🥇</span> <strong class="podio-nome">Aguardando dados</strong> —
+              <span class="podio-pontos">0 pts</span></p>
+            <p><span>🥈</span> <strong class="podio-nome">Aguardando dados</strong> —
+              <span class="podio-pontos">0 pts</span></p>
+            <p><span>🥉</span> <strong class="podio-nome">Aguardando dados</strong> —
+              <span class="podio-pontos">0 pts</span></p>
           </div>
         </article>
       </div>
     </div>
-
     <div class="tabelas-meio-container">
       <div class="painel-tabela-box">
         <h3>Painel de pontuação dos times</h3>
@@ -854,9 +1113,10 @@
 
       <div class="painel-tabela-box">
         <h3>Painel de pontuação individual</h3>
-        <div class="grupo-busca" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; margin: 12px;">
-            <span class="icon-busca">🔍</span>
-            <input type="text" id="busca-placar-individual" placeholder="Buscar por colaborador..." style="border: none; outline: none; width: 100%; color: #333;">
+        <div class="grupo-busca"
+          style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; margin: 12px;">
+          <span class="icon-busca">🔍</span>
+          <input type="text" id="busca-placar-individual" placeholder="Buscar por colaborador..." style="border: none; outline: none; width: 100%; color: #333;">
         </div>
         <div class="table-wrapper scrollable-table" style="max-height: 420px; overflow-y: auto;">
           <table>
@@ -887,86 +1147,86 @@
             <tr>
               <th>Nome Colaborador</th>
               <th>Cargo</th>
-              <th>CPF</th>
+              <th>CPF do segurado</th>
               <th>Data do contato</th>
               <th>Nº da apólice</th>
               <th>R$ do prêmio</th>
               <th>Tipo de contato</th>
               <th>Foi retido?</th>
+              <th class="text-center" style="background-color: #eaf4ff;">Pontos</th>
               <th class="text-center">Ações</th>
             </tr>
           </thead>
           <tbody>
             <tr class="row-placeholder">
-              <td colspan="9" class="text-center">Nenhum atendimento foi auditado.</td>
+              <td colspan="10" class="text-center">Nenhum atendimento foi auditado.</td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div>
   </section>
 
   <section id="tab2">
-        <h2>Dados de Atendimento</h2>
-        <div class="form-container-blue">
-            <form id="form-atendimento">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Nome do colaborador</label>
-                        <select id="atend-nome" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label>Cargo</label>
-                        <select id="atend-cargo" required>
+    <h2>Dados de Atendimento</h2>
+    <div class="form-container-blue">
+      <form id="form-atendimento">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nome do colaborador</label>
+            <select id="atend-nome" required></select>
+          </div>
+          <div class="form-group">
+            <label>Cargo</label>
+            <select id="atend-cargo" required>
                             <option value="" disabled selected>Selecione o cargo</option>
-                            <option value="Técnico">Técnico</option>
-                            <option value="Atendente">Atendente</option>
+                            <option value="Emissão VI">Emissão VI</option>
+                            <option value="Central Vida">Central Vida</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label>CPF</label>
-                        <input type="text" id="atend-cpf" placeholder="000.000.000-00" maxlength="14" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Data do contato</label>
-                        <div class="date-inputs" style="display: flex; gap: 5px;">
-                            <input type="text" id="atend-dia" placeholder="DD" maxlength="2" required style="width: 30%;">
-                            <input type="text" id="atend-mes" placeholder="MM" maxlength="2" required style="width: 30%;">
-                            <input type="text" id="atend-ano" placeholder="AAAA" maxlength="4" required style="width: 40%;">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Nº da apólice</label>
-                        <input type="text" id="atend-apolice" placeholder="Ex: 123456789" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Valor do prêmio</label>
-                        <input type="text" id="atend-premio" placeholder="R$ 0,00" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de contato</label>
-                        <select id="atend-tipo" required>
+          </div>
+          <div class="form-group">
+            <label>CPF do segurado</label>
+            <input type="text" id="atend-cpf" placeholder="000.000.000-00" maxlength="14" required>
+          </div>
+          <div class="form-group">
+            <label>Data do contato</label>
+            <div class="date-inputs" style="display: flex; gap: 5px;">
+              <input type="text" id="atend-dia" placeholder="DD" maxlength="2" required style="width: 30%;">
+              <input type="text" id="atend-mes" placeholder="MM" maxlength="2" required style="width: 30%;">
+              <input type="text" id="atend-ano" placeholder="AAAA" maxlength="4" required style="width: 40%;">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nº da apólice</label>
+            <input type="text" id="atend-apolice" placeholder="Ex: 123456789" required>
+          </div>
+          <div class="form-group">
+            <label>Valor do prêmio retido/anual</label>
+            <input type="text" id="atend-premio" placeholder="R$ 0,00" required>
+          </div>
+          <div class="form-group">
+            <label>Tipo de contato</label>
+            <select id="atend-tipo" required>
                             <option value="" disabled selected>Selecione o tipo</option>
                             <option value="Potencial">Potencial</option>
                             <option value="Não potencial">Não potencial</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Foi retido?</label>
-                        <select id="atend-retido" required>
+          </div>
+          <div class="form-group">
+            <label>Foi retido?</label>
+            <select id="atend-retido" required>
                             <option value="" disabled selected>Selecione</option>
                             <option value="Sim">Sim</option>
                             <option value="Não">Não</option>
                         </select>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn-salvar">Salvar Novo Atendimento</button>
-                    <button type="reset" class="btn-limpar">Limpar</button>
-                </div>
-            </form>
+          </div>
         </div>
-    </section>
+        <div class="form-actions">
+          <button type="submit" class="btn-salvar">Salvar Novo Atendimento</button>
+          <button type="reset" class="btn-limpar">Limpar</button>
+        </div>
+      </form>
+    </div>
+  </section>
 
   <section id="tab3">
     <h2>Registro de Pontos</h2>
@@ -1008,7 +1268,8 @@
     <div class="config-top-container">
       <div class="config-box-blue">
         <h3>Gerenciamento de Equipe</h3>
-        <p style="color: #ccc; margin-bottom: 20px; font-size: 0.9rem;">Adicione novos times ou colaboradores à campanha.</p>
+        <p style="color: #ccc; margin-bottom: 20px; font-size: 0.9rem;">Adicione novos times ou colaboradores à
+          campanha.</p>
         <button class="btn-abrir-modal" onclick="abrirModalCadastro()">+ Cadastrar Equipe ou Colaborador</button>
       </div>
 
@@ -1022,8 +1283,8 @@
           </div>
         </div>
         <div class="form-group" style="margin-top: 15px;">
-            <label>Tema Visual</label>
-            <select id="select-tema" style="color:#333;" onchange="mudarTemaVisual()">
+          <label>Tema Visual</label>
+          <select id="select-tema" style="color:#333;" onchange="mudarTemaVisual()">
                 <option value="padrao">Padrão (Verde, Amarelo e Azul)</option>
                 <option value="azul">Corporativo (Azul Claro e Escuro)</option>
                 <option value="dark">Modo Escuro (Cinza e Preto)</option>
@@ -1054,9 +1315,10 @@
 
       <div class="painel-tabela-box">
         <h3 style="background-color: var(--azul);">Colaboradores cadastrados</h3>
-        <div class="grupo-busca" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; margin: 12px;">
-            <span class="icon-busca">🔍</span>
-            <input type="text" id="busca-tab4-colab" placeholder="Buscar por colaborador..." style="border: none; outline: none; width: 100%; color: #333;">
+        <div class="grupo-busca"
+          style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; margin: 12px;">
+          <span class="icon-busca">🔍</span>
+          <input type="text" id="busca-tab4-colab" placeholder="Buscar por colaborador..." style="border: none; outline: none; width: 100%; color: #333;">
         </div>
         <div class="table-wrapper scrollable-table" style="max-height: 420px; overflow-y: auto;">
           <table>
@@ -1079,7 +1341,7 @@
     </div>
   </section>
 
-<script>
+  <script>
   // =====================================
   // ESTADO GLOBAL DO SISTEMA
   // =====================================
@@ -1106,7 +1368,26 @@
               const target = document.querySelector(this.getAttribute('href'));
               if(target) target.style.display = 'block';
           });
+
+          // Listeners da Tab 2
+    const camposForm = ['atend-tipo', 'atend-retido', 'atend-premio'];
+    camposForm.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('change', atualizarPontosFormPrincipal);
+        if(el && id === 'atend-premio') el.addEventListener('input', atualizarPontosFormPrincipal);
+    });
+
+    // Listeners do Modal de Edição
+    const camposModal = ['edit-atend-tipo', 'edit-atend-retido', 'edit-atend-premio'];
+    camposModal.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('change', atualizarPontosModalEdicao);
+        if(el && id === 'edit-atend-premio') el.addEventListener('input', atualizarPontosModalEdicao);
+    });
       });
+
+      // NOVO: Configura os cargos permitidos no sistema
+      configurarCargosPermitidos();
 
       carregarDadosSistema();
 
@@ -1122,7 +1403,7 @@
       const buscaColabTab3 = document.getElementById('busca-colaborador');
       const filtroTimeTab3 = document.getElementById('filtro-time');
       const btnLimparTab3 = document.querySelector('.btn-limpar-filtros');
-      
+     
       const buscaColabTab4 = document.getElementById('busca-tab4-colab');
       if(buscaColabTab4) buscaColabTab4.addEventListener('input', filtrarTab4Colaboradores);
 
@@ -1136,6 +1417,23 @@
           });
       }
   });
+
+  // =====================================
+  // CONFIGURAÇÃO DE CARGOS
+  // =====================================
+  function configurarCargosPermitidos() {
+      const cargosPermitidos = ['Central Vida', 'Emissão VI'];
+      const idsCargos = ['cad-colab-cargo', 'edit-colab-cargo', 'atend-cargo']; // Ajuste os IDs conforme o seu HTML
+
+      idsCargos.forEach(id => {
+          const el = document.getElementById(id);
+          // Se o elemento de cargo for um <select> no seu HTML, isso preenche as opções automaticamente:
+          if (el && el.tagName === 'SELECT') {
+              el.innerHTML = '<option value="" disabled selected>Selecione o cargo...</option>' +
+                             cargosPermitidos.map(c => `<option value="${c}">${c}</option>`).join('');
+          }
+      });
+  }
 
   // =====================================
   // FUNÇÕES DE MODAL E FEEDBACK
@@ -1198,167 +1496,185 @@
 
   function renderizarPainelCompleto(dados) {
       if(!dados) return;
-      cacheDadosApp = dados;
+    cacheDadosApp = dados;
 
-      const footer = document.querySelector('.sidebar-footer');
-      if(footer) footer.innerText = dados.usuario || "Acesso";
+    const footer = document.querySelector('.sidebar-footer');
+    if(footer) footer.innerText = dados.usuario || "Acesso";
 
-      const listaEquipes = dados.equipes || [];
-      const listaColaboradores = dados.colaboradores || [];
-      let listaRankingTimes = dados.rankingTimes || [];
-      let listaRankingIndiv = dados.rankingIndividual || [];
-      const listaAtendimentos = dados.atendimentos || [];
+    const listaEquipes = dados.equipes || [];
+    const listaColaboradores = dados.colaboradores || [];
+    let listaRankingTimes = dados.rankingTimes || [];
+    let listaRankingIndiv = dados.rankingIndividual || [];
+    const listaAtendimentos = dados.atendimentos || [];
 
-      // Processar Ranking Faltantes
-      listaEquipes.forEach(eq => {
-          if (!listaRankingTimes.some(t => t.nome.toLowerCase() === eq.toLowerCase())) {
-              listaRankingTimes.push({ nome: eq, pontos: 0 });
-          }
-      });
-      listaRankingTimes.sort((a, b) => b.pontos - a.pontos);
+    // Processar Ranking Faltantes
+    listaEquipes.forEach(eq => {
+        if (!listaRankingTimes.some(t => t.nome.toLowerCase() === eq.toLowerCase())) {
+            listaRankingTimes.push({ nome: eq, pontos: 0 });
+        }
+    });
+    listaRankingTimes.sort((a, b) => b.pontos - a.pontos);
 
-      listaColaboradores.forEach(c => {
-          if (!listaRankingIndiv.some(ind => ind.nome.toLowerCase() === c.nome.toLowerCase())) {
-              listaRankingIndiv.push({ nome: c.nome, equipe: c.equipe, pontos: 0 });
-          }
-      });
-      listaRankingIndiv.sort((a, b) => b.pontos - a.pontos);
+    listaColaboradores.forEach(c => {
+        if (!listaRankingIndiv.some(ind => ind.nome.toLowerCase() === c.nome.toLowerCase())) {
+            listaRankingIndiv.push({ nome: c.nome, equipe: c.equipe, pontos: 0 });
+        }
+    });
+    listaRankingIndiv.sort((a, b) => b.pontos - a.pontos);
 
-      // Popula Selects de Equipes e Colaboradores (Aba 2 e Aba 4)
-      const selectColabEquipe = document.getElementById('cad-colab-equipe');
-      const selectFiltroTime = document.getElementById('filtro-time');
-      const selectAtendNome = document.getElementById('atend-nome');
-      
-      let optionsHtml = '<option value="" disabled selected>Selecione a equipe...</option>';
-      let filterOptionsHtml = '<option value="">Todos os Times</option>';
-      let atendNomeHtml = '<option value="" disabled selected>Selecione o colaborador...</option>';
-      
-      listaEquipes.forEach(eq => {
-          optionsHtml += `<option value="${eq}">${eq}</option>`;
-          filterOptionsHtml += `<option value="${eq}">${eq}</option>`;
-      });
-      listaColaboradores.forEach(c => {
-          atendNomeHtml += `<option value="${c.nome}">${c.nome}</option>`;
-      });
+    // Popula Selects de Equipes e Colaboradores (Aba 2 e Aba 4)
+    const selectColabEquipe = document.getElementById('cad-colab-equipe');
+    const selectFiltroTime = document.getElementById('filtro-time');
+    const selectAtendNome = document.getElementById('atend-nome');
+   
+    let optionsHtml = '<option value="" disabled selected>Selecione a equipe...</option>';
+    let filterOptionsHtml = '<option value="">Todos os Times</option>';
+    let atendNomeHtml = '<option value="" disabled selected>Selecione o colaborador...</option>';
+   
+    listaEquipes.forEach(eq => {
+        optionsHtml += `<option value="${eq}">${eq}</option>`;
+        filterOptionsHtml += `<option value="${eq}">${eq}</option>`;
+    });
+    listaColaboradores.forEach(c => {
+        atendNomeHtml += `<option value="${c.nome}">${c.nome}</option>`;
+    });
 
-      if(selectColabEquipe) selectColabEquipe.innerHTML = optionsHtml;
-      if(selectFiltroTime) selectFiltroTime.innerHTML = filterOptionsHtml;
-      if(selectAtendNome) {
-          selectAtendNome.innerHTML = atendNomeHtml;
-          selectAtendNome.onchange = function() {
-              const colabEncontrado = listaColaboradores.find(col => col.nome === this.value);
-              if (colabEncontrado && document.getElementById('atend-cargo')) {
-                  document.getElementById('atend-cargo').value = colabEncontrado.cargo;
-              }
-          };
-      }
+    if(selectColabEquipe) selectColabEquipe.innerHTML = optionsHtml;
+    if(selectFiltroTime) selectFiltroTime.innerHTML = filterOptionsHtml;
+    if(selectAtendNome) {
+        selectAtendNome.innerHTML = atendNomeHtml;
+        selectAtendNome.onchange = function() {
+            const colabEncontrado = listaColaboradores.find(col => col.nome === this.value);
+            const selectCargo = document.getElementById('atend-cargo');
+            if (colabEncontrado && selectCargo) {
+                // Validação de segurança para normalizar termos antigos ("Técnico"/"Atendente") para os novos padrões
+                let cargoDefinido = colabEncontrado.cargo;
+                if(cargoDefinido === "Emissão VI") cargoDefinido = "Emissão VI";
+                if(cargoDefinido === "Central Vida") cargoDefinido = "Central Vida";
+               
+                selectCargo.value = cargoDefinido;
+            }
+        };
+    }
 
-      // ABA 4 - Tabela Equipes
-      const tbodyEq = document.querySelector('#tab4 .painel-tabela-box:first-of-type table tbody');
-      if(tbodyEq) {
-          tbodyEq.innerHTML = listaEquipes.length === 0
-              ? '<tr><td colspan="2" class="text-center">Aguardando times.</td></tr>'
-              : listaEquipes.map((eq, index) => `
-                  <tr>
-                      <td>${eq}</td>
-                      <td class="text-center">
-                          <div style="display:flex; gap:8px; justify-content:center;">
-                              <button class="btn-azul" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="abrirModalEditarEquipe(${index})">Editar</button>
-                              <button class="btn-limpar" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="excluirItem('equipe', '${eq}')">Excluir</button>
-                          </div>
-                      </td>
-                  </tr>`).join('');
-      }
+    // ABA 4 - Tabela Equipes
+    const tbodyEq = document.querySelector('#tab4 .painel-tabela-box:first-of-type table tbody');
+    if(tbodyEq) {
+        tbodyEq.innerHTML = listaEquipes.length === 0
+            ? '<tr><td colspan="2" class="text-center">Aguardando times.</td></tr>'
+            : listaEquipes.map((eq, index) => `
+                <tr>
+                    <td>${eq}</td>
+                    <td class="text-center">
+                        <div style="display:flex; gap:8px; justify-content:center;">
+                            <button class="btn-azul-brasil" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="abrirModalEditarEquipe(${index})">Editar</button>
+                            <button class="btn-limpar" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="excluirItem('equipe', '${eq}')">Excluir</button>
+                        </div>
+                    </td>
+                </tr>`).join('');
+    }
 
-      // ABA 4 - Tabela Colaboradores
-      const tbodyColab = document.querySelector('#tab4 .painel-tabela-box:nth-of-type(2) table tbody');
-      if(tbodyColab) {
-          tbodyColab.innerHTML = listaColaboradores.length === 0
-              ? '<tr><td colspan="4" class="text-center">Aguardando colaboradores.</td></tr>'
-              : listaColaboradores.map((c, index) => `
-                  <tr class="item-tab4-colab" data-nome="${c.nome.toLowerCase()}">
-                      <td>${c.nome}</td>
-                      <td>${c.cargo}</td>
-                      <td>${c.equipe}</td>
-                      <td class="text-center">
-                          <div style="display:flex; gap:8px; justify-content:center;">
-                              <button class="btn-azul" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="abrirModalEditarColaborador(${index})">Editar</button>
-                              <button class="btn-limpar" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="excluirItem('colaborador', '${c.nome}')">Excluir</button>
-                          </div>
-                      </td>
-                  </tr>`).join('');
-      }
+    // ABA 4 - Tabela Colaboradores
+    const tbodyColab = document.querySelector('#tab4 .painel-tabela-box:nth-of-type(2) table tbody');
+    if(tbodyColab) {
+        tbodyColab.innerHTML = listaColaboradores.length === 0
+            ? '<tr><td colspan="4" class="text-center">Aguardando colaboradores.</td></tr>'
+            : listaColaboradores.map((c, index) => {
+                let cargoExibicao = c.cargo === "Emissão IV" ? "Emissão IV" : (c.cargo === "Central Vida" ? "Central Vida" : c.cargo);
+                return `
+                <tr class="item-tab4-colab" data-nome="${c.nome.toLowerCase()}">
+                    <td>${c.nome}</td>
+                    <td>${cargoExibicao}</td>
+                    <td>${c.equipe}</td>
+                    <td class="text-center">
+                        <div style="display:flex; gap:8px; justify-content:center;">
+                            <button class="btn-azul-brasil" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="abrirModalEditarColaborador(${index})">Editar</button>
+                            <button class="btn-limpar" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="excluirItem('colaborador', '${c.nome}')">Excluir</button>
+                        </div>
+                    </td>
+                </tr>`}).join('');
+    }
 
-      // ABA 1 - Placar Geral e Podio
-      const cardLiderNome = document.querySelector('.card-time-lider .podio-nome');
-      const cardLiderPontos = document.querySelector('.card-time-lider .podio-pontos');
-      if (listaRankingTimes.length > 0) {
-          if(cardLiderNome) cardLiderNome.innerText = listaRankingTimes[0].nome;
-          if(cardLiderPontos) cardLiderPontos.innerText = `${listaRankingTimes[0].pontos} pontos`;
-      }
+    // ABA 1 - Placar Geral e Podio
+    const cardLiderNome = document.querySelector('.card-time-lider .podio-nome');
+    const cardLiderPontos = document.querySelector('.card-time-lider .podio-pontos');
+    if (listaRankingTimes.length > 0) {
+        if(cardLiderNome) cardLiderNome.innerText = listaRankingTimes[0].nome;
+        if(cardLiderPontos) cardLiderPontos.innerText = `${listaRankingTimes[0].pontos} pontos`;
+    }
 
-      const podioP = document.querySelectorAll('.podio-list p');
-      for (let i = 0; i < 3; i++) {
-          if (podioP[i] && listaRankingIndiv[i]) {
-              podioP[i].querySelector('.podio-nome').innerText = listaRankingIndiv[i].nome;
-              podioP[i].querySelector('.podio-pontos').innerText = `${listaRankingIndiv[i].pontos} pts`;
-          }
-      }
+    const podioP = document.querySelectorAll('.podio-list p');
+    for (let i = 0; i < 3; i++) {
+        if (podioP[i] && listaRankingIndiv[i]) {
+            podioP[i].querySelector('.podio-nome').innerText = listaRankingIndiv[i].nome;
+            podioP[i].querySelector('.podio-pontos').innerText = `${listaRankingIndiv[i].pontos} pts`;
+        }
+    }
 
-      const tbodyTimesPlacar = document.querySelector('#tab1 .painel-tabela-box:first-of-type table tbody');
-      if(tbodyTimesPlacar) {
-          tbodyTimesPlacar.innerHTML = listaRankingTimes.length === 0
-              ? '<tr><td colspan="2" class="text-center">Nenhuma equipe cadastrada.</td></tr>'
-              : listaRankingTimes.map(t => `<tr><td>${t.nome}</td><td class="text-right" style="font-weight:bold;">${t.pontos}</td></tr>`).join('');
-      }
+    const tbodyTimesPlacar = document.querySelector('#tab1 .painel-tabela-box:first-of-type table tbody');
+    if(tbodyTimesPlacar) {
+        tbodyTimesPlacar.innerHTML = listaRankingTimes.length === 0
+            ? '<tr><td colspan="2" class="text-center">Nenhuma equipe cadastrada.</td></tr>'
+            : listaRankingTimes.map(t => `<tr><td>${t.nome}</td><td class="text-right" style="font-weight:bold;">${t.pontos}</td></tr>`).join('');
+    }
 
-      const tbodyIndividualPlacar = document.querySelector('#tab1 .painel-tabela-box:nth-of-type(2) table tbody');
-      if(tbodyIndividualPlacar) {
-          tbodyIndividualPlacar.innerHTML = listaRankingIndiv.length === 0
-              ? '<tr><td colspan="3" class="text-center">Nenhum colaborador cadastrado.</td></tr>'
-              : listaRankingIndiv.map(c => `<tr class="item-placar-individual" data-nome="${c.nome.toLowerCase()}"><td>${c.nome}</td><td>${c.equipe}</td><td class="text-right" style="font-weight:bold;">${c.pontos}</td></tr>`).join('');
-      }
+    const tbodyIndividualPlacar = document.querySelector('#tab1 .painel-tabela-box:nth-of-type(2) table tbody');
+    if(tbodyIndividualPlacar) {
+        tbodyIndividualPlacar.innerHTML = listaRankingIndiv.length === 0
+            ? '<tr><td colspan="3" class="text-center">Nenhum colaborador cadastrado.</td></tr>'
+            : listaRankingIndiv.map(c => `<tr class="item-placar-individual" data-nome="${c.nome.toLowerCase()}"><td>${c.nome}</td><td>${c.equipe}</td><td class="text-right" style="font-weight:bold;">${c.pontos}</td></tr>`).join('');
+    }
 
-      const tbodyAtend = document.querySelector('#tab1 .painel-atendimentos-box table tbody');
-      if(tbodyAtend) {
-          if (listaAtendimentos.length === 0) {
-              tbodyAtend.innerHTML = '<tr><td colspan="9" class="text-center">Nenhum atendimento registrado no banco de dados.</td></tr>';
-          } else {
-              tbodyAtend.innerHTML = listaAtendimentos.map(a => `
-                  <tr>
-                      <td>${a.nome}</td><td>${a.cargo}</td><td>${a.cpf}</td><td>${a.dataContato}</td>
-                      <td>${a.apolice}</td><td>${a.premio}</td><td>${a.tipoContato}</td><td>${a.retido}</td>
-                      <td class="text-center">
-                          <div style="display:flex; gap:8px; justify-content:center;">
-                              <button class="btn-azul" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="acionarEdicaoAtendimentoNoModal(${a.linha})">Editar</button>
-                              <button class="btn-limpar" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="excluirAtendimentoUnico(${a.linha})">Excluir</button>
-                          </div>
-                      </td>
-                  </tr>
-              `).join('');
-          }
-      }
+    // TABELA PRINCIPAL ABA 1 - Ajustada com 10 Colunas (Pontos na 9ª e Botões perfeitamente abaixo de Ações)
+    const tbodyAtend = document.querySelector('#tab1 .painel-atendimentos-box table tbody');
+    if(tbodyAtend) {
+        if (listaAtendimentos.length === 0) {
+            tbodyAtend.innerHTML = '<tr><td colspan="10" class="text-center">Nenhum atendimento registrado no banco de dados.</td></tr>';
+        } else {
+            tbodyAtend.innerHTML = listaAtendimentos.map(a => {
+                let cargoExibicao = a.cargo === "Emissão IV" ? "Emissão IV" : (a.cargo === "Central Vida" ? "Central Vida" : a.cargo);
+                return `
+                <tr>
+                    <td>${a.nome}</td>
+                    <td>${cargoExibicao}</td>
+                    <td>${a.cpf}</td>
+                    <td class="text-center">${a.dataContato}</td>
+                    <td>${a.apolice}</td>
+                    <td class="text-right">${a.premio}</td>
+                    <td>${a.tipoContato}</td>
+                    <td class="text-center">${a.retido}</td>
+                    <td class="text-center" style="font-weight:bold; background-color: #eaf4ff;">${a.pontos}</td>
+                    <td class="text-center">
+                        <div style="display:flex; gap:6px; justify-content:center;">
+                            <button class="btn-azul-brasil" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="acionarEdicaoAtendimentoNoModal(${a.linha})">Editar</button>
+                            <button class="btn-limpar" style="padding: 4px 10px; border:none; border-radius:4px; color:#fff; cursor:pointer; font-size:0.85rem;" onclick="excluirAtendimentoUnico(${a.linha})">Excluir</button>
+                        </div>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+    }
 
-      // ABA 3 - Registro de Pontos
-      const tbodyPontosReg = document.querySelector('#tab3 .tabela-pontos-box table tbody');
-      if(tbodyPontosReg) {
-          if (listaColaboradores.length === 0) {
-              tbodyPontosReg.innerHTML = '<tr><td colspan="3" class="text-center">Aguardando cadastro de colaboradores.</td></tr>';
-          } else {
-              tbodyPontosReg.innerHTML = listaColaboradores.map(c => `
-                  <tr class="item-colaborador-ponto" data-nome="${c.nome.toLowerCase()}" data-equipe="${c.equipe.toLowerCase()}">
-                      <td><strong>${c.nome}</strong></td>
-                      <td><span class="tag-time">${c.equipe}</span></td>
-                      <td class="text-center">
-                          <div style="display:flex; gap:8px; justify-content:center;">
-                              <button class="btn-azul" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="abrirModalPontosManual('${c.nome}', '${c.equipe}')">Atribuir Ponto</button>
-                          </div>
-                      </td>
-                  </tr>
-              `).join('');
-          }
-      }
-  }
+    // ABA 3 - Registro de Pontos Manuais
+    const tbodyPontosReg = document.querySelector('#tab3 .tabela-pontos-box table tbody');
+    if(tbodyPontosReg) {
+        if (listaColaboradores.length === 0) {
+            tbodyPontosReg.innerHTML = '<tr><td colspan="3" class="text-center">Aguardando cadastro de colaboradores.</td></tr>';
+        } else {
+            tbodyPontosReg.innerHTML = listaColaboradores.map(c => `
+                <tr class="item-colaborador-ponto" data-nome="${c.nome.toLowerCase()}" data-equipe="${c.equipe.toLowerCase()}">
+                    <td><strong>${c.nome}</strong></td>
+                    <td><span class="tag-time">${c.equipe}</span></td>
+                    <td class="text-center">
+                        <div style="display:flex; gap:8px; justify-content:center;">
+                            <button class="btn-azul-brasil" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="abrirModalPontosManual('${c.nome}', '${c.equipe}')">Atribuir Ponto</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    }
+}
 
   // =====================================
   // AÇÕES DE DADOS (C, U, D)
@@ -1377,59 +1693,66 @@
 
   function acionarEdicaoAtendimentoNoModal(linha) {
       const atend = cacheDadosApp.atendimentos.find(a => a.linha === parseInt(linha));
-      if(!atend) return;
-      
-      document.getElementById('edit-atend-linha').value = linha;
-      document.getElementById('edit-atend-nome').value = atend.nome;
-      document.getElementById('edit-atend-cargo').value = atend.cargo;
-      document.getElementById('edit-atend-cpf').value = atend.cpf;
-      
-      if (atend.dataContato) {
-          const partes = atend.dataContato.split('/');
-          if (partes.length === 3) {
-              document.getElementById('edit-atend-dia').value = partes[0];
-              document.getElementById('edit-atend-mes').value = partes[1];
-              document.getElementById('edit-atend-ano').value = partes[2];
-          }
-      }
-      
-      document.getElementById('edit-atend-nome').value = atend.nome !== "-" ? atend.nome : "";
-      document.getElementById('edit-atend-apolice').value = atend.apolice !== "-" ? atend.apolice : "";
-      document.getElementById('edit-atend-premio').value = atend.premio !== "0,00" ? atend.premio : "";
-      document.getElementById('edit-atend-tipo').value = atend.tipoContato !== "-" ? atend.tipoContato : "Potencial";
-      document.getElementById('edit-atend-retido').value = atend.retido !== "" ? atend.retido : "Sim";
+    if(!atend) return;
+   
+    document.getElementById('edit-atend-linha').value = linha;
+    document.getElementById('edit-atend-nome').value = atend.nome !== "-" ? atend.nome : "";
+   
+    // Normalização dos cargos na abertura da Edição
+    let cargoNormalizado = atend.cargo;
+    if(cargoNormalizado === "Emissão VI") cargoNormalizado = "Emissão VI";
+    if(cargoNormalizado === "Central Vida") cargoNormalizado = "Central Vida";
+    document.getElementById('edit-atend-cargo').value = cargoNormalizado;
+   
+    document.getElementById('edit-atend-cpf').value = atend.cpf;
+   
+    if (atend.dataContato) {
+        const partes = atend.dataContato.split('/');
+        if (partes.length === 3) {
+            document.getElementById('edit-atend-dia').value = partes[0];
+            document.getElementById('edit-atend-mes').value = partes[1];
+            document.getElementById('edit-atend-ano').value = partes[2];
+        }
+    }
+   
+    document.getElementById('edit-atend-apolice').value = atend.apolice !== "-" ? atend.apolice : "";
+    document.getElementById('edit-atend-premio').value = atend.premio !== "0,00" ? atend.premio : "";
+    document.getElementById('edit-atend-tipo').value = atend.tipoContato !== "-" ? atend.tipoContato : "Potencial";
+    document.getElementById('edit-atend-retido').value = atend.retido !== "" ? atend.retido : "Sim";
 
-      abrirModalEditarAtendimento();
+    // Força o recalculo do mostrador visual de pontos ao carregar o modal
+    atualizarPontosModalEdicao();
+    abrirModalEditarAtendimento();
   }
 
   function salvarEdicaoAtendimento() {
-      const linhaParaEditar = document.getElementById('edit-atend-linha').value;
-      const nome = document.getElementById('edit-atend-nome').value;
-      const cargo = document.getElementById('edit-atend-cargo').value;
-      const cpf = document.getElementById('edit-atend-cpf').value;
-      const dia = document.getElementById('edit-atend-dia').value;
-      const mes = document.getElementById('edit-atend-mes').value;
-      const ano = document.getElementById('edit-atend-ano').value;
-      const apolice = document.getElementById('edit-atend-apolice').value;
-      const premio = document.getElementById('edit-atend-premio').value;
-      const tipoContato = document.getElementById('edit-atend-tipo').value;
-      const retido = document.getElementById('edit-atend-retido').value;
+     const linhaParaEditar = document.getElementById('edit-atend-linha').value;
+    const nome = document.getElementById('edit-atend-nome').value;
+    const cargo = document.getElementById('edit-atend-cargo').value;
+    const cpf = document.getElementById('edit-atend-cpf').value;
+    const dia = document.getElementById('edit-atend-dia').value;
+    const mes = document.getElementById('edit-atend-mes').value;
+    const ano = document.getElementById('edit-atend-ano').value;
+    const apolice = document.getElementById('edit-atend-apolice').value;
+    const premio = document.getElementById('edit-atend-premio').value;
+    const tipoContato = document.getElementById('edit-atend-tipo').value;
+    const retido = document.getElementById('edit-atend-retido').value;
 
-      if (!cpf || !dia || !mes || !ano || !apolice || !premio) {
-          return abrirFeedback('modal-erro', 'Por favor, preencha todos os campos.');
-      }
+    if (!cpf || !dia || !mes || !ano || !apolice || !premio) {
+        return abrirFeedback('modal-erro', 'Por favor, preencha todos os campos.');
+    }
 
-      const dataContato = `${dia}/${mes}/${ano}`;
-      const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido };
+    const dataContato = `${dia}/${mes}/${ano}`;
+    const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido };
 
-      google.script.run
-          .withSuccessHandler(() => {
-              fecharModalEditarAtendimento();
-              abrirFeedback('modal-sucesso', 'Atendimento editado com sucesso!');
-              carregarDadosSistema();
-          })
-          .withFailureHandler((e) => abrirFeedback('modal-erro', 'Erro: ' + e))
-          .salvarAtendimento(payload, parseInt(linhaParaEditar));
+    google.script.run
+        .withSuccessHandler(() => {
+            fecharModalEditarAtendimento();
+            abrirFeedback('modal-sucesso', 'Atendimento editado com sucesso!');
+            carregarDadosSistema();
+        })
+        .withFailureHandler((e) => abrirFeedback('modal-erro', 'Erro: ' + e))
+        .salvarAtendimento(payload, parseInt(linhaParaEditar));
   }
 
   function processarCadastro() {
@@ -1452,6 +1775,12 @@
           if(!nome || !cargo || !equipe || equipe === 'Selecione a equipe...') {
               return abrirFeedback('modal-erro', 'Preencha todos os dados do colaborador.');
           }
+
+          // NOVO: Validação de segurança para o cargo no cadastro
+          if (cargo !== 'Central Vida' && cargo !== 'Emissão IV') {
+              return abrirFeedback('modal-erro', 'Cargo inválido. Selecione apenas Central Vida ou Emissão IV.');
+          }
+
           google.script.run
               .withSuccessHandler(() => {
                   fecharModalCadastro();
@@ -1479,31 +1808,35 @@
   }
 
   function salvarDadosAtendimento() {
-      const nome = document.getElementById('atend-nome').value;
-      const cargo = document.getElementById('atend-cargo').value;
-      const cpf = document.getElementById('atend-cpf').value;
-      const dia = document.getElementById('atend-dia').value;
-      const mes = document.getElementById('atend-mes').value;
-      const ano = document.getElementById('atend-ano').value;
-      const apolice = document.getElementById('atend-apolice').value;
-      const premio = document.getElementById('atend-premio').value;
-      const tipoContato = document.getElementById('atend-tipo').value;
-      const retido = document.getElementById('atend-retido').value;
+    const nome = document.getElementById('atend-nome').value;
+    const cargo = document.getElementById('atend-cargo').value;
+    const cpf = document.getElementById('atend-cpf').value;
+    const dia = document.getElementById('atend-dia').value;
+    const mes = document.getElementById('atend-mes').value;
+    const ano = document.getElementById('atend-ano').value;
+    const apolice = document.getElementById('atend-apolice').value;
+    const premio = document.getElementById('atend-premio').value;
+    const tipoContato = document.getElementById('atend-tipo').value;
+    const retido = document.getElementById('atend-retido').value;
 
-      if (!nome || !cargo || !cpf || !dia || !mes || !ano || !apolice || !premio || !tipoContato || !retido) {
-          return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios.');
-      }
+    // REMOVIDO a validação manual do antigo campo de pontos pAtnd
+    if (!nome || !cargo || !cpf || !dia || !mes || !ano || !apolice || !premio || !tipoContato || !retido) {
+        return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios.');
+    }
 
-      const dataContato = `${dia}/${mes}/${ano}`;
-      const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido };
+    const dataContato = `${dia}/${mes}/${ano}`;
+    const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido };
 
-      google.script.run
-          .withSuccessHandler(() => {
-              abrirFeedback('modal-sucesso', 'Novo Atendimento salvo com sucesso!');
-              document.getElementById('form-atendimento').reset();
-              carregarDadosSistema();
-          })
-          .salvarAtendimento(payload, null);
+    google.script.run
+        .withSuccessHandler(() => {
+            abrirFeedback('modal-sucesso', 'Novo Atendimento salvo com sucesso!');
+            document.getElementById('form-atendimento').reset();
+            if(document.getElementById('pontosAtendimento')) {
+                document.getElementById('pontosAtendimento').value = "0";
+            }
+            carregarDadosSistema();
+        })
+        .salvarAtendimento(payload, null);
   }
 
   function atribuirPontoSheets(nome, equipe, pontos, motivo) {
@@ -1550,7 +1883,7 @@
       if (!novoNome) return abrirFeedback('modal-erro', 'O nome da equipe não pode ficar vazio!');
 
       const nomeAntigo = cacheDadosApp.equipes[index];
-      
+     
       google.script.run
           .withSuccessHandler(function(response) {
               fecharModalEditarEquipe();
@@ -1576,7 +1909,7 @@
 
       const selectEquipe = document.getElementById('edit-colab-equipe');
       selectEquipe.innerHTML = '';
-      
+     
       if (cacheDadosApp.equipes && cacheDadosApp.equipes.length > 0) {
           cacheDadosApp.equipes.forEach(equipe => {
               const option = document.createElement('option');
@@ -1603,6 +1936,11 @@
       const equipeNova = document.getElementById('edit-colab-equipe').value;
 
       if (!nomeNovo) return abrirFeedback('modal-erro', 'O nome do colaborador é obrigatório!');
+     
+      // NOVO: Validação de segurança para o cargo na edição
+      if (cargoNovo !== 'Central Vida' && cargoNovo !== 'Emissão IV') {
+          return abrirFeedback('modal-erro', 'Cargo inválido. Selecione apenas Central Vida ou Emissão IV.');
+      }
 
       const nomeAntigo = cacheDadosApp.colaboradores[index].nome;
 
@@ -1682,6 +2020,181 @@
       root.style.setProperty('--texto-sidebar', t.ts); root.style.setProperty('--texto-tabela', t.ttab);
       root.style.setProperty('--fundo-tabela', t.ftab);
   }
+
+  // =======================================================
+  // INTERFACES E FILTROS DINÂMICOS DA ABA 1
+  // =======================================================
+  function abrirModalFiltroAba1() {
+    // 1. Reseta os inputs de data normalmente
+    const inputInicio = document.getElementById('filtro-data-inicio');
+    const inputFim = document.getElementById('filtro-data-fim');
+    if (inputInicio) inputInicio.value = '';
+    if (inputFim) inputFim.value = '';
+   
+    // 2. Limpa o pódio antigo e coloca a mensagem inicial orientando o usuário
+    const podioLista = document.getElementById('top-atendentes-lista');
+    if (podioLista) {
+        podioLista.innerHTML = '<li style="text-align: center; padding: 15px; color: #777; list-style: none;">Escolha o período e clique em Buscar.</li>';
+    }
+
+    // 3. Segurança para manter compatibilidade se esses elementos ainda existirem em outro lugar
+    const tbody = document.getElementById('tbody-filtro-aba1');
+    if (tbody) tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 15px; color: #777;">Escolha o período e clique em Buscar.</td></tr>';
+   
+    const containerMetricas = document.getElementById('metricas-filtro-container');
+    if (containerMetricas) containerMetricas.style.display = 'none';
+   
+    // 4. Abre o modal exibindo em modo Flexo
+    const modal = document.getElementById('modal-filtro-data-aba1');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function fecharModalFiltroAba1() {
+    const modal = document.getElementById('modal-filtro-data-aba1');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+  function processarFiltroPorData() {
+      const dataInicio = document.getElementById('filtro-data-inicio').value;
+      const dataFim = document.getElementById('filtro-data-fim').value;
+     
+      if (!dataInicio || !dataFim) {
+          alert("Por favor, preencha a Data Inicial e a Data Final!");
+          return;
+      }
+     
+      const tbody = document.getElementById('tbody-filtro-aba1');
+      tbody.innerHTML = '<p colspan="3" style="text-align: center; padding: 15px; color: #555;">Processando dados na planilha...</p>';
+     
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+              .withSuccessHandler(function(response) {
+                  if (response.erro) {
+                      alert("Erro: " + response.erro);
+                      return;
+                  }
+                  renderizarResultadosFiltroAba1(response);
+              })
+              .withFailureHandler(function(err) {
+                  alert("Falha de comunicação com o servidor: " + err);
+              })
+              .obterDadosFiltradosAba1(dataInicio, dataFim);
+      }
+  }
+
+function renderizarResultadosFiltroAba1(dados) {
+    const podioLista = document.getElementById('top-atendentes-lista');
+    const tbody = document.getElementById('tbody-filtro-aba1');
+   
+    if (!podioLista) return; // Segurança caso o elemento não exista
+
+    // Limpa o conteúdo antes de preencher o novo pódio
+    podioLista.innerHTML = '';
+    tbody.innerHTML = '';
+
+    if (!dados.topAtendentes || dados.topAtendentes.length === 0) {
+        podioLista.innerHTML = '<li style="text-align:center; padding:15px; color: #555;">Nenhuma pontuação encontrada neste período.</li>';
+        return;
+    }
+
+    let htmlPodio = "";
+
+    // 🥇 1º Lugar (Destaque principal)
+    if (dados.topAtendentes[0]) {
+        htmlPodio += `
+        <li style="background: linear-gradient(135deg, #FFD700, #F5B041); color: #fff; padding: 20px 15px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div style="font-size: 1.1rem; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">🥇 1º Lugar dos Campeões</div>
+            <div style="font-size: 1.4rem; font-weight: 900; letter-spacing: 0.5px;">${dados.topAtendentes[0].nome}</div>
+            <div style="font-size: 0.95rem; margin: 5px 0;">Equipe: <strong style="text-decoration: underline;">${dados.topAtendentes[0].equipe}</strong></div>
+            <div style="font-size: 1.2rem; font-weight: bold; background: rgba(255,255,255,0.3); display: inline-block; padding: 6px 20px; border-radius: 20px; margin-top: 10px;">${dados.topAtendentes[0].pontos} Pontos Totais</div>
+        </li>`;
+    }
+
+    // 🥈 2º Lugar (Menos destaque)
+    if (dados.topAtendentes[1]) {
+        htmlPodio += `
+        <li style="background: #E8ECEF; color: #333; padding: 15px; border-radius: 8px; text-align: center; border-left: 5px solid #A6B0B8;">
+            <div style="font-size: 0.95rem; font-weight: bold; color: #555; margin-bottom: 3px;">🥈 2º Lugar</div>
+            <div style="font-size: 1.15rem; font-weight: 800;">${dados.topAtendentes[1].nome}</div>
+            <div style="font-size: 0.85rem; color: #666; margin: 3px 0;">Equipe: <strong>${dados.topAtendentes[1].equipe}</strong></div>
+            <div style="font-size: 1rem; font-weight: bold; margin-top: 5px;">${dados.topAtendentes[1].pontos} pts</div>
+        </li>`;
+    }
+
+    // 🥉 3º Lugar (Menos destaque)
+    if (dados.topAtendentes[2]) {
+        htmlPodio += `
+        <li style="background: #F9EBEA; color: #333; padding: 15px; border-radius: 8px; text-align: center; border-left: 5px solid #CD7F32;">
+            <div style="font-size: 0.95rem; font-weight: bold; color: #8B4513; margin-bottom: 3px;">🥉 3º Lugar</div>
+            <div style="font-size: 1.15rem; font-weight: 800;">${dados.topAtendentes[2].nome}</div>
+            <div style="font-size: 0.85rem; color: #666; margin: 3px 0;">Equipe: <strong>${dados.topAtendentes[2].equipe}</strong></div>
+            <div style="font-size: 1rem; font-weight: bold; margin-top: 5px;">${dados.topAtendentes[2].pontos} pts</div>
+        </li>`;
+    }
+
+    // Insere o HTML montado na lista
+    podioLista.innerHTML = htmlPodio;
+}
+  // ==========================================
+// CONFIGURAÇÃO DOS LISTENERS DE CÁLCULO AUTOMÁTICO
+// ==========================================
+
+// Função auxiliar para calcular pontos no front-end em tempo real
+function calcularPontosNoFront(tipoContato, retido, premioStr) {
+    let totalPontos = 0;
+
+    // Regra 1: Tipo de Contato
+    if (tipoContato === "Potencial") {
+        totalPontos += 10;
+    } else if (tipoContato === "Não potencial") {
+        totalPontos -= 5;
+    }
+
+    // Regra 2: Retido
+    if (retido === "Sim") {
+        totalPontos += 25;
+    }
+
+    // Regra 3: Prêmio acima de R$3.000
+    if (premioStr) {
+        let limpo = premioStr.toString().replace("R$", "").replace(/\./g, "").replace(",", ".").trim();
+        let valorPremio = parseFloat(limpo) || 0;
+        if (valorPremio > 3000) {
+            totalPontos += 10;
+        }
+    }
+
+    return totalPontos;
+}
+
+// Função para atualizar o input visual de pontos da Tab 2
+function atualizarPontosFormPrincipal() {
+    const tipo = document.getElementById('atend-tipo').value;
+    const retido = document.getElementById('atend-retido').value;
+    const premio = document.getElementById('atend-premio').value;
+    const inputPontos = document.getElementById('pontosAtendimento');
+   
+    if(inputPontos) {
+        inputPontos.value = calcularPontosNoFront(tipo, retido, premio);
+    }
+}
+
+// Função para atualizar o input visual de pontos do Modal de Edição
+function atualizarPontosModalEdicao() {
+    const tipo = document.getElementById('edit-atend-tipo').value;
+    const retido = document.getElementById('edit-atend-retido').value;
+    const premio = document.getElementById('edit-atend-premio').value;
+    const inputPontos = document.getElementById('edit-atend-pontos');
+   
+    if(inputPontos) {
+        inputPontos.value = calcularPontosNoFront(tipo, retido, premio);
+    }
+}
 </script>
 </body>
+
 </html>

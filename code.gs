@@ -42,33 +42,34 @@ function buscarDadosIniciais() {
   
   // 1. Processar Equipes
   var equipes = [];
-  if (equipesRaw.length > 0) {
-    var startIdx = (equipesRaw[0][0] && equipesRaw[0][0].toString().toLowerCase().includes("nome")) ? 1 : 0;
-    for (var e = startIdx; e < equipesRaw.length; e++) {
+  if (equipesRaw.length > 1) {
+    for (var e = 1; e < equipesRaw.length; e++) {
       if (equipesRaw[e][0]) equipes.push(equipesRaw[e][0].toString().trim());
     }
   }
 
-  // 2. Processar Colaboradores
+  // 2. Processar Colaboradores e criar mapa de equipes
   var colaboradores = [];
-  if (colaboradoresRaw.length > 0) {
-    var startIdx = (colaboradoresRaw[0][0] && colaboradoresRaw[0][0].toString().toLowerCase().includes("nome")) ? 1 : 0;
-    for (var i = startIdx; i < colaboradoresRaw.length; i++) {
+  var colabEquipeMap = {};
+  if (colaboradoresRaw.length > 1) {
+    for (var i = 1; i < colaboradoresRaw.length; i++) {
       if (colaboradoresRaw[i][0]) {
+        var nomeC = colaboradoresRaw[i][0].toString().trim();
+        var equipeC = colaboradoresRaw[i][2] ? colaboradoresRaw[i][2].toString().trim() : "";
         colaboradores.push({
-          nome: colaboradoresRaw[i][0].toString().trim(),
+          nome: nomeC,
           cargo: colaboradoresRaw[i][1] ? colaboradoresRaw[i][1].toString().trim() : "",
-          equipe: colaboradoresRaw[i][2] ? colaboradoresRaw[i][2].toString().trim() : ""
+          equipe: equipeC
         });
+        colabEquipeMap[nomeC] = equipeC;
       }
     }
   }
   
-  // 3. Processar Atendimentos
+  // 3. Processar Atendimentos para exibição (📋 Atendimentos Auditados)
   var atendimentos = [];
-  if (atendimentosRaw.length > 0) {
-    var startIdx = (atendimentosRaw[0][0] && atendimentosRaw[0][0].toString().toLowerCase().includes("nome")) ? 1 : 0;
-    var limite = Math.max(startIdx, atendimentosRaw.length - 50);
+  if (atendimentosRaw.length > 1) {
+    var limite = Math.max(1, atendimentosRaw.length - 50);
     for (var j = atendimentosRaw.length - 1; j >= limite; j--) {
       if (atendimentosRaw[j][0]) {
         var rawDate = atendimentosRaw[j][3];
@@ -86,13 +87,14 @@ function buscarDadosIniciais() {
           apolice: atendimentosRaw[j][4] != null && atendimentosRaw[j][4] !== "" ? atendimentosRaw[j][4].toString() : "-",
           premio: atendimentosRaw[j][5] != null && atendimentosRaw[j][5] !== "" ? atendimentosRaw[j][5].toString() : "0,00",
           tipoContato: atendimentosRaw[j][6] != null && atendimentosRaw[j][6] !== "" ? atendimentosRaw[j][6].toString() : "-",
-          retido: atendimentosRaw[j][7] != null ? atendimentosRaw[j][7].toString() : ""
+          retido: atendimentosRaw[j][7] != null ? atendimentosRaw[j][7].toString() : "",
+          pontos: atendimentosRaw[j][8] != null && atendimentosRaw[j][8] !== "" ? parseFloat(atendimentosRaw[j][8]) : 0
         });
       }
     }
   }
 
-  // 4. Processar Rankings
+  // 4. Processar Rankings (Unificação das duas origens de pontos)
   var scoreIndividualMap = {};
   var scoreTeamMap = {};
   
@@ -103,9 +105,30 @@ function buscarDadosIniciais() {
     scoreTeamMap[eq] = 0;
   });
 
-  if (pontuacoesRaw.length > 0) {
-    var startIdx = (pontuacoesRaw[0][0] && pontuacoesRaw[0][0].toString().toLowerCase().includes("nome")) ? 1 : 0;
-    for (var k = startIdx; k < pontuacoesRaw.length; k++) {
+  // A) Somar pontos vindos diretamente da aba ATENDIMENTO
+  if (atendimentosRaw.length > 1) {
+    for (var m = 1; m < atendimentosRaw.length; m++) {
+      var aNome = atendimentosRaw[m][0] ? atendimentosRaw[m][0].toString().trim() : null;
+      var aPts = parseFloat(atendimentosRaw[m][8]) || 0;
+      if (!aNome) continue;
+      
+      var aEquipe = colabEquipeMap[aNome] || "";
+      
+      if (scoreIndividualMap[aNome]) {
+        scoreIndividualMap[aNome].pontos += aPts;
+      } else {
+        scoreIndividualMap[aNome] = { pontos: aPts, equipe: aEquipe };
+      }
+      
+      if (aEquipe && scoreTeamMap[aEquipe] !== undefined) {
+        scoreTeamMap[aEquipe] += aPts;
+      }
+    }
+  }
+
+  // B) Somar pontos vindos de lançamentos manuais da aba PONTUACAO
+  if (pontuacoesRaw.length > 1) {
+    for (var k = 1; k < pontuacoesRaw.length; k++) {
       var pNome = pontuacoesRaw[k][0] ? pontuacoesRaw[k][0].toString().trim() : null;
       var pEquipe = pontuacoesRaw[k][1] ? pontuacoesRaw[k][1].toString().trim() : null;
       var pValor = parseFloat(pontuacoesRaw[k][2]) || 0;
@@ -115,18 +138,20 @@ function buscarDadosIniciais() {
       if (scoreIndividualMap[pNome]) {
         scoreIndividualMap[pNome].pontos += pValor;
       } else {
-        scoreIndividualMap[pNome] = { pontos: pValor, equipe: pEquipe };
+        scoreIndividualMap[pNome] = { pontos: pValor, equipe: pEquipe || colabEquipeMap[pNome] || "" };
       }
       
-      if (pEquipe) {
-        if (scoreTeamMap[pEquipe] !== undefined) {
-          scoreTeamMap[pEquipe] += pValor;
-        } else {
-          scoreTeamMap[pEquipe] = pValor;
-        }
+      var eqFinal = pEquipe || colabEquipeMap[pNome];
+      if (eqFinal && scoreTeamMap[eqFinal] !== undefined) {
+        scoreTeamMap[eqFinal] += pValor;
       }
     }
   }
+
+  delete scoreIndividualMap["Nome Completo"];
+  delete scoreIndividualMap["Nome Colaborador"];
+  delete scoreTeamMap["Nome da Equipe"];
+  delete scoreTeamMap["Equipe"];
 
   var rankingIndividual = Object.keys(scoreIndividualMap).map(function(nome) {
     return { nome: nome, equipe: scoreIndividualMap[nome].equipe, pontos: scoreIndividualMap[nome].pontos };
@@ -162,13 +187,28 @@ function incluirColaborador(nome, cargo, equipe) {
   return false;
 }
 
+/**
+ * Salva ou edita um atendimento incluindo o novo campo de pontuação direta.
+ */
 function salvarAtendimento(dados, linhaEdit) {
   try {
     var sheet = obterAbaSegura(obterPlanilha(), "atendimento");
     if (sheet) {
+      
+      // Força o cálculo automatizado direto no servidor baseado nas regras informadas
+      var pontosCalculados = calcularPontosAutomatizados(dados.tipoContato, dados.retido, dados.premio);
+      
       var rowData = [
-        dados.nome, dados.cargo, dados.cpf, dados.dataContato,
-        dados.apolice, dados.premio, dados.tipoContato, dados.retido, new Date()
+        dados.nome, 
+        dados.cargo, 
+        dados.cpf, 
+        dados.dataContato,
+        dados.apolice, 
+        dados.premio, 
+        dados.tipoContato, 
+        dados.retido, 
+        pontosCalculados, // Grava a pontuação exata gerada pela inteligência do script
+        new Date()
       ];
       
       if (linhaEdit) {
@@ -179,7 +219,10 @@ function salvarAtendimento(dados, linhaEdit) {
       return true;
     }
     return false;
-  } catch(e) { return false; }
+  } catch(e) { 
+    Logger.log("Erro ao salvar atendimento: " + e.toString());
+    return false; 
+  }
 }
 
 function lancarPontuacao(nome, equipe, pontos, motivo) {
@@ -250,10 +293,14 @@ function excluirAtendimentoSheets(linha) {
   } catch(e) { return false; }
 }
 
+/**
+ * Alinha e garante a estrutura correta de colunas de todas as abas.
+ * Nova coluna inserida: "Pontuação Atendimento" na aba de atendimentos.
+ */
 function verificarESetupPlanilhas() {
   var ss = obterPlanilha();
   var estruturas = {
-    "atendimento": ["Nome Colaborador", "Cargo", "CPF", "Data do Contato", "Nº da Apólice", "Valor do Prêmio", "Tipo de Contato", "Foi Retido?", "Data Registro"],
+    "atendimento": ["Nome Colaborador", "Cargo", "CPF", "Data do Contato", "Nº da Apólice", "Valor do Prêmio", "Tipo de Contato", "Foi Retido?", "Pontuação Atendimento", "Data Registro"],
     "pontuacao": ["Nome Colaborador", "Equipe", "Pontos Atribuídos", "Motivo", "Data do Lançamento"],
     "colaboradores": ["Nome Completo", "Cargo", "Equipe Associada"],
     "equipes": ["Nome da Equipe"]
@@ -340,4 +387,132 @@ function atualizarColaboradorNoSheets(nomeAntigo, nomeNovo, cargoNovo, equipeNov
     Logger.log("Erro ao atualizar colaborador: " + erro.toString());
     throw new Error("Erro no servidor: " + erro.message);
   }
+}
+
+/**
+ * Realiza o filtro dinâmico por datas integrando a pontuação unificada de Atendimento + Manual
+ * Retorna apenas o agrupamento dos 3 colaboradores de maior pontuação.
+ */
+function obterDadosFiltradosAba1(dataInicioStr, dataFimStr) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheetAtendimentos = ss.getSheetByName("atendimento");
+    const sheetPontuacao = ss.getSheetByName("pontuacao");
+    const sheetColabs = ss.getSheetByName("colaboradores");
+    
+    if (!sheetAtendimentos || !sheetPontuacao) {
+      return { erro: "As abas necessárias não foram encontradas." };
+    }
+    
+    const dadosAtend = sheetAtendimentos.getDataRange().getValues();
+    const dadosPont = sheetPontuacao.getDataRange().getValues();
+    
+    const dataInicio = new Date(dataInicioStr + "T00:00:00");
+    const dataFim = new Date(dataFimStr + "T23:59:59");
+    
+    // 1. Mapeia a base global de equipes (Colaborador -> Equipe)
+    let mapaColabEquipeMaster = {};
+    if (sheetColabs) {
+      const dadosColabs = sheetColabs.getDataRange().getValues();
+      for (let c = 1; c < dadosColabs.length; c++) {
+        let nomeC = dadosColabs[c][0] ? dadosColabs[c][0].toString().trim() : "";
+        let eqC = dadosColabs[c][2] ? dadosColabs[c][2].toString().trim() : "";
+        if (nomeC) mapaColabEquipeMaster[nomeC] = eqC;
+      }
+    }
+    
+    let mapaPontosAtendentes = {};
+    let mapaEquipeDoAtendente = {};
+    
+    // 2. Acumula e soma pontos da aba "pontuacao" (Manuais) no período informado
+    if (dadosPont.length > 1) {
+      for (let p = 1; p < dadosPont.length; p++) {
+        let linhaPont = dadosPont[p];
+        if (!linhaPont[4]) continue;
+        let dataLancamento = new Date(linhaPont[4]);
+        
+        if (dataLancamento >= dataInicio && dataLancamento <= dataFim) {
+          let nomeAt = linhaPont[0] ? linhaPont[0].toString().trim() : null;
+          let nomeEq = linhaPont[1] ? linhaPont[1].toString().trim() : mapaColabEquipeMaster[nomeAt] || "Sem Equipe";
+          let pts = Number(linhaPont[2]) || 0;
+          
+          if (nomeAt) {
+            mapaPontosAtendentes[nomeAt] = (mapaPontosAtendentes[nomeAt] || 0) + pts;
+            mapaEquipeDoAtendente[nomeAt] = nomeEq;
+          }
+        }
+      }
+    }
+    
+    // 3. Acumula e soma pontos vindos da aba de "atendimento" no período informado
+    if (dadosAtend.length > 1) {
+      for (let a = 1; a < dadosAtend.length; a++) {
+        let linha = dadosAtend[a];
+        if (!linha[3]) continue;
+        let dataLinha = new Date(linha[3]);
+        
+        if (dataLinha >= dataInicio && dataLinha <= dataFim) {
+          let colabName   = linha[0] ? linha[0].toString().trim() : null;
+          let ptsAtend    = Number(linha[8]) || 0;
+          let nomeEq      = mapaColabEquipeMaster[colabName] || "Sem Equipe";
+          
+          if (colabName) {
+            mapaPontosAtendentes[colabName] = (mapaPontosAtendentes[colabName] || 0) + ptsAtend;
+            mapaEquipeDoAtendente[colabName] = nomeEq;
+          }
+        }
+      }
+    }
+    
+    // 4. Consolida e ordena o objeto final estruturando o ranking decrescente
+    let arrayAtendentes = [];
+    for (let at in mapaPontosAtendentes) {
+      if (mapaPontosAtendentes[at] !== 0) {
+        arrayAtendentes.push({
+          nome: at,
+          equipe: mapaEquipeDoAtendente[at] || "Sem Equipe",
+          pontos: mapaPontosAtendentes[at]
+        });
+      }
+    }
+    arrayAtendentes.sort((a, b) => b.pontos - a.pontos);
+    
+    return {
+      sucesso: true,
+      topAtendentes: arrayAtendentes.slice(0, 3) // Retorna exclusivamente os 3 primeiros
+    };
+    
+  } catch (erro) {
+    Logger.log("Erro no processamento do ranking simplificado: " + erro.toString());
+    return { erro: erro.toString() };
+  }
+}
+
+// LÓGICA DE SOMA AUTOMÁTICA REQUISITADA
+function calcularPontosAutomatizados(tipoContato, retido, premioStr) {
+  var totalPontos = 0;
+  
+  // Regra 1: Potencial (+10) ou Não Potencial (-5)
+  if (tipoContato === "Potencial") {
+    totalPontos += 10;
+  } else if (tipoContato === "Não potencial") {
+    totalPontos -= 5;
+  }
+  
+  // Regra 2: Retido (+25) ou Não Retido (0)
+  if (retido === "Sim") {
+    totalPontos += 25;
+  }
+  
+  // Regra 3: Prêmio acima de R$3.000 (+10)
+  if (premioStr) {
+    // Remove "R$", pontos de milhar e converte a vírgula decimal para ponto
+    var limpo = premioStr.toString().replace("R$", "").replace(/\./g, "").replace(",", ".").trim();
+    var valorPremio = parseFloat(limpo) || 0;
+    if (valorPremio > 3000 && retido === "Sim" && tipoContato === "Potencial") {
+      totalPontos += 10;
+    }
+  }
+  
+  return totalPontos;
 }
