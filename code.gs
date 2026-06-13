@@ -2,7 +2,7 @@
  * Sistema de Campanhas Integrado - Backend Google Apps Script
  */
 
-const SPREADSHEET_ID = "1kS-cCzgiUD5XS0WYEkYnpIQzS8qC7pt5hclCvoN7E70";
+const SPREADSHEET_ID = "sheets_id";
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('Index')
