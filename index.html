@@ -221,6 +221,15 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
       background-color: var(--amarelo);
       border-bottom: 6px solid var(--verde);
+      /* Animação Sutil */
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .card-podio.is-visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .card-header-green {
@@ -305,6 +314,27 @@
       height: 8px;
       line-height: 8px;
       opacity: 0.8;
+    }
+
+    /* Ajustes para o Pódio Responsivo (Beleza) */
+    .podio-list p {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px; /* Espaço entre o ícone da medalha e o nome */
+    }
+
+    .podio-nome {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-grow: 1; /* Permite que o nome cresça para preencher o espaço */
+    }
+
+    .podio-pontos {
+      margin-left: auto; /* Mágica para alinhar os pontos à direita */
+      padding-left: 8px; /* Garante um espaço mínimo do nome */
+      flex-shrink: 0; /* Impede que os pontos sejam espremidos */
     }
 
     .icon-coroa {
@@ -778,6 +808,64 @@
   align-items: center;
   justify-content: center;
 }
+
+/* =======================================================
+   10. SPINNER DE CARREGAMENTO
+   ======================================================= */
+.spinner-overlay {
+  position: fixed;
+  z-index: 10001; /* Acima de tudo */
+  left: 20%; /* Começa depois da sidebar */
+  top: 0;
+  width: 80%; /* Cobre apenas a área de conteúdo */
+  height: 100%;
+  background-color: rgba(245, 245, 245, 0.7);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  border: 6px solid #e0e0e0;
+  border-top: 6px solid var(--azul);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .spinner-overlay { left: 0; width: 100%; }
+}
+  </style>
+  <style>
+    /* Estilos para a Paginação */
+    .paginacao-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+      background-color: var(--fundo-tabela);
+      border-radius: 0 0 12px 12px;
+      border: 1px solid #e0e0e0;
+      border-top: none;
+    }
+    .btn-paginacao {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-paginacao:disabled { background-color: #e9ecef; color: #adb5bd; cursor: not-allowed; }
   </style>
 </head>
 
@@ -792,6 +880,10 @@
     </nav>
     <div class="sidebar-footer">User_acessando</div>
   </aside>
+
+  <div id="loading-spinner" class="spinner-overlay" style="display: none;">
+    <div class="spinner"></div>
+  </div>
 
   <div id="modal-sucesso" class="modal-overlay" style="display:none;">
     <div class="modal-content-feedback" style="border-top: 6px solid var(--verde);">
@@ -1081,12 +1173,9 @@
             Pódio de pontuação
           </div>
           <div class="card-body-yellow podio-list">
-            <p><span>🥇</span> <strong class="podio-nome">Aguardando dados</strong> —
-              <span class="podio-pontos">0 pts</span></p>
-            <p><span>🥈</span> <strong class="podio-nome">Aguardando dados</strong> —
-              <span class="podio-pontos">0 pts</span></p>
-            <p><span>🥉</span> <strong class="podio-nome">Aguardando dados</strong> —
-              <span class="podio-pontos">0 pts</span></p>
+            <p><span>🥇</span><strong class="podio-nome">Aguardando dados</strong><span class="podio-pontos">0 pts</span></p>
+            <p><span>🥈</span><strong class="podio-nome">Aguardando dados</strong><span class="podio-pontos">0 pts</span></p>
+            <p><span>🥉</span><strong class="podio-nome">Aguardando dados</strong><span class="podio-pontos">0 pts</span></p>
           </div>
         </article>
       </div>
@@ -1141,7 +1230,12 @@
       <div class="atendimentos-header-blue">
         <span>📋</span> Atendimentos auditados
       </div>
-      <div class="table-wrapper" style="max-height: 500px; overflow-y: auto;">
+      <div class="grupo-busca" style="margin: 12px; border: 1px solid #ccc; background: var(--fundo-tabela);">
+          <span class="icon-busca" style="padding-left: 8px;">🔍</span>
+          <input type="text" id="busca-atendimentos" placeholder="Buscar por nome, CPF, apólice, data..." style="border: none; outline: none; width: 100%; color: var(--texto-tabela); background: transparent; padding: 12px;">
+      </div>
+
+      <div class="table-wrapper" style="max-height: 450px; overflow-y: auto; border-top: none; border-radius: 0;">
         <table>
           <thead style="position: sticky; top: 0; background: var(--fundo-tabela); z-index: 1;">
             <tr>
@@ -1164,6 +1258,7 @@
           </tbody>
         </table>
       </div>
+      <div id="paginacao-atendimentos" class="paginacao-container" style="display: none;"></div>
   </section>
 
   <section id="tab2">
@@ -1288,6 +1383,7 @@
                 <option value="padrao">Padrão (Verde, Amarelo e Azul)</option>
                 <option value="azul">Corporativo (Azul Claro e Escuro)</option>
                 <option value="dark">Modo Escuro (Cinza e Preto)</option>
+                <option value="rosa">Festa (Tons de Rosa)</option>
             </select>
         </div>
       </div>
@@ -1353,6 +1449,11 @@
       rankingIndividual: []
   };
 
+  let paginaAtualAtendimentos = 1;
+
+  /**
+   * Ponto de entrada principal do JavaScript quando a página é carregada.
+   */
   document.addEventListener('DOMContentLoaded', () => {
       const links = document.querySelectorAll('#sidebar nav a');
       const sections = document.querySelectorAll('section');
@@ -1360,6 +1461,7 @@
       sections.forEach((s, index) => { s.style.display = (index === 0) ? 'block' : 'none'; });
 
       links.forEach(link => {
+          // Lógica para navegação entre abas (simulando uma Single Page Application)
           link.addEventListener('click', function (e) {
               e.preventDefault();
               links.forEach(l => l.classList.remove('ativo'));
@@ -1368,55 +1470,45 @@
               const target = document.querySelector(this.getAttribute('href'));
               if(target) target.style.display = 'block';
           });
-
-          // Listeners da Tab 2
-    const camposForm = ['atend-tipo', 'atend-retido', 'atend-premio'];
-    camposForm.forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.addEventListener('change', atualizarPontosFormPrincipal);
-        if(el && id === 'atend-premio') el.addEventListener('input', atualizarPontosFormPrincipal);
-    });
-
-    // Listeners do Modal de Edição
-    const camposModal = ['edit-atend-tipo', 'edit-atend-retido', 'edit-atend-premio'];
-    camposModal.forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.addEventListener('change', atualizarPontosModalEdicao);
-        if(el && id === 'edit-atend-premio') el.addEventListener('input', atualizarPontosModalEdicao);
-    });
       });
 
-      // NOVO: Configura os cargos permitidos no sistema
+      // Configura os cargos permitidos no sistema
       configurarCargosPermitidos();
 
+      // Adiciona os listeners para os campos que afetam o cálculo de pontos em tempo real
+      adicionarListenersDeCalculoPontos();
+
+      // Adiciona os listeners para os campos de busca e filtro
+      adicionarListenersDeFiltro();
+
+      // Carrega os dados iniciais do Google Sheets
       carregarDadosSistema();
 
+      // Adiciona o listener para o formulário principal de atendimento
       const formAtend = document.getElementById('form-atendimento');
       if(formAtend) {
           formAtend.addEventListener('submit', function(e) { e.preventDefault(); salvarDadosAtendimento(); });
       }
+  });
 
-      // Buscas
-      const buscaPlacarInd = document.getElementById('busca-placar-individual');
-      if(buscaPlacarInd) buscaPlacarInd.addEventListener('input', filtrarPlacarIndividual);
+  function adicionarListenersDeFiltro() {
+      // Filtros da Aba 1 (Placar Individual)
+      document.getElementById('busca-placar-individual')?.addEventListener('input', () => filtrarTabela('#busca-placar-individual', '.item-placar-individual', 'data-nome'));
 
+      // Filtros da Aba 3 (Registro de Pontos)
       const buscaColabTab3 = document.getElementById('busca-colaborador');
       const filtroTimeTab3 = document.getElementById('filtro-time');
       const btnLimparTab3 = document.querySelector('.btn-limpar-filtros');
-     
-      const buscaColabTab4 = document.getElementById('busca-tab4-colab');
-      if(buscaColabTab4) buscaColabTab4.addEventListener('input', filtrarTab4Colaboradores);
+      buscaColabTab3?.addEventListener('input', filtrarTabelaPontos);
+      filtroTimeTab3?.addEventListener('change', filtrarTabelaPontos);
+      btnLimparTab3?.addEventListener('click', limparFiltrosTab3);
 
-      if(buscaColabTab3) buscaColabTab3.addEventListener('input', filtrarTabelaPontos);
-      if(filtroTimeTab3) filtroTimeTab3.addEventListener('change', filtrarTabelaPontos);
-      if(btnLimparTab3) {
-          btnLimparTab3.addEventListener('click', () => {
-              if(buscaColabTab3) buscaColabTab3.value = '';
-              if(filtroTimeTab3) filtroTimeTab3.value = '';
-              filtrarTabelaPontos();
-          });
-      }
-  });
+      // Filtros da Aba 4 (Colaboradores)
+      document.getElementById('busca-tab4-colab')?.addEventListener('input', () => filtrarTabela('#busca-tab4-colab', '.item-tab4-colab', 'data-nome'));
+
+      // Filtro da Tabela de Atendimentos (Aba 1)
+      document.getElementById('busca-atendimentos')?.addEventListener('input', handleBuscaAtendimentos);
+  }
 
   // =====================================
   // CONFIGURAÇÃO DE CARGOS
@@ -1438,6 +1530,10 @@
   // =====================================
   // FUNÇÕES DE MODAL E FEEDBACK
   // =====================================
+  /**
+   * Funções genéricas para abrir e fechar os modais da aplicação.
+   * Manipulam a propriedade 'display' para mostrar ou esconder os overlays.
+   */
   function abrirModalCadastro() { document.getElementById('modal-cadastro').style.display = 'flex'; }
   function fecharModalCadastro() { document.getElementById('modal-cadastro').style.display = 'none'; }
 
@@ -1486,28 +1582,57 @@
   // CARREGAR E RENDERIZAR DADOS
   // =====================================
   function carregarDadosSistema() {
+      // Mostra um feedback visual de carregamento (opcional, mas bom para UX)
+      // Ex: document.getElementById('loading-spinner').style.display = 'block';
+      const spinner = document.getElementById('loading-spinner');
+      if (spinner) spinner.style.display = 'flex';
+
+      // Acessa a API do Google Apps Script para buscar os dados.
+      // 'google.script.run' é o objeto que faz a ponte entre o frontend e o backend.
       if(typeof google !== 'undefined') {
+      if(typeof google !== 'undefined' && google.script && google.script.run) {
           google.script.run
               .withSuccessHandler(renderizarPainelCompleto)
               .withFailureHandler(erro => abrirFeedback('modal-erro', 'Erro ao carregar banco: ' + erro))
+              .withSuccessHandler(dados => {
+                  renderizarPainelCompleto(dados);
+                  if (spinner) spinner.style.display = 'none'; // Esconde após renderizar
+              })
+              .withFailureHandler(erro => {
+                  if (spinner) spinner.style.display = 'none'; // Esconde no erro
+                  abrirFeedback('modal-erro', 'Erro ao carregar dados: ' + erro);
+              })
               .buscarDadosIniciais();
+      } else {
+          // Caso de teste local sem google.script
+          if (spinner) spinner.style.display = 'none';
+          console.warn("Google Script API não encontrada. A aplicação pode não funcionar como esperado.");
+          abrirFeedback('modal-erro', 'Não foi possível conectar ao servidor da planilha.');
       }
   }
 
+  /**
+   * Função "maestro" que recebe os dados do backend e orquestra a renderização de toda a UI.
+   * @param {object} dados - O objeto completo de dados vindo da função buscarDadosIniciais() do Apps Script.
+   */
   function renderizarPainelCompleto(dados) {
       if(!dados) return;
+    
+    // 1. Armazena os dados recebidos no cache local para uso em outras funções
     cacheDadosApp = dados;
 
+    // 2. Atualiza o email do usuário no rodapé da sidebar
     const footer = document.querySelector('.sidebar-footer');
     if(footer) footer.innerText = dados.usuario || "Acesso";
 
+    // 3. Extrai os dados para variáveis locais para facilitar o acesso
     const listaEquipes = dados.equipes || [];
     const listaColaboradores = dados.colaboradores || [];
     let listaRankingTimes = dados.rankingTimes || [];
     let listaRankingIndiv = dados.rankingIndividual || [];
     const listaAtendimentos = dados.atendimentos || [];
 
-    // Processar Ranking Faltantes
+    // 4. Garante que equipes e colaboradores sem pontos ainda apareçam nos rankings com 0 pontos.
     listaEquipes.forEach(eq => {
         if (!listaRankingTimes.some(t => t.nome.toLowerCase() === eq.toLowerCase())) {
             listaRankingTimes.push({ nome: eq, pontos: 0 });
@@ -1522,11 +1647,27 @@
     });
     listaRankingIndiv.sort((a, b) => b.pontos - a.pontos);
 
-    // Popula Selects de Equipes e Colaboradores (Aba 2 e Aba 4)
+    // 5. Chama as funções de renderização específicas para cada parte da UI
+    renderizarSelects(listaEquipes, listaColaboradores);
+    renderizarTabelasConfig(listaEquipes, listaColaboradores);
+
+    // Reseta a paginação para a primeira página sempre que os dados são recarregados
+    paginaAtualAtendimentos = 1;
+    renderizarPlacarGeral(listaRankingTimes, listaRankingIndiv);
+    renderizarTabelaAtendimentos(listaAtendimentos);
+    renderizarTabelaPontos(listaColaboradores);
+}
+
+  /**
+   * Popula todos os menus <select> da aplicação com dados dinâmicos de equipes e colaboradores.
+   * @param {string[]} listaEquipes - Array com nomes das equipes.
+   * @param {object[]} listaColaboradores - Array de objetos de colaboradores.
+   */
+  function renderizarSelects(listaEquipes, listaColaboradores) {
     const selectColabEquipe = document.getElementById('cad-colab-equipe');
     const selectFiltroTime = document.getElementById('filtro-time');
     const selectAtendNome = document.getElementById('atend-nome');
-   
+
     let optionsHtml = '<option value="" disabled selected>Selecione a equipe...</option>';
     let filterOptionsHtml = '<option value="">Todos os Times</option>';
     let atendNomeHtml = '<option value="" disabled selected>Selecione o colaborador...</option>';
@@ -1546,12 +1687,11 @@
         selectAtendNome.onchange = function() {
             const colabEncontrado = listaColaboradores.find(col => col.nome === this.value);
             const selectCargo = document.getElementById('atend-cargo');
-            if (colabEncontrado && selectCargo) {
-                // Validação de segurança para normalizar termos antigos ("Técnico"/"Atendente") para os novos padrões
+            if (colabEncontrado && selectCargo) {               
                 let cargoDefinido = colabEncontrado.cargo;
                 if(cargoDefinido === "Emissão VI") cargoDefinido = "Emissão VI";
                 if(cargoDefinido === "Central Vida") cargoDefinido = "Central Vida";
-               
+
                 selectCargo.value = cargoDefinido;
             }
         };
@@ -1559,7 +1699,14 @@
 
     // ABA 4 - Tabela Equipes
     const tbodyEq = document.querySelector('#tab4 .painel-tabela-box:first-of-type table tbody');
-    if(tbodyEq) {
+    if (tbodyEq) {
+        renderizarTabelaEquipes(tbodyEq, listaEquipes);
+    }
+}
+
+function renderizarTabelasConfig(listaEquipes, listaColaboradores) {
+    const tbodyEq = document.querySelector('#tab4 .painel-tabela-box:first-of-type table tbody');
+    if (tbodyEq) {
         tbodyEq.innerHTML = listaEquipes.length === 0
             ? '<tr><td colspan="2" class="text-center">Aguardando times.</td></tr>'
             : listaEquipes.map((eq, index) => `
@@ -1576,7 +1723,7 @@
 
     // ABA 4 - Tabela Colaboradores
     const tbodyColab = document.querySelector('#tab4 .painel-tabela-box:nth-of-type(2) table tbody');
-    if(tbodyColab) {
+    if (tbodyColab) {
         tbodyColab.innerHTML = listaColaboradores.length === 0
             ? '<tr><td colspan="4" class="text-center">Aguardando colaboradores.</td></tr>'
             : listaColaboradores.map((c, index) => {
@@ -1594,8 +1741,14 @@
                     </td>
                 </tr>`}).join('');
     }
+}
 
-    // ABA 1 - Placar Geral e Podio
+  /**
+   * Atualiza os cards do pódio e as tabelas de ranking na Aba 1.
+   * @param {object[]} listaRankingTimes - Array de equipes com suas pontuações.
+   * @param {object[]} listaRankingIndiv - Array de colaboradores com suas pontuações.
+   */
+  function renderizarPlacarGeral(listaRankingTimes, listaRankingIndiv) {
     const cardLiderNome = document.querySelector('.card-time-lider .podio-nome');
     const cardLiderPontos = document.querySelector('.card-time-lider .podio-pontos');
     if (listaRankingTimes.length > 0) {
@@ -1607,9 +1760,18 @@
     for (let i = 0; i < 3; i++) {
         if (podioP[i] && listaRankingIndiv[i]) {
             podioP[i].querySelector('.podio-nome').innerText = listaRankingIndiv[i].nome;
-            podioP[i].querySelector('.podio-pontos').innerText = `${listaRankingIndiv[i].pontos} pts`;
+            podioP[i].querySelector('.podio-pontos').innerText = `— ${listaRankingIndiv[i].pontos} pts`;
         }
     }
+
+    // Anima os cards do pódio
+    const podioCards = document.querySelectorAll('.card-podio');
+    podioCards.forEach((card, index) => {
+      // Adiciona um pequeno delay para cada card para um efeito escalonado
+      setTimeout(() => {
+        card.classList.add('is-visible');
+      }, index * 150); // 0ms para o primeiro, 150ms para o segundo, etc.
+    });
 
     const tbodyTimesPlacar = document.querySelector('#tab1 .painel-tabela-box:first-of-type table tbody');
     if(tbodyTimesPlacar) {
@@ -1624,14 +1786,45 @@
             ? '<tr><td colspan="3" class="text-center">Nenhum colaborador cadastrado.</td></tr>'
             : listaRankingIndiv.map(c => `<tr class="item-placar-individual" data-nome="${c.nome.toLowerCase()}"><td>${c.nome}</td><td>${c.equipe}</td><td class="text-right" style="font-weight:bold;">${c.pontos}</td></tr>`).join('');
     }
+}
 
-    // TABELA PRINCIPAL ABA 1 - Ajustada com 10 Colunas (Pontos na 9ª e Botões perfeitamente abaixo de Ações)
+  /**
+   * Renderiza a tabela de atendimentos auditados na Aba 1.
+   * @param {object[]} listaAtendimentos - Array de objetos de atendimento.
+   */
+  function renderizarTabelaAtendimentos(listaAtendimentos) {
+    const ITENS_POR_PAGINA = 10;
     const tbodyAtend = document.querySelector('#tab1 .painel-atendimentos-box table tbody');
-    if(tbodyAtend) {
-        if (listaAtendimentos.length === 0) {
-            tbodyAtend.innerHTML = '<tr><td colspan="10" class="text-center">Nenhum atendimento registrado no banco de dados.</td></tr>';
+    const paginacaoContainer = document.getElementById('paginacao-atendimentos');
+    const buscaInput = document.getElementById('busca-atendimentos');
+    const termoBusca = buscaInput ? buscaInput.value.toLowerCase().trim() : '';
+
+    let atendimentosFiltrados = listaAtendimentos;
+
+    // Aplica o filtro de busca se houver um termo
+    if (termoBusca) {
+        atendimentosFiltrados = listaAtendimentos.filter(a => {
+            // Busca em múltiplos campos para maior abrangência
+            return (
+                a.nome.toLowerCase().includes(termoBusca) ||
+                a.cpf.includes(termoBusca) ||
+                a.apolice.toLowerCase().includes(termoBusca) ||
+                a.dataContato.includes(termoBusca)
+            );
+        });
+    }
+
+    if (tbodyAtend) {
+        if (atendimentosFiltrados.length === 0) {
+            tbodyAtend.innerHTML = `<tr><td colspan="10" class="text-center">Nenhum atendimento encontrado ${termoBusca ? 'para "' + buscaInput.value + '"' : ''}.</td></tr>`;
+            if (paginacaoContainer) paginacaoContainer.style.display = 'none';
         } else {
-            tbodyAtend.innerHTML = listaAtendimentos.map(a => {
+            // Lógica de Paginação
+            const inicio = (paginaAtualAtendimentos - 1) * ITENS_POR_PAGINA;
+            const fim = inicio + ITENS_POR_PAGINA;
+            const itensDaPagina = atendimentosFiltrados.slice(inicio, fim);
+
+            tbodyAtend.innerHTML = itensDaPagina.map(a => {
                 let cargoExibicao = a.cargo === "Emissão IV" ? "Emissão IV" : (a.cargo === "Central Vida" ? "Central Vida" : a.cargo);
                 return `
                 <tr>
@@ -1652,12 +1845,59 @@
                     </td>
                 </tr>
             `}).join('');
+
+            // Renderiza os controles da paginação
+            renderizarPaginacaoAtendimentos(atendimentosFiltrados.length);
+            if (paginacaoContainer) paginacaoContainer.style.display = 'flex';
         }
     }
+}
 
-    // ABA 3 - Registro de Pontos Manuais
+/**
+ * Renderiza os botões e informações de paginação para a tabela de atendimentos.
+ * @param {number} totalItens - O número total de itens na lista de atendimentos.
+ */
+function renderizarPaginacaoAtendimentos(totalItens) {
+    const ITENS_POR_PAGINA = 10;
+    const paginacaoContainer = document.getElementById('paginacao-atendimentos');
+    if (!paginacaoContainer) return;
+
+    const totalPaginas = Math.ceil(totalItens / ITENS_POR_PAGINA);
+
+    if (totalPaginas <= 1) {
+        paginacaoContainer.style.display = 'none';
+        return;
+    }
+
+    paginacaoContainer.innerHTML = `
+        <button class="btn-paginacao" onclick="mudarPaginaAtendimentos(-1)" ${paginaAtualAtendimentos === 1 ? 'disabled' : ''}>Anterior</button>
+        <span class="pagina-info">Página ${paginaAtualAtendimentos} de ${totalPaginas}</span>
+        <button class="btn-paginacao" onclick="mudarPaginaAtendimentos(1)" ${paginaAtualAtendimentos === totalPaginas ? 'disabled' : ''}>Próximo</button>
+    `;
+}
+
+function mudarPaginaAtendimentos(direcao) {
+    paginaAtualAtendimentos += direcao;
+    // Re-renderiza a tabela. A função já sabe como aplicar o filtro que está no campo de busca.
+    renderizarTabelaAtendimentos(cacheDadosApp.atendimentos || []);
+}
+
+/**
+ * Manipulador para o evento de input no campo de busca de atendimentos.
+ */
+function handleBuscaAtendimentos() {
+    paginaAtualAtendimentos = 1; // Reseta para a primeira página a cada nova busca
+    renderizarTabelaAtendimentos(cacheDadosApp.atendimentos || []);
+}
+}
+
+  /**
+   * Renderiza a tabela de colaboradores na Aba 3 para lançamento manual de pontos.
+   * @param {object[]} listaColaboradores - Array de objetos de colaboradores.
+   */
+  function renderizarTabelaPontos(listaColaboradores) {
     const tbodyPontosReg = document.querySelector('#tab3 .tabela-pontos-box table tbody');
-    if(tbodyPontosReg) {
+    if (tbodyPontosReg) {
         if (listaColaboradores.length === 0) {
             tbodyPontosReg.innerHTML = '<tr><td colspan="3" class="text-center">Aguardando cadastro de colaboradores.</td></tr>';
         } else {
@@ -1675,7 +1915,6 @@
         }
     }
 }
-
   // =====================================
   // AÇÕES DE DADOS (C, U, D)
   // =====================================
@@ -1959,42 +2198,52 @@
   // =======================================================
   // FILTROS
   // =======================================================
-  function filtrarPlacarIndividual() {
-      const elBusca = document.getElementById('busca-placar-individual');
-      const busca = elBusca ? elBusca.value.toLowerCase() : "";
-      const rows = document.querySelectorAll('.item-placar-individual');
+  /**
+   * Função genérica para filtrar linhas de uma tabela com base em um campo de busca.
+   * @param {string} inputSelector - O seletor CSS do campo de input da busca.
+   * @param {string} rowSelector - O seletor CSS para as linhas <tr> da tabela a serem filtradas.
+   * @param {string} dataAttribute - O atributo 'data-*' na linha que contém o texto a ser comparado.
+   */
+  function filtrarTabela(inputSelector, rowSelector, dataAttribute) {
+      const busca = document.querySelector(inputSelector).value.toLowerCase();
+      const rows = document.querySelectorAll(rowSelector);
       rows.forEach(row => {
-          const nome = row.getAttribute('data-nome') || "";
-          row.style.display = nome.includes(busca) ? '' : 'none';
+          const textoLinha = row.getAttribute(dataAttribute) || "";
+          row.style.display = textoLinha.includes(busca) ? '' : 'none';
       });
   }
 
+  /**
+   * Filtra a tabela de colaboradores na Aba 3, que possui dois filtros combinados (nome e time).
+   */
   function filtrarTabelaPontos() {
-      const elBusca = document.getElementById('busca-colaborador');
-      const elTime = document.getElementById('filtro-time');
-      const busca = elBusca ? elBusca.value.toLowerCase() : "";
-      const timeFiltro = elTime ? elTime.value.toLowerCase() : "";
+      const busca = document.getElementById('busca-colaborador').value.toLowerCase();
+      const timeFiltro = document.getElementById('filtro-time').value.toLowerCase();
       const rows = document.querySelectorAll('.item-colaborador-ponto');
 
       rows.forEach(row => {
           const nome = row.getAttribute('data-nome') || "";
           const equipe = row.getAttribute('data-equipe') || "";
+
           const matchBusca = nome.includes(busca);
           const matchTime = timeFiltro === '' || equipe === timeFiltro;
+
           row.style.display = (matchBusca && matchTime) ? '' : 'none';
       });
   }
 
-  function filtrarTab4Colaboradores() {
-      const elBusca = document.getElementById('busca-tab4-colab');
-      const busca = elBusca ? elBusca.value.toLowerCase() : "";
-      const rows = document.querySelectorAll('.item-tab4-colab');
-      rows.forEach(row => {
-          const nome = row.getAttribute('data-nome') || "";
-          row.style.display = nome.includes(busca) ? '' : 'none';
-      });
+  /**
+   * Limpa os campos de filtro da Aba 3 e re-executa a filtragem para mostrar todos os itens.
+   */
+  function limparFiltrosTab3() {
+      document.getElementById('busca-colaborador').value = '';
+      document.getElementById('filtro-time').value = '';
+      filtrarTabelaPontos();
   }
 
+  // =======================================================
+  // FUNÇÕES DE UI E TEMAS
+  // =======================================================
   function alterarNomeCampanha() {
       const input = document.getElementById('input-nome-campanha');
       const novoNome = input ? input.value : "";
@@ -2010,7 +2259,8 @@
       const temas = {
           'padrao': { v: '#009B3A', a: '#FEDF00', az: '#002776', br: '#ffffff', ci: '#f5f5f5', tt: '#002776', ts: '#002776', ttab: '#555555', ftab: '#ffffff' },
           'azul': { v: '#007BFF', a: '#E6F2FF', az: '#003366', br: '#ffffff', ci: '#F0F4F8', tt: '#003366', ts: '#003366', ttab: '#444444', ftab: '#ffffff' },
-          'dark': { v: '#2c2c2c', a: '#1f1f1f', az: '#121212', br: '#ffffff', ci: '#0a0a0a', tt: '#e0e0e0', ts: '#cccccc', ttab: '#bbbbbb', ftab: '#1f1f1f' }
+          'dark': { v: '#2c2c2c', a: '#1f1f1f', az: '#121212', br: '#ffffff', ci: '#0a0a0a', tt: '#e0e0e0', ts: '#cccccc', ttab: '#bbbbbb', ftab: '#1f1f1f' },
+          'rosa': { v: '#E91E63', a: '#FCE4EC', az: '#880E4F', br: '#ffffff', ci: '#F8F9FA', tt: '#880E4F', ts: '#880E4F', ttab: '#444444', ftab: '#ffffff' }
       };
 
       const t = temas[tema];
@@ -2143,31 +2393,49 @@ function renderizarResultadosFiltroAba1(dados) {
 // CONFIGURAÇÃO DOS LISTENERS DE CÁLCULO AUTOMÁTICO
 // ==========================================
 
-// Função auxiliar para calcular pontos no front-end em tempo real
+/**
+ * Adiciona os listeners de 'change' e 'input' aos campos de formulário
+ * que disparam o recálculo de pontos em tempo real na tela.
+ */
+function adicionarListenersDeCalculoPontos() {
+    // Campos do formulário principal (Aba 2)
+    const camposForm = ['atend-tipo', 'atend-retido', 'atend-premio'];
+    camposForm.forEach(id => {
+        const el = document.getElementById(id);
+        el?.addEventListener('change', atualizarPontosFormPrincipal);
+        if (id === 'atend-premio') el?.addEventListener('input', atualizarPontosFormPrincipal);
+    });
+
+    // Campos do modal de edição de atendimento
+    const camposModal = ['edit-atend-tipo', 'edit-atend-retido', 'edit-atend-premio'];
+    camposModal.forEach(id => {
+        const el = document.getElementById(id);
+        el?.addEventListener('change', atualizarPontosModalEdicao);
+        if (id === 'edit-atend-premio') el?.addEventListener('input', atualizarPontosModalEdicao);
+    });
+}
+
+/**
+ * Lógica de cálculo de pontos no frontend.
+ * IMPORTANTE: Esta lógica deve ser um espelho da função `calcularPontosAutomatizados` no `code.gs`.
+ * Sua única finalidade é dar feedback visual instantâneo ao usuário. O cálculo final é sempre feito no servidor.
+ */
 function calcularPontosNoFront(tipoContato, retido, premioStr) {
     let totalPontos = 0;
 
-    // Regra 1: Tipo de Contato
-    if (tipoContato === "Potencial") {
-        totalPontos += 10;
-    } else if (tipoContato === "Não potencial") {
-        totalPontos -= 5;
-    }
+    if (tipoContato === "Potencial") totalPontos += 10;
+    else if (tipoContato === "Não potencial") totalPontos -= 5;
 
-    // Regra 2: Retido
-    if (retido === "Sim") {
-        totalPontos += 25;
-    }
+    if (retido === "Sim") totalPontos += 25;
 
-    // Regra 3: Prêmio acima de R$3.000
     if (premioStr) {
         let limpo = premioStr.toString().replace("R$", "").replace(/\./g, "").replace(",", ".").trim();
         let valorPremio = parseFloat(limpo) || 0;
-        if (valorPremio > 3000) {
+        // CORREÇÃO: O bônus só se aplica se for Potencial e Retido, espelhando o backend.
+        if (valorPremio > 3000 && retido === "Sim" && tipoContato === "Potencial") {
             totalPontos += 10;
         }
     }
-
     return totalPontos;
 }
 
