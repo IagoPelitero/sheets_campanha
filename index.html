@@ -129,6 +129,8 @@
       border-radius: 12px;
       overflow: hidden;
       background-color: var(--fundo-tabela);
+      display: flex;
+      flex-direction: column;
     }
 
     .painel-tabela-box h3,
@@ -152,6 +154,7 @@
       border: 1px solid #e0e0e0;
       border-top: none;
       background-color: var(--fundo-tabela);
+      flex-grow: 1;
     }
 
     table {
@@ -264,11 +267,9 @@
       gap: 12px;
       width: 100%;
       margin: 0;
-      background: rgba(255, 255, 255, 0.45);
-      /* Fundo branco elegante e suave */
+      background: transparent;
       padding: 10px 14px;
       border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
       transition: transform 0.2s;
     }
 
@@ -347,6 +348,8 @@
       padding: 24px;
       color: var(--branco);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
     }
 
     .config-top-container {
@@ -510,6 +513,31 @@
       padding: 16px;
     }
 
+    #filtro-painel-individual {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline: none;
+      font-size: 0.95rem;
+      color: #333;
+      background-color: #fff;
+      cursor: pointer;
+      min-width: 150px;
+    }
+
+    .btn-limpar-filtros-painel {
+      background-color: var(--azul);
+      color: var(--branco);
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: opacity 0.2s;
+    }
+    .btn-limpar-filtros-painel:hover {
+      opacity: 0.85;
+    }
     /* =======================================================
        7. CLASSES DOS BOTÕES CUSTOMIZADOS (ABA 3 E CONFIGS)
        ======================================================= */
@@ -790,27 +818,45 @@
    Modal de Filtro de Atendimentos por Data (Aba 1) - Ajustado
    ======================================================= */
     #modal-filtro-data-aba1 {
-      display: none;
-      /* Inicialmente oculto */
       position: fixed;
-      /* Fixado na tela independente do scroll */
       z-index: 10000;
-      /* Valor alto para garantir que fique por cima de tudo */
       left: 0;
       top: 0;
-      width: 100vw;
-      /* Força cobrir toda a largura visível */
-      height: 100vh;
-      /* Força cobrir toda a altura visível */
+      width: 100%;
+      height: 100%;
       background-color: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(3px);
-
-      /* Garante o alinhamento central perfeito do conteúdo interno de 450px */
-      display: none;
-      /* Controlado via JS para virar 'flex' */
       align-items: center;
       justify-content: center;
+      display: none;
     }
+
+    /* =======================================================
+       10. SPINNER DE CARREGAMENTO GLOBAL
+       ======================================================= */
+    .spinner-grande {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid #ffffff;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* =======================================================
+       11. VALIDAÇÃO VISUAL (ERRO EM CAMPOS)
+       ======================================================= */
+    .input-erro {
+      outline: 2px solid var(--vermelho) !important;
+      background-color: #ffeeee !important;
+      transition: background-color 0.2s, outline 0.2s;
+    }
+
   </style>
 </head>
 
@@ -869,13 +915,13 @@
           <div class="form-group" style="margin-bottom: 12px;">
             <label>Cargo</label>
             <select id="edit-atend-cargo" required style="color:#333;">
-              <option value="Técnico">Emissão VI</option>
-              <option value="Atendente">Central Vida</option>
+              <option value="Emissão VI">Emissão VI</option>
+              <option value="Central Vida">Central Vida</option>
             </select>
           </div>
           <div class="form-group" style="margin-bottom: 12px;">
             <label>CPF do segurado</label>
-            <input type="text" id="edit-atend-cpf" required style="color:#333;">
+            <input type="text" id="edit-atend-cpf" maxlength="14" required style="color:#333;">
           </div>
           <div class="form-group" style="margin-bottom: 12px;">
             <label>Data do Contato</label>
@@ -910,7 +956,6 @@
               <option value="Não">Não</option>
             </select>
           </div>
-        </form>
         <div class="form-group" style="margin-bottom: 12px;">
           <label>Pontuação do Atendimento (Calculado)</label>
           <input type="text" id="edit-atend-pontos"
@@ -922,7 +967,7 @@
       <div class="modal-footer form-actions">
         <button class="btn-verde-brasil"
           style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;"
-          onclick="salvarEdicaoAtendimento()">Salvar Alterações</button>
+          onclick="salvarEdicaoAtendimento(this)">Salvar Alterações</button>
         <button class="btn-limpar" onclick="fecharModalEditarAtendimento()">Cancelar</button>
       </div>
     </div>
@@ -951,7 +996,7 @@
         </div>
       </div>
       <div class="modal-footer form-actions">
-        <button class="btn-salvar" onclick="lancarPontosManuais()">Salvar Pontuação</button>
+        <button class="btn-salvar" onclick="lancarPontosManuais(this)">Salvar Pontuação</button>
         <button class="btn-limpar" onclick="fecharModalPontosManual()">Cancelar</button>
       </div>
     </div>
@@ -986,8 +1031,8 @@
             <label>Cargo</label>
             <select id="cad-colab-cargo" required>
               <option value="" disabled selected>Selecione o cargo</option>
-              <option value="Técnico">Emissão VI</option>
-              <option value="Atendente">Central Vida</option>
+              <option value="Emissão VI">Emissão VI</option>
+              <option value="Central Vida">Central Vida</option>
             </select>
           </div>
           <div class="form-group">
@@ -999,7 +1044,7 @@
         </div>
       </div>
       <div class="modal-footer form-actions">
-        <button class="btn-salvar" onclick="processarCadastro()">Incluir</button>
+        <button class="btn-salvar" onclick="processarCadastro(this)">Incluir</button>
         <button class="btn-limpar" onclick="fecharModalCadastro()">Cancelar</button>
       </div>
     </div>
@@ -1021,7 +1066,7 @@
       <div class="modal-footer form-actions">
         <button class="btn-verde-brasil"
           style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;"
-          onclick="salvarEdicaoEquipe()">Salvar</button>
+          onclick="salvarEdicaoEquipe(this)">Salvar</button>
         <button class="btn-limpar" onclick="fecharModalEditarEquipe()">Cancelar</button>
       </div>
     </div>
@@ -1042,8 +1087,8 @@
         <div class="form-group" style="margin-bottom: 16px;">
           <label for="edit-colab-cargo">Cargo / Função</label>
           <select id="edit-colab-cargo" required style="color: #333;">
-            <option value="Técnico">Emissão VI</option>
-            <option value="Atendente">Central Vida</option>
+            <option value="Emissão VI">Emissão VI</option>
+            <option value="Central Vida">Central Vida</option>
 
           </select>
         </div>
@@ -1055,7 +1100,7 @@
       <div class="modal-footer form-actions">
         <button class="btn-verde-brasil"
           style="padding: 10px 20px; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer;"
-          onclick="salvarEdicaoColaborador()">Salvar</button>
+          onclick="salvarEdicaoColaborador(this)">Salvar</button>
         <button class="btn-limpar" onclick="fecharModalEditarColaborador()">Cancelar</button>
       </div>
     </div>
@@ -1114,11 +1159,18 @@
     </div>
   </div>
 
+  <div id="modal-loading" class="modal-overlay" style="display:none; background-color: rgba(0, 0, 0, 0.5); z-index: 10001;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+      <div class="spinner-grande"></div>
+      <p style="color: white; font-size: 1.2rem; font-weight: bold;">Salvando...</p>
+    </div>
+  </div>
+
   <section id="tab1">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; width: 100%;">
       <h2 style="margin: 0;">Placar Geral</h2>
       <button class="btn-acao btn-azul-brasil" onclick="abrirModalFiltroAba1()">
-        <i class="fas fa-calendar-alt"></i> Filtro de campanha semanal
+        <i class="fas fa-calendar-alt"></i> Filtrar Ranking de Pontuações
       </button>
     </div>
 
@@ -1164,7 +1216,7 @@
                   dados</strong>
               </span>
               <span class="podio-pontos"
-                style="flex-shrink: 0; white-space: nowrap; background-color: rgba(255,255,255,0.4); padding: 2px 6px; border-radius: 4px;">0
+                style="flex-shrink: 0; white-space: nowrap; padding: 2px 6px; border-radius: 4px;">0
                 pts</span>
             </p>
 
@@ -1176,7 +1228,7 @@
                   dados</strong>
               </span>
               <span class="podio-pontos"
-                style="flex-shrink: 0; white-space: nowrap; background-color: rgba(255,255,255,0.4); padding: 2px 6px; border-radius: 4px;">0
+                style="flex-shrink: 0; white-space: nowrap; padding: 2px 6px; border-radius: 4px;">0
                 pts</span>
             </p>
 
@@ -1188,7 +1240,7 @@
                   dados</strong>
               </span>
               <span class="podio-pontos"
-                style="flex-shrink: 0; white-space: nowrap; background-color: rgba(255,255,255,0.4); padding: 2px 6px; border-radius: 4px;">0
+                style="flex-shrink: 0; white-space: nowrap; padding: 2px 6px; border-radius: 4px;">0
                 pts</span>
             </p>
 
@@ -1223,6 +1275,10 @@
           <span class="icon-busca">🔍</span>
           <input type="text" id="busca-placar-individual" placeholder="Buscar por colaborador..."
             style="border: none; outline: none; width: 100%; color: #333;">
+          <select id="filtro-painel-individual">
+            <option value="">Todos os Times</option>
+          </select>
+          <button class="btn-limpar-filtros-painel">Limpar</button>
         </div>
         <div class="table-wrapper scrollable-table" style="max-height: 420px; overflow-y: auto;">
           <table>
@@ -1243,9 +1299,14 @@
       </div>
     </div>
 
-    <div class="painel-atendimentos-box">
+    <div class="painel-atendimentos-box" style="background-color: var(--fundo-tabela); border-radius: 12px; overflow: hidden; margin-top: 24px;">
       <div class="atendimentos-header-blue">
         <span>📋</span> Atendimentos auditados
+      </div>
+      <div class="grupo-busca" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; margin: 12px;">
+        <span class="icon-busca">🔍</span>
+        <input type="text" id="busca-atendimentos-input" placeholder="Buscar atendimentos auditados..."
+          style="border: none; outline: none; width: 100%; color: #333;" onkeyup="aplicarFiltroAtendimentos()">
       </div>
       <div class="table-wrapper" style="max-height: 500px; overflow-y: auto;">
         <table>
@@ -1270,6 +1331,12 @@
           </tbody>
         </table>
       </div>
+      <div id="rodapeResumoFiltro" style="display: flex; justify-content: space-around; background-color: #f1f5f9; padding: 15px; font-size: 1.1em; font-weight: 600; border-top: 3px solid #cbd5e1;">
+        <span>Atendimentos Retidos: <strong id="totalRetidosFiltro" style="color: #002776;">0</strong></span>
+        <span>Valor Final Prêmio: <strong id="totalPremioFiltro" style="color: #002776;">R$ 0,00</strong></span>
+        <span>Total de Pontos: <strong id="totalPontosFiltro" style="color: #002776;">0</strong></span>
+      </div>
+    </div>
   </section>
 
   <section id="tab2">
@@ -1349,6 +1416,10 @@
         <button class="btn-limpar-filtros">Limpar</button>
       </div>
     </div>
+    
+    <div id="resumo-pontos-tab3" style="display: flex; justify-content: flex-end; margin-bottom: 15px; font-size: 1.1em; font-weight: bold; color: var(--azul);">
+        Total de Pontos (Filtro): <span id="total-pontos-filtro-tab3" style="margin-left: 8px; color: var(--verde);">0</span>
+    </div>
 
     <div class="tabela-pontos-box">
       <div class="table-wrapper">
@@ -1357,12 +1428,13 @@
             <tr class="header-tabela-verde">
               <th>Nome Colaborador</th>
               <th>Time</th>
+              <th class="text-center">Pontos Totais</th>
               <th class="text-center">Ações de Pontuação</th>
             </tr>
           </thead>
           <tbody>
             <tr class="row-placeholder">
-              <td colspan="3" class="text-center">Aguardando cadastro de colaboradores.</td>
+              <td colspan="4" class="text-center">Aguardando cadastro de colaboradores.</td>
             </tr>
           </tbody>
         </table>
@@ -1484,7 +1556,10 @@
         camposForm.forEach(id => {
           const el = document.getElementById(id);
           if (el) el.addEventListener('change', atualizarPontosFormPrincipal);
-          if (el && id === 'atend-premio') el.addEventListener('input', atualizarPontosFormPrincipal);
+          if (el && id === 'atend-premio') {
+            el.addEventListener('input', formatarInputMoeda);
+            el.addEventListener('input', atualizarPontosFormPrincipal);
+          }
         });
 
         // Listeners do Modal de Edição
@@ -1492,23 +1567,53 @@
         camposModal.forEach(id => {
           const el = document.getElementById(id);
           if (el) el.addEventListener('change', atualizarPontosModalEdicao);
-          if (el && id === 'edit-atend-premio') el.addEventListener('input', atualizarPontosModalEdicao);
+          if (el && id === 'edit-atend-premio') {
+            el.addEventListener('input', formatarInputMoeda);
+            el.addEventListener('input', atualizarPontosModalEdicao);
+          }
         });
+        
+        // Listeners da Máscara de CPF
+        const inputCpfNovo = document.getElementById('atend-cpf');
+        if (inputCpfNovo) inputCpfNovo.addEventListener('input', formatarInputCPF);
+        const inputCpfEdit = document.getElementById('edit-atend-cpf');
+        if (inputCpfEdit) inputCpfEdit.addEventListener('input', formatarInputCPF);
+      });
+
+      // Remove a classe de erro ao digitar/interagir com o campo
+      document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', function () { this.classList.remove('input-erro'); });
+        el.addEventListener('change', function () { this.classList.remove('input-erro'); });
       });
 
       // NOVO: Configura os cargos permitidos no sistema
       configurarCargosPermitidos();
 
+      // Preenche a data de hoje por padrão
+      preencherDataHoje();
+
       carregarDadosSistema();
 
       const formAtend = document.getElementById('form-atendimento');
       if (formAtend) {
-        formAtend.addEventListener('submit', function (e) { e.preventDefault(); salvarDadosAtendimento(); });
+        formAtend.addEventListener('submit', function (e) { e.preventDefault(); salvarDadosAtendimento(this.querySelector('.btn-salvar')); });
+        formAtend.addEventListener('reset', function () { setTimeout(preencherDataHoje, 10); limparErrosVisuais(); });
       }
 
       // Buscas
       const buscaPlacarInd = document.getElementById('busca-placar-individual');
-      if (buscaPlacarInd) buscaPlacarInd.addEventListener('input', filtrarPlacarIndividual);
+      if (buscaPlacarInd) buscaPlacarInd.addEventListener('input', filtrarPainel);
+
+      const filtroPainel = document.getElementById('filtro-painel-individual');
+      const btnPainel = document.querySelector('.btn-limpar-filtros-painel');
+      if (filtroPainel) filtroPainel.addEventListener('change', filtrarPainel);
+      if (btnPainel) {
+        btnPainel.addEventListener('click', () => {
+          if (buscaPlacarInd) buscaPlacarInd.value = '';
+          if (filtroPainel) filtroPainel.value = '';
+          filtrarPainel();
+        });
+      }
 
       const buscaColabTab3 = document.getElementById('busca-colaborador');
       const filtroTimeTab3 = document.getElementById('filtro-time');
@@ -1527,6 +1632,77 @@
         });
       }
     });
+
+    // =====================================
+    // PREENCHER DATA DE HOJE (ABA 2)
+    // =====================================
+    function preencherDataHoje() {
+      const hoje = new Date();
+      const elDia = document.getElementById('atend-dia');
+      const elMes = document.getElementById('atend-mes');
+      const elAno = document.getElementById('atend-ano');
+      
+      if (elDia) elDia.value = String(hoje.getDate()).padStart(2, '0');
+      if (elMes) elMes.value = String(hoje.getMonth() + 1).padStart(2, '0');
+      if (elAno) elAno.value = hoje.getFullYear();
+    }
+
+    // =====================================
+    // MÁSCARA DE MOEDA
+    // =====================================
+    function formatarInputMoeda(e) {
+      let valor = e.target.value.replace(/\D/g, '');
+      if (valor === '') {
+        e.target.value = '';
+        return;
+      }
+      valor = (parseInt(valor, 10) / 100).toFixed(2);
+      valor = valor.replace('.', ',');
+      valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+      e.target.value = 'R$ ' + valor;
+    }
+
+    // =====================================
+    // MÁSCARA DE CPF
+    // =====================================
+    function formatarInputCPF(e) {
+      let valor = e.target.value.replace(/\D/g, ''); // Remove tudo que não for dígito
+      if (valor.length > 11) valor = valor.substring(0, 11); // Limita a 11 números reais
+      valor = valor.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona o primeiro ponto
+      valor = valor.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona o segundo ponto
+      valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Adiciona o hífen
+      e.target.value = valor;
+    }
+
+    // =====================================
+    // VALIDAÇÃO MATEMÁTICA DE CPF
+    // =====================================
+    function validarCPF(cpf) {
+      cpf = cpf.replace(/[^\d]+/g, ''); // Remove formatação
+      if (cpf === '') return false;
+      
+      // Elimina CPFs inválidos conhecidos (sequências repetidas)
+      if (cpf.length !== 11 || 
+          /^(\d)\1{10}$/.test(cpf)) {
+        return false;
+      }
+      
+      // Valida 1º dígito verificador
+      let soma = 0;
+      for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
+      let resto = 11 - (soma % 11);
+      if (resto === 10 || resto === 11) resto = 0;
+      if (resto !== parseInt(cpf.charAt(9))) return false;
+      
+      // Valida 2º dígito verificador
+      soma = 0;
+      for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i)) * (11 - i);
+      resto = 11 - (soma % 11);
+      if (resto === 10 || resto === 11) resto = 0;
+      if (resto !== parseInt(cpf.charAt(10))) return false;
+      
+      return true;
+    }
 
     // =====================================
     // CONFIGURAÇÃO DE CARGOS
@@ -1548,11 +1724,45 @@
     // =====================================
     // FUNÇÕES DE MODAL E FEEDBACK
     // =====================================
+    function validarCamposObrigatorios(listaIds) {
+      let valido = true;
+      listaIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el || !el.value || el.value.trim() === '') {
+          if (el) el.classList.add('input-erro');
+          valido = false;
+        } else {
+          if (el) el.classList.remove('input-erro');
+        }
+      });
+      return valido;
+    }
+
+    function limparErrosVisuais() {
+      document.querySelectorAll('.input-erro').forEach(el => el.classList.remove('input-erro'));
+    }
+
+    function showLoading(buttonElement) {
+      if (buttonElement) {
+        buttonElement.disabled = true;
+        buttonElement.style.opacity = '0.7';
+      }
+      document.getElementById('modal-loading').style.display = 'flex';
+    }
+
+    function hideLoading(buttonElement) {
+      if (buttonElement) {
+        buttonElement.disabled = false;
+        buttonElement.style.opacity = '1';
+      }
+      document.getElementById('modal-loading').style.display = 'none';
+    }
+
     function abrirModalCadastro() { document.getElementById('modal-cadastro').style.display = 'flex'; }
-    function fecharModalCadastro() { document.getElementById('modal-cadastro').style.display = 'none'; }
+    function fecharModalCadastro() { document.getElementById('modal-cadastro').style.display = 'none'; limparErrosVisuais(); }
 
     function abrirModalEditarAtendimento() { document.getElementById('modal-editar-atendimento').style.display = 'flex'; }
-    function fecharModalEditarAtendimento() { document.getElementById('modal-editar-atendimento').style.display = 'none'; }
+    function fecharModalEditarAtendimento() { document.getElementById('modal-editar-atendimento').style.display = 'none'; limparErrosVisuais(); }
 
     function abrirModalPontosManual(nome, equipe) {
       document.getElementById('manual-pontos-nome').value = nome;
@@ -1562,7 +1772,7 @@
       document.getElementById('manual-pontos-motivo').value = '';
       document.getElementById('modal-pontos-manual').style.display = 'flex';
     }
-    function fecharModalPontosManual() { document.getElementById('modal-pontos-manual').style.display = 'none'; }
+    function fecharModalPontosManual() { document.getElementById('modal-pontos-manual').style.display = 'none'; limparErrosVisuais(); }
 
     function alternarFormularioCadastro() {
       const tipo = document.getElementById('tipo-cadastro-select').value;
@@ -1636,6 +1846,7 @@
       const selectColabEquipe = document.getElementById('cad-colab-equipe');
       const selectFiltroTime = document.getElementById('filtro-time');
       const selectAtendNome = document.getElementById('atend-nome');
+      const selectFiltroPainel = document.getElementById('filtro-painel-individual');
 
       let optionsHtml = '<option value="" disabled selected>Selecione a equipe...</option>';
       let filterOptionsHtml = '<option value="">Todos os Times</option>';
@@ -1651,13 +1862,14 @@
 
       if (selectColabEquipe) selectColabEquipe.innerHTML = optionsHtml;
       if (selectFiltroTime) selectFiltroTime.innerHTML = filterOptionsHtml;
+      if (selectFiltroPainel) selectFiltroPainel.innerHTML = optionsHtml;
       if (selectAtendNome) {
         selectAtendNome.innerHTML = atendNomeHtml;
         selectAtendNome.onchange = function () {
           const colabEncontrado = listaColaboradores.find(col => col.nome === this.value);
           const selectCargo = document.getElementById('atend-cargo');
           if (colabEncontrado && selectCargo) {
-            // Validação de segurança para normalizar termos antigos ("Técnico"/"Atendente") para os novos padrões
+            // Validação de segurança para normalizar termos antigos ("Emissão VI"/"Central Vida") para os novos padrões
             let cargoDefinido = colabEncontrado.cargo;
             if (cargoDefinido === "Emissão VI") cargoDefinido = "Emissão VI";
             if (cargoDefinido === "Central Vida") cargoDefinido = "Central Vida";
@@ -1666,6 +1878,7 @@
           }
         };
       }
+
 
       // ABA 4 - Tabela Equipes
       const tbodyEq = document.querySelector('#tab4 .painel-tabela-box:first-of-type table tbody');
@@ -1690,7 +1903,7 @@
         tbodyColab.innerHTML = listaColaboradores.length === 0
           ? '<tr><td colspan="4" class="text-center">Aguardando colaboradores.</td></tr>'
           : listaColaboradores.map((c, index) => {
-            let cargoExibicao = c.cargo === "Emissão IV" ? "Emissão IV" : (c.cargo === "Central Vida" ? "Central Vida" : c.cargo);
+            let cargoExibicao = c.cargo === "Emissão VI" ? "Emissão VI" : (c.cargo === "Central Vida" ? "Central Vida" : c.cargo);
             return `
                 <tr class="item-tab4-colab" data-nome="${c.nome.toLowerCase()}">
                     <td>${c.nome}</td>
@@ -1732,7 +1945,13 @@
       if (tbodyIndividualPlacar) {
         tbodyIndividualPlacar.innerHTML = listaRankingIndiv.length === 0
           ? '<tr><td colspan="3" class="text-center">Nenhum colaborador cadastrado.</td></tr>'
-          : listaRankingIndiv.map(c => `<tr class="item-placar-individual" data-nome="${c.nome.toLowerCase()}"><td>${c.nome}</td><td>${c.equipe}</td><td class="text-right" style="font-weight:bold;">${c.pontos}</td></tr>`).join('');
+          : listaRankingIndiv.map(c => `<tr class="item-placar-individual"
+                    data-nome="${c.nome.toLowerCase()}"
+                    data-equipe="${c.equipe.toLowerCase()}">
+                    <td>${c.nome}</td>
+                    <td>${c.equipe}</td>
+                    <td class="text-right" style="font-weight:bold;">${c.pontos}</td>
+                </tr>`).join('');
       }
 
       // TABELA PRINCIPAL ABA 1 - Ajustada com 10 Colunas (Pontos na 9ª e Botões perfeitamente abaixo de Ações)
@@ -1742,7 +1961,7 @@
           tbodyAtend.innerHTML = '<tr><td colspan="10" class="text-center">Nenhum atendimento registrado no banco de dados.</td></tr>';
         } else {
           tbodyAtend.innerHTML = listaAtendimentos.map(a => {
-            let cargoExibicao = a.cargo === "Emissão IV" ? "Emissão IV" : (a.cargo === "Central Vida" ? "Central Vida" : a.cargo);
+            let cargoExibicao = a.cargo === "Emissão VI" ? "Emissão VI" : (a.cargo === "Central Vida" ? "Central Vida" : a.cargo);
             return `
                 <tr>
                     <td>${a.nome}</td>
@@ -1769,21 +1988,28 @@
       const tbodyPontosReg = document.querySelector('#tab3 .tabela-pontos-box table tbody');
       if (tbodyPontosReg) {
         if (listaColaboradores.length === 0) {
-          tbodyPontosReg.innerHTML = '<tr><td colspan="3" class="text-center">Aguardando cadastro de colaboradores.</td></tr>';
+          tbodyPontosReg.innerHTML = '<tr><td colspan="4" class="text-center">Aguardando cadastro de colaboradores.</td></tr>';
         } else {
-          tbodyPontosReg.innerHTML = listaColaboradores.map(c => `
-                <tr class="item-colaborador-ponto" data-nome="${c.nome.toLowerCase()}" data-equipe="${c.equipe.toLowerCase()}">
+          tbodyPontosReg.innerHTML = listaColaboradores.map(c => {
+                const colabPoints = listaRankingIndiv.find(r => r.nome === c.nome)?.pontos || 0;
+                return `
+                <tr class="item-colaborador-ponto" data-nome="${c.nome.toLowerCase()}" data-equipe="${c.equipe.toLowerCase()}" data-pontos="${colabPoints}">
                     <td><strong>${c.nome}</strong></td>
                     <td><span class="tag-time">${c.equipe}</span></td>
+                    <td class="text-center" style="font-weight:bold; color:var(--azul);">${colabPoints}</td>
                     <td class="text-center">
                         <div style="display:flex; gap:8px; justify-content:center;">
                             <button class="btn-azul-brasil" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="abrirModalPontosManual('${c.nome}', '${c.equipe}')">Atribuir Ponto</button>
                         </div>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
       }
+      
+      // Recalcula rodapé após renderização inicial
+      aplicarFiltroAtendimentos();
+      filtrarTabelaPontos();
     }
 
     // =====================================
@@ -1834,8 +2060,13 @@
       atualizarPontosModalEdicao();
       abrirModalEditarAtendimento();
     }
+    
+    function salvarEdicaoAtendimento(btn) {
+      const camposObrigatorios = ['edit-atend-nome', 'edit-atend-cargo', 'edit-atend-cpf', 'edit-atend-dia', 'edit-atend-mes', 'edit-atend-ano', 'edit-atend-apolice', 'edit-atend-premio', 'edit-atend-tipo', 'edit-atend-retido'];
+      if (!validarCamposObrigatorios(camposObrigatorios)) {
+        return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios destacados.');
+      }
 
-    function salvarEdicaoAtendimento() {
       const linhaParaEditar = document.getElementById('edit-atend-linha').value;
       const nome = document.getElementById('edit-atend-nome').value;
       const cargo = document.getElementById('edit-atend-cargo').value;
@@ -1848,56 +2079,92 @@
       const tipoContato = document.getElementById('edit-atend-tipo').value;
       const retido = document.getElementById('edit-atend-retido').value;
 
-      if (!cpf || !dia || !mes || !ano || !apolice || !premio) {
-        return abrirFeedback('modal-erro', 'Por favor, preencha todos os campos.');
+      if (!validarCPF(cpf)) {
+        document.getElementById('edit-atend-cpf').classList.add('input-erro');
+        return abrirFeedback('modal-erro', 'CPF inválido. Por favor, verifique o número digitado.');
+      }
+
+
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0); // Zera o tempo para comparar apenas a data
+      const dataInformada = new Date(ano, mes - 1, dia);
+
+      if (dataInformada > hoje) {
+        document.getElementById('edit-atend-dia').classList.add('input-erro');
+        document.getElementById('edit-atend-mes').classList.add('input-erro');
+        document.getElementById('edit-atend-ano').classList.add('input-erro');
+        return abrirFeedback('modal-erro', 'A data do atendimento não pode ser no futuro.');
       }
 
       const dataContato = `${dia}/${mes}/${ano}`;
       const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido };
 
+      showLoading(btn);
       google.script.run
         .withSuccessHandler(() => {
+          hideLoading(btn);
           fecharModalEditarAtendimento();
           abrirFeedback('modal-sucesso', 'Atendimento editado com sucesso!');
           carregarDadosSistema();
         })
-        .withFailureHandler((e) => abrirFeedback('modal-erro', 'Erro: ' + e))
+        .withFailureHandler((e) => {
+          hideLoading(btn);
+          abrirFeedback('modal-erro', 'Erro: ' + e)
+        })
         .salvarAtendimento(payload, parseInt(linhaParaEditar));
     }
 
-    function processarCadastro() {
+    function processarCadastro(btn) {
       const tipo = document.getElementById('tipo-cadastro-select').value;
+      showLoading(btn);
+
       if (tipo === 'equipe') {
+        if (!validarCamposObrigatorios(['cad-equipe-nome'])) {
+          hideLoading(btn);
+          return abrirFeedback('modal-erro', 'Digite o nome da equipe.');
+        }
         const nomeEquipe = document.getElementById('cad-equipe-nome').value.trim();
-        if (!nomeEquipe) return abrirFeedback('modal-erro', 'Digite o nome da equipe.');
         google.script.run
           .withSuccessHandler(() => {
+            hideLoading(btn);
             fecharModalCadastro();
             abrirFeedback('modal-sucesso', 'Equipe cadastrada com sucesso!');
             document.getElementById('cad-equipe-nome').value = '';
             carregarDadosSistema();
-          }).incluirEquipe(nomeEquipe);
+          })
+          .withFailureHandler((err) => {
+            hideLoading(btn);
+            abrirFeedback('modal-erro', 'Erro ao cadastrar equipe: ' + err);
+          })
+          .incluirEquipe(nomeEquipe);
       } else {
+        if (!validarCamposObrigatorios(['cad-colab-nome', 'cad-colab-cargo', 'cad-colab-equipe'])) {
+          hideLoading(btn);
+          return abrirFeedback('modal-erro', 'Preencha todos os dados do colaborador destacados.');
+        }
         const nome = document.getElementById('cad-colab-nome').value.trim();
         const cargo = document.getElementById('cad-colab-cargo').value;
         const equipe = document.getElementById('cad-colab-equipe').value;
 
-        if (!nome || !cargo || !equipe || equipe === 'Selecione a equipe...') {
-          return abrirFeedback('modal-erro', 'Preencha todos os dados do colaborador.');
-        }
-
         // NOVO: Validação de segurança para o cargo no cadastro
-        if (cargo !== 'Central Vida' && cargo !== 'Emissão IV') {
-          return abrirFeedback('modal-erro', 'Cargo inválido. Selecione apenas Central Vida ou Emissão IV.');
+        if (cargo !== 'Central Vida' && cargo !== 'Emissão VI') {
+          hideLoading(btn);
+          return abrirFeedback('modal-erro', 'Cargo inválido. Selecione apenas Central Vida ou Emissão VI.');
         }
 
         google.script.run
           .withSuccessHandler(() => {
+            hideLoading(btn);
             fecharModalCadastro();
             abrirFeedback('modal-sucesso', 'Colaborador cadastrado com sucesso!');
             document.getElementById('cad-colab-nome').value = '';
             carregarDadosSistema();
-          }).incluirColaborador(nome, cargo, equipe);
+          })
+          .withFailureHandler((err) => {
+            hideLoading(btn);
+            abrirFeedback('modal-erro', 'Erro ao cadastrar colaborador: ' + err);
+          })
+          .incluirColaborador(nome, cargo, equipe);
       }
     }
 
@@ -1917,7 +2184,12 @@
       });
     }
 
-    function salvarDadosAtendimento() {
+    function salvarDadosAtendimento(btn) {
+      const camposObrigatorios = ['atend-nome', 'atend-cargo', 'atend-cpf', 'atend-dia', 'atend-mes', 'atend-ano', 'atend-apolice', 'atend-premio', 'atend-tipo', 'atend-retido'];
+      if (!validarCamposObrigatorios(camposObrigatorios)) {
+        return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios destacados.');
+      }
+
       const nome = document.getElementById('atend-nome').value;
       const cargo = document.getElementById('atend-cargo').value;
       const cpf = document.getElementById('atend-cpf').value;
@@ -1929,16 +2201,30 @@
       const tipoContato = document.getElementById('atend-tipo').value;
       const retido = document.getElementById('atend-retido').value;
 
-      // REMOVIDO a validação manual do antigo campo de pontos pAtnd
-      if (!nome || !cargo || !cpf || !dia || !mes || !ano || !apolice || !premio || !tipoContato || !retido) {
-        return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios.');
+      if (!validarCPF(cpf)) {
+        document.getElementById('atend-cpf').classList.add('input-erro');
+        return abrirFeedback('modal-erro', 'CPF inválido. Por favor, verifique o número digitado.');
+      }
+
+
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0); // Zera o tempo para comparar apenas a data
+      const dataInformada = new Date(ano, mes - 1, dia);
+
+      if (dataInformada > hoje) {
+        document.getElementById('atend-dia').classList.add('input-erro');
+        document.getElementById('atend-mes').classList.add('input-erro');
+        document.getElementById('atend-ano').classList.add('input-erro');
+        return abrirFeedback('modal-erro', 'A data do atendimento não pode ser no futuro.');
       }
 
       const dataContato = `${dia}/${mes}/${ano}`;
       const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido };
 
+      showLoading(btn);
       google.script.run
         .withSuccessHandler(() => {
+          hideLoading(btn);
           abrirFeedback('modal-sucesso', 'Novo Atendimento salvo com sucesso!');
           document.getElementById('form-atendimento').reset();
           if (document.getElementById('pontosAtendimento')) {
@@ -1946,29 +2232,39 @@
           }
           carregarDadosSistema();
         })
+        .withFailureHandler((err) => {
+          hideLoading(btn);
+          abrirFeedback('modal-erro', 'Erro ao salvar: ' + err);
+        })
         .salvarAtendimento(payload, null);
     }
 
-    function atribuirPontoSheets(nome, equipe, pontos, motivo) {
+    function atribuirPontoSheets(nome, equipe, pontos, motivo, btn) {
+      showLoading(btn);
       google.script.run
         .withSuccessHandler(() => {
+          hideLoading(btn);
+          fecharModalPontosManual();
           abrirFeedback('modal-sucesso', `Pontuação (${pontos > 0 ? '+' : ''}${pontos} pts) atribuída a ${nome}!`);
           carregarDadosSistema();
-        }).lancarPontuacao(nome, equipe, pontos, motivo);
+        })
+        .withFailureHandler((err) => {
+          hideLoading(btn);
+          abrirFeedback('modal-erro', 'Erro ao lançar pontos: ' + err);
+        })
+        .lancarPontuacao(nome, equipe, pontos, motivo);
     }
 
-    function lancarPontosManuais() {
+    function lancarPontosManuais(btn) {
+      if (!validarCamposObrigatorios(['manual-pontos-valor', 'manual-pontos-motivo'])) {
+        return abrirFeedback('modal-erro', 'Informe a quantidade e o motivo destacados.');
+      }
       const nome = document.getElementById('manual-pontos-nome').value;
       const equipe = document.getElementById('manual-pontos-equipe').value;
       const pontos = document.getElementById('manual-pontos-valor').value;
       const motivo = document.getElementById('manual-pontos-motivo').value;
 
-      if (!pontos || !motivo) {
-        return abrirFeedback('modal-erro', 'Informe a quantidade e o motivo.');
-      }
-
-      fecharModalPontosManual();
-      atribuirPontoSheets(nome, equipe, parseInt(pontos), motivo);
+      atribuirPontoSheets(nome, equipe, parseInt(pontos), motivo, btn);
     }
 
     // =======================================================
@@ -1983,24 +2279,28 @@
     }
 
     function fecharModalEditarEquipe() {
-      document.getElementById('modal-editar-equipe').style.display = 'none';
+      document.getElementById('modal-editar-equipe').style.display = 'none'; limparErrosVisuais();
     }
 
-    function salvarEdicaoEquipe() {
+    function salvarEdicaoEquipe(btn) {
+      if (!validarCamposObrigatorios(['edit-equipe-nome'])) {
+        return abrirFeedback('modal-erro', 'O nome da equipe não pode ficar vazio!');
+      }
       const index = document.getElementById('edit-equipe-index').value;
       const novoNome = document.getElementById('edit-equipe-nome').value.trim();
 
-      if (!novoNome) return abrirFeedback('modal-erro', 'O nome da equipe não pode ficar vazio!');
-
       const nomeAntigo = cacheDadosApp.equipes[index];
 
+      showLoading(btn);
       google.script.run
         .withSuccessHandler(function (response) {
+          hideLoading(btn);
           fecharModalEditarEquipe();
           abrirFeedback('modal-sucesso', response.mensagem || 'Equipe Editada com Sucesso');
           carregarDadosSistema();
         })
         .withFailureHandler(function (err) {
+          hideLoading(btn);
           abrirFeedback('modal-erro', "Erro ao salvar no Google Sheets: " + err);
         })
         .atualizarEquipeNoSheets(nomeAntigo, novoNome);
@@ -2036,31 +2336,35 @@
     }
 
     function fecharModalEditarColaborador() {
-      document.getElementById('modal-editar-colaborador').style.display = 'none';
+      document.getElementById('modal-editar-colaborador').style.display = 'none'; limparErrosVisuais();
     }
 
-    function salvarEdicaoColaborador() {
+    function salvarEdicaoColaborador(btn) {
+      if (!validarCamposObrigatorios(['edit-colab-nome', 'edit-colab-cargo', 'edit-colab-equipe'])) {
+        return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios destacados!');
+      }
       const index = document.getElementById('edit-colab-index').value;
       const nomeNovo = document.getElementById('edit-colab-nome').value.trim();
       const cargoNovo = document.getElementById('edit-colab-cargo').value;
       const equipeNova = document.getElementById('edit-colab-equipe').value;
 
-      if (!nomeNovo) return abrirFeedback('modal-erro', 'O nome do colaborador é obrigatório!');
-
       // NOVO: Validação de segurança para o cargo na edição
-      if (cargoNovo !== 'Central Vida' && cargoNovo !== 'Emissão IV') {
-        return abrirFeedback('modal-erro', 'Cargo inválido. Selecione apenas Central Vida ou Emissão IV.');
+      if (cargoNovo !== 'Central Vida' && cargoNovo !== 'Emissão VI') {
+        return abrirFeedback('modal-erro', 'Cargo inválido. Selecione apenas Central Vida ou Emissão VI.');
       }
 
       const nomeAntigo = cacheDadosApp.colaboradores[index].nome;
 
+      showLoading(btn);
       google.script.run
         .withSuccessHandler(function (response) {
+          hideLoading(btn);
           fecharModalEditarColaborador();
           abrirFeedback('modal-sucesso', response.mensagem || 'Colaborador Editado!');
           carregarDadosSistema();
         })
         .withFailureHandler(function (err) {
+          hideLoading(btn);
           abrirFeedback('modal-erro', "Erro ao salvar no Google Sheets: " + err);
         })
         .atualizarColaboradorNoSheets(nomeAntigo, nomeNovo, cargoNovo, equipeNova);
@@ -2069,16 +2373,6 @@
     // =======================================================
     // FILTROS
     // =======================================================
-    function filtrarPlacarIndividual() {
-      const elBusca = document.getElementById('busca-placar-individual');
-      const busca = elBusca ? elBusca.value.toLowerCase() : "";
-      const rows = document.querySelectorAll('.item-placar-individual');
-      rows.forEach(row => {
-        const nome = row.getAttribute('data-nome') || "";
-        row.style.display = nome.includes(busca) ? '' : 'none';
-      });
-    }
-
     function filtrarTabelaPontos() {
       const elBusca = document.getElementById('busca-colaborador');
       const elTime = document.getElementById('filtro-time');
@@ -2086,12 +2380,54 @@
       const timeFiltro = elTime ? elTime.value.toLowerCase() : "";
       const rows = document.querySelectorAll('.item-colaborador-ponto');
 
+      let somaPontos = 0;
+
       rows.forEach(row => {
         const nome = row.getAttribute('data-nome') || "";
         const equipe = row.getAttribute('data-equipe') || "";
+        const pontos = parseFloat(row.getAttribute('data-pontos')) || 0;
         const matchBusca = nome.includes(busca);
         const matchTime = timeFiltro === '' || equipe === timeFiltro;
-        row.style.display = (matchBusca && matchTime) ? '' : 'none';
+        
+        if (matchBusca && matchTime) {
+          row.style.display = '';
+          somaPontos += pontos;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+      
+      const elTotal = document.getElementById('total-pontos-filtro-tab3');
+      if (elTotal) elTotal.textContent = somaPontos;
+    }
+
+    function filtrarPainel() {
+      const buscaPainel = document.getElementById('busca-placar-individual');
+      const elPainel = document.getElementById('filtro-painel-individual');
+
+      // Obtém os valores e garante que não sejam nulos
+      const bPainel = buscaPainel ? buscaPainel.value.toLowerCase().trim() : "";
+      const indPainel = elPainel ? elPainel.value.toLowerCase().trim() : "";
+
+      const rows = document.querySelectorAll('.item-placar-individual');
+
+      rows.forEach(row => {
+        // Captura os dados de forma segura
+        const nome = (row.getAttribute('data-nome') || "").toLowerCase();
+        const equipe = (row.getAttribute('data-equipe') || "").toLowerCase().trim();
+
+        // Lógica de filtro:
+        // 1. O nome precisa conter o termo da busca
+        // 2. A equipe precisa ser igual ao filtro ou o filtro estar vazio
+        const matchBusca = nome.includes(bPainel);
+        const matchTime = (indPainel === '' || equipe === indPainel);
+
+        // Define o display: se ambos forem verdadeiros, mostra (vazio), senão esconde ('none')
+        if (matchBusca && matchTime) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
       });
     }
 
@@ -2149,7 +2485,7 @@
 
       // 3. Segurança para manter compatibilidade se esses elementos ainda existirem em outro lugar
       const tbody = document.getElementById('tbody-filtro-aba1');
-      if (tbody) tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 15px; color: #777;">Escolha o período e clique em Buscar.</td></tr>';
+      if (tbody) tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 15px; color: #777;"></td></tr>';
 
       const containerMetricas = document.getElementById('metricas-filtro-container');
       if (containerMetricas) containerMetricas.style.display = 'none';
@@ -2252,6 +2588,48 @@
       // Insere o HTML montado na lista
       podioLista.innerHTML = htmlPodio;
     }
+
+    // ==========================================
+    // FILTRO DINÂMICO E CÁLCULO DE RODAPÉ (ABA 1)
+    // ==========================================
+    function aplicarFiltroAtendimentos() {
+      const inputBusca = document.getElementById('busca-atendimentos-input');
+      const termo = inputBusca ? inputBusca.value.toLowerCase() : "";
+      const tbody = document.querySelector('#tab1 .painel-atendimentos-box table tbody');
+      if (!tbody) return;
+      const linhas = tbody.querySelectorAll('tr');
+
+      let somaRetidos = 0;
+      let somaPremio = 0;
+      let somaPontos = 0;
+
+      linhas.forEach(linha => {
+        if (linha.classList.contains('row-placeholder') || linha.innerText.includes('Nenhum atendimento')) {
+          linha.style.display = termo === '' ? '' : 'none';
+          return;
+        }
+        const textoLinha = linha.textContent.toLowerCase();
+        if (textoLinha.includes(termo)) {
+          linha.style.display = '';
+          const colunas = linha.querySelectorAll('td');
+          if (colunas.length >= 9) {
+            const premioStr = colunas[5].textContent.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+            somaPremio += parseFloat(premioStr) || 0;
+            const retidoStr = colunas[7].textContent.trim().toLowerCase();
+            if (retidoStr === 'sim') somaRetidos += 1;
+            const pontosStr = colunas[8].textContent.trim();
+            somaPontos += parseFloat(pontosStr) || 0;
+          }
+        } else {
+          linha.style.display = 'none';
+        }
+      });
+      const elRetidos = document.getElementById('totalRetidosFiltro'); const elPremio = document.getElementById('totalPremioFiltro'); const elPontos = document.getElementById('totalPontosFiltro');
+      if (elRetidos) elRetidos.textContent = somaRetidos;
+      if (elPremio) elPremio.textContent = somaPremio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      if (elPontos) elPontos.textContent = somaPontos;
+    }
+
     // ==========================================
     // CONFIGURAÇÃO DOS LISTENERS DE CÁLCULO AUTOMÁTICO
     // ==========================================
@@ -2276,7 +2654,7 @@
       if (premioStr) {
         let limpo = premioStr.toString().replace("R$", "").replace(/\./g, "").replace(",", ".").trim();
         let valorPremio = parseFloat(limpo) || 0;
-        if (valorPremio > 3000) {
+        if (valorPremio > 3000 && retido === "Sim" && tipoContato === "Potencial") {
           totalPontos += 10;
         }
       }
