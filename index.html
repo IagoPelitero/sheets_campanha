@@ -125,6 +125,7 @@
 
     .painel-tabela-box {
       flex: 1;
+      min-width: 0;
       margin-top: 12px;
       border-radius: 12px;
       overflow: hidden;
@@ -155,6 +156,7 @@
       border-top: none;
       background-color: var(--fundo-tabela);
       flex-grow: 1;
+      overflow-x: auto;
     }
 
     table {
@@ -535,9 +537,11 @@
       font-weight: bold;
       transition: opacity 0.2s;
     }
+
     .btn-limpar-filtros-painel:hover {
       opacity: 0.85;
     }
+
     /* =======================================================
        7. CLASSES DOS BOTÕES CUSTOMIZADOS (ABA 3 E CONFIGS)
        ======================================================= */
@@ -844,8 +848,13 @@
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
     }
 
     /* =======================================================
@@ -856,7 +865,6 @@
       background-color: #ffeeee !important;
       transition: background-color 0.2s, outline 0.2s;
     }
-
   </style>
 </head>
 
@@ -956,12 +964,12 @@
               <option value="Não">Não</option>
             </select>
           </div>
-        <div class="form-group" style="margin-bottom: 12px;">
-          <label>Pontuação do Atendimento (Calculado)</label>
-          <input type="text" id="edit-atend-pontos"
-            style="color:#555; width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background-color: #e9ecef; cursor: not-allowed; font-weight: bold;"
-            readonly>
-        </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>Pontuação do Atendimento (Calculado)</label>
+            <input type="text" id="edit-atend-pontos"
+              style="color:#555; width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background-color: #e9ecef; cursor: not-allowed; font-weight: bold;"
+              readonly>
+          </div>
         </form>
       </div>
       <div class="modal-footer form-actions">
@@ -1159,7 +1167,8 @@
     </div>
   </div>
 
-  <div id="modal-loading" class="modal-overlay" style="display:none; background-color: rgba(0, 0, 0, 0.5); z-index: 10001;">
+  <div id="modal-loading" class="modal-overlay"
+    style="display:none; background-color: rgba(0, 0, 0, 0.5); z-index: 10001;">
     <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
       <div class="spinner-grande"></div>
       <p style="color: white; font-size: 1.2rem; font-weight: bold;">Salvando...</p>
@@ -1299,40 +1308,64 @@
       </div>
     </div>
 
-    <div class="painel-atendimentos-box" style="background-color: var(--fundo-tabela); border-radius: 12px; overflow: hidden; margin-top: 24px;">
+    <div class="painel-atendimentos-box"
+      style="background-color: var(--fundo-tabela); border-radius: 12px; overflow: hidden; margin-top: 24px;">
       <div class="atendimentos-header-blue">
         <span>📋</span> Atendimentos auditados
       </div>
-      <div class="grupo-busca" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; margin: 12px;">
+      <div class="grupo-busca"
+        style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; margin: 12px; flex-wrap: wrap;">
         <span class="icon-busca">🔍</span>
         <input type="text" id="busca-atendimentos-input" placeholder="Buscar atendimentos auditados..."
-          style="border: none; outline: none; width: 100%; color: #333;" onkeyup="aplicarFiltroAtendimentos()">
+          style="border: none; outline: none; flex: 1; min-width: 200px; color: #333;"
+          onkeyup="aplicarFiltroAtendimentos()">
+        <select id="filtro-equipe-atendimentos"
+          style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; outline: none; font-size: 0.95rem; color: #333; cursor: pointer;"
+          onchange="aplicarFiltroAtendimentos()">
+          <option value="">Todas as Equipes</option>
+        </select>
+        <select id="filtro-retido-atendimentos"
+          style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; outline: none; font-size: 0.95rem; color: #333; cursor: pointer;"
+          onchange="aplicarFiltroAtendimentos()">
+          <option value="">Status de Retenção</option>
+          <option value="sim">Retidos</option>
+          <option value="não">Não Retidos</option>
+        </select>
+        <button class="btn-limpar-filtros-painel" onclick="limparFiltrosAtendimentos()">Limpar</button>
       </div>
-      <div class="table-wrapper" style="max-height: 500px; overflow-y: auto;">
-        <table>
+      <div class="table-wrapper" style="max-height: 500px; overflow-y: auto; overflow-x: auto;">
+        <table style="min-width: 1100px;">
           <thead style="position: sticky; top: 0; background: var(--fundo-tabela); z-index: 1;">
             <tr>
               <th>Nome Colaborador</th>
               <th>Cargo</th>
+              <th>Equipe</th>
               <th>CPF do segurado</th>
               <th>Data do contato</th>
               <th>Nº da apólice</th>
               <th>R$ do prêmio</th>
               <th>Tipo de contato</th>
               <th>Foi retido?</th>
+              <!-- FUTURA MELHORIA: Colunas Analista e Transferência
+              <th>Nome do Analista</th>
+              <th>Transferência</th>
+              -->
               <th class="text-center" style="background-color: #eaf4ff;">Pontos</th>
               <th class="text-center">Ações</th>
             </tr>
           </thead>
           <tbody>
             <tr class="row-placeholder">
-              <td colspan="10" class="text-center">Nenhum atendimento foi auditado.</td>
+              <td colspan="11" class="text-center">Nenhum atendimento foi auditado.</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div id="rodapeResumoFiltro" style="display: flex; justify-content: space-around; background-color: #f1f5f9; padding: 15px; font-size: 1.1em; font-weight: 600; border-top: 3px solid #cbd5e1;">
-        <span>Atendimentos Retidos: <strong id="totalRetidosFiltro" style="color: #002776;">0</strong></span>
+      <div id="rodapeResumoFiltro"
+        style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 10px; background-color: #f1f5f9; padding: 15px; font-size: 1.1em; font-weight: 600; border-top: 3px solid #cbd5e1;">
+        <span>Total Atendimentos: <strong id="totalAtendimentosFiltro" style="color: #002776;">0</strong></span>
+        <span>Atend. Retidos: <strong id="totalRetidosFiltro" style="color: #002776;">0</strong></span>
+        <span>Não Retidos: <strong id="totalNaoRetidosFiltro" style="color: #002776;">0</strong></span>
         <span>Valor Final Prêmio: <strong id="totalPremioFiltro" style="color: #002776;">R$ 0,00</strong></span>
         <span>Total de Pontos: <strong id="totalPontosFiltro" style="color: #002776;">0</strong></span>
       </div>
@@ -1393,6 +1426,30 @@
               <option value="Não">Não</option>
             </select>
           </div>
+          <div class="form-group">
+            <label>Pontuação do Atendimento (Calculado)</label>
+            <input type="text" id="pontosAtendimento"
+              style="color:#555; width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background-color: #e9ecef; cursor: not-allowed; font-weight: bold;"
+              readonly value="0">
+          </div>
+          <!-- FUTURA MELHORIA: Inputs de Analista e Transferência (Descomentar futuramente)
+          <div class="form-group">
+            <label>Nome do Analista</label>
+            <select id="atend-analista" required>
+              <option value="" disabled selected>Selecione o analista</option>
+              <option value="João Silva">João Silva</option>
+              <option value="Maria Souza">Maria Souza</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Transferência</label>
+            <select id="atend-transferencia" required>
+              <option value="" disabled selected>Selecione o status</option>
+              <option value="Devida">Devida</option>
+              <option value="Indevida">Indevida</option>
+            </select>
+          </div>
+          -->
         </div>
         <div class="form-actions">
           <button type="submit" class="btn-salvar">Salvar Novo Atendimento</button>
@@ -1416,9 +1473,11 @@
         <button class="btn-limpar-filtros">Limpar</button>
       </div>
     </div>
-    
-    <div id="resumo-pontos-tab3" style="display: flex; justify-content: flex-end; margin-bottom: 15px; font-size: 1.1em; font-weight: bold; color: var(--azul);">
-        Total de Pontos (Filtro): <span id="total-pontos-filtro-tab3" style="margin-left: 8px; color: var(--verde);">0</span>
+
+    <div id="resumo-pontos-tab3"
+      style="display: flex; justify-content: flex-end; margin-bottom: 15px; font-size: 1.1em; font-weight: bold; color: var(--azul);">
+      Total de Pontos (Filtro): <span id="total-pontos-filtro-tab3"
+        style="margin-left: 8px; color: var(--verde);">0</span>
     </div>
 
     <div class="tabela-pontos-box">
@@ -1477,8 +1536,8 @@
     <div class="tabelas-meio-container" style="margin-top: 24px;">
       <div class="painel-tabela-box">
         <h3 style="background-color: var(--azul);">Equipes cadastradas</h3>
-        <div class="table-wrapper">
-          <table>
+        <div class="table-wrapper" style="max-height: 420px; overflow-y: auto; overflow-x: auto;">
+          <table style="min-width: 400px;">
             <thead>
               <tr>
                 <th>Nome do Time</th>
@@ -1502,8 +1561,8 @@
           <input type="text" id="busca-tab4-colab" placeholder="Buscar por colaborador..."
             style="border: none; outline: none; width: 100%; color: #333;">
         </div>
-        <div class="table-wrapper scrollable-table" style="max-height: 420px; overflow-y: auto;">
-          <table>
+        <div class="table-wrapper scrollable-table" style="max-height: 420px; overflow-y: auto; overflow-x: auto;">
+          <table style="min-width: 500px;">
             <thead style="position: sticky; top: 0; background: var(--fundo-tabela); z-index: 1;">
               <tr>
                 <th>Nome</th>
@@ -1534,6 +1593,7 @@
       rankingTimes: [],
       rankingIndividual: []
     };
+    let isSubmitting = false; // Flag global para travar duplo clique
 
     document.addEventListener('DOMContentLoaded', () => {
       const links = document.querySelectorAll('#sidebar nav a');
@@ -1557,6 +1617,7 @@
           const el = document.getElementById(id);
           if (el) el.addEventListener('change', atualizarPontosFormPrincipal);
           if (el && id === 'atend-premio') {
+            el.addEventListener('keydown', bloquearCaracteresNaoNumericos);
             el.addEventListener('input', formatarInputMoeda);
             el.addEventListener('input', atualizarPontosFormPrincipal);
           }
@@ -1568,16 +1629,23 @@
           const el = document.getElementById(id);
           if (el) el.addEventListener('change', atualizarPontosModalEdicao);
           if (el && id === 'edit-atend-premio') {
+            el.addEventListener('keydown', bloquearCaracteresNaoNumericos);
             el.addEventListener('input', formatarInputMoeda);
             el.addEventListener('input', atualizarPontosModalEdicao);
           }
         });
-        
+
         // Listeners da Máscara de CPF
         const inputCpfNovo = document.getElementById('atend-cpf');
-        if (inputCpfNovo) inputCpfNovo.addEventListener('input', formatarInputCPF);
+        if (inputCpfNovo) {
+          inputCpfNovo.addEventListener('keydown', bloquearCaracteresNaoNumericos);
+          inputCpfNovo.addEventListener('input', formatarInputCPF);
+        }
         const inputCpfEdit = document.getElementById('edit-atend-cpf');
-        if (inputCpfEdit) inputCpfEdit.addEventListener('input', formatarInputCPF);
+        if (inputCpfEdit) {
+          inputCpfEdit.addEventListener('keydown', bloquearCaracteresNaoNumericos);
+          inputCpfEdit.addEventListener('input', formatarInputCPF);
+        }
       });
 
       // Remove a classe de erro ao digitar/interagir com o campo
@@ -1641,10 +1709,28 @@
       const elDia = document.getElementById('atend-dia');
       const elMes = document.getElementById('atend-mes');
       const elAno = document.getElementById('atend-ano');
-      
+
       if (elDia) elDia.value = String(hoje.getDate()).padStart(2, '0');
       if (elMes) elMes.value = String(hoje.getMonth() + 1).padStart(2, '0');
       if (elAno) elAno.value = hoje.getFullYear();
+    }
+
+    // =====================================
+    // BLINDAGEM TECLADO (APENAS NÚMEROS)
+    // =====================================
+    function bloquearCaracteresNaoNumericos(e) {
+      // Permite teclas de controle (Backspace, Tab, Setas, Delete, etc)
+      if (['Backspace', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End'].includes(e.key)) {
+        return;
+      }
+      // Permite atalhos de teclado (Ctrl+C, Ctrl+V, Ctrl+A, Ctrl+X)
+      if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) {
+        return;
+      }
+      // Bloqueia qualquer tecla que não seja um número de 0 a 9
+      if (!/^[0-9]$/.test(e.key)) {
+        e.preventDefault();
+      }
     }
 
     // =====================================
@@ -1680,27 +1766,27 @@
     function validarCPF(cpf) {
       cpf = cpf.replace(/[^\d]+/g, ''); // Remove formatação
       if (cpf === '') return false;
-      
+
       // Elimina CPFs inválidos conhecidos (sequências repetidas)
-      if (cpf.length !== 11 || 
-          /^(\d)\1{10}$/.test(cpf)) {
+      if (cpf.length !== 11 ||
+        /^(\d)\1{10}$/.test(cpf)) {
         return false;
       }
-      
+
       // Valida 1º dígito verificador
       let soma = 0;
       for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
       let resto = 11 - (soma % 11);
       if (resto === 10 || resto === 11) resto = 0;
       if (resto !== parseInt(cpf.charAt(9))) return false;
-      
+
       // Valida 2º dígito verificador
       soma = 0;
       for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i)) * (11 - i);
       resto = 11 - (soma % 11);
       if (resto === 10 || resto === 11) resto = 0;
       if (resto !== parseInt(cpf.charAt(10))) return false;
-      
+
       return true;
     }
 
@@ -1743,17 +1829,21 @@
     }
 
     function showLoading(buttonElement) {
+      isSubmitting = true;
       if (buttonElement) {
         buttonElement.disabled = true;
         buttonElement.style.opacity = '0.7';
+        buttonElement.style.cursor = 'not-allowed';
       }
       document.getElementById('modal-loading').style.display = 'flex';
     }
 
     function hideLoading(buttonElement) {
+      isSubmitting = false;
       if (buttonElement) {
         buttonElement.disabled = false;
         buttonElement.style.opacity = '1';
+        buttonElement.style.cursor = 'pointer';
       }
       document.getElementById('modal-loading').style.display = 'none';
     }
@@ -1797,8 +1887,9 @@
       document.getElementById('modal-confirmacao').style.display = 'none';
       acaoPendente = null;
     }
-    document.getElementById('btn-confirmar-acao').addEventListener('click', () => {
-      if (acaoPendente) acaoPendente();
+    document.getElementById('btn-confirmar-acao').addEventListener('click', function () {
+      if (isSubmitting) return;
+      if (acaoPendente) acaoPendente(this);
       fecharModalConfirmacao();
     });
 
@@ -1847,14 +1938,17 @@
       const selectFiltroTime = document.getElementById('filtro-time');
       const selectAtendNome = document.getElementById('atend-nome');
       const selectFiltroPainel = document.getElementById('filtro-painel-individual');
+      const selectFiltroEquipeAtendimentos = document.getElementById('filtro-equipe-atendimentos');
 
       let optionsHtml = '<option value="" disabled selected>Selecione a equipe...</option>';
       let filterOptionsHtml = '<option value="">Todos os Times</option>';
+      let filterEquipeAtendHtml = '<option value="">Todas as Equipes</option>';
       let atendNomeHtml = '<option value="" disabled selected>Selecione o colaborador...</option>';
 
       listaEquipes.forEach(eq => {
         optionsHtml += `<option value="${eq}">${eq}</option>`;
         filterOptionsHtml += `<option value="${eq}">${eq}</option>`;
+        filterEquipeAtendHtml += `<option value="${eq}">${eq}</option>`;
       });
       listaColaboradores.forEach(c => {
         atendNomeHtml += `<option value="${c.nome}">${c.nome}</option>`;
@@ -1862,7 +1956,8 @@
 
       if (selectColabEquipe) selectColabEquipe.innerHTML = optionsHtml;
       if (selectFiltroTime) selectFiltroTime.innerHTML = filterOptionsHtml;
-      if (selectFiltroPainel) selectFiltroPainel.innerHTML = optionsHtml;
+      if (selectFiltroPainel) selectFiltroPainel.innerHTML = filterOptionsHtml;
+      if (selectFiltroEquipeAtendimentos) selectFiltroEquipeAtendimentos.innerHTML = filterEquipeAtendHtml;
       if (selectAtendNome) {
         selectAtendNome.innerHTML = atendNomeHtml;
         selectAtendNome.onchange = function () {
@@ -1958,7 +2053,7 @@
       const tbodyAtend = document.querySelector('#tab1 .painel-atendimentos-box table tbody');
       if (tbodyAtend) {
         if (listaAtendimentos.length === 0) {
-          tbodyAtend.innerHTML = '<tr><td colspan="10" class="text-center">Nenhum atendimento registrado no banco de dados.</td></tr>';
+          tbodyAtend.innerHTML = '<tr><td colspan="11" class="text-center">Nenhum atendimento registrado no banco de dados.</td></tr>';
         } else {
           tbodyAtend.innerHTML = listaAtendimentos.map(a => {
             let cargoExibicao = a.cargo === "Emissão VI" ? "Emissão VI" : (a.cargo === "Central Vida" ? "Central Vida" : a.cargo);
@@ -1966,12 +2061,17 @@
                 <tr>
                     <td>${a.nome}</td>
                     <td>${cargoExibicao}</td>
+                    <td>${a.equipe}</td>
                     <td>${a.cpf}</td>
                     <td class="text-center">${a.dataContato}</td>
                     <td>${a.apolice}</td>
                     <td class="text-right">R$${a.premio}</td>
                     <td>${a.tipoContato}</td>
                     <td class="text-center">${a.retido}</td>
+                    <!-- FUTURA MELHORIA: Dados de Analista e Transferência
+                    <td>\${a.analista || '-'}</td>
+                    <td>\${a.transferencia || '-'}</td>
+                    -->
                     <td class="text-center" style="font-weight:bold; background-color: #eaf4ff;">${a.pontos}</td>
                     <td class="text-center">
                         <div style="display:flex; gap:6px; justify-content:center;">
@@ -1991,8 +2091,8 @@
           tbodyPontosReg.innerHTML = '<tr><td colspan="4" class="text-center">Aguardando cadastro de colaboradores.</td></tr>';
         } else {
           tbodyPontosReg.innerHTML = listaColaboradores.map(c => {
-                const colabPoints = listaRankingIndiv.find(r => r.nome === c.nome)?.pontos || 0;
-                return `
+            const colabPoints = listaRankingIndiv.find(r => r.nome === c.nome)?.pontos || 0;
+            return `
                 <tr class="item-colaborador-ponto" data-nome="${c.nome.toLowerCase()}" data-equipe="${c.equipe.toLowerCase()}" data-pontos="${colabPoints}">
                     <td><strong>${c.nome}</strong></td>
                     <td><span class="tag-time">${c.equipe}</span></td>
@@ -2006,7 +2106,7 @@
             `}).join('');
         }
       }
-      
+
       // Recalcula rodapé após renderização inicial
       aplicarFiltroAtendimentos();
       filtrarTabelaPontos();
@@ -2060,8 +2160,9 @@
       atualizarPontosModalEdicao();
       abrirModalEditarAtendimento();
     }
-    
+
     function salvarEdicaoAtendimento(btn) {
+      if (isSubmitting) return;
       const camposObrigatorios = ['edit-atend-nome', 'edit-atend-cargo', 'edit-atend-cpf', 'edit-atend-dia', 'edit-atend-mes', 'edit-atend-ano', 'edit-atend-apolice', 'edit-atend-premio', 'edit-atend-tipo', 'edit-atend-retido'];
       if (!validarCamposObrigatorios(camposObrigatorios)) {
         return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios destacados.');
@@ -2115,6 +2216,7 @@
     }
 
     function processarCadastro(btn) {
+      if (isSubmitting) return;
       const tipo = document.getElementById('tipo-cadastro-select').value;
       showLoading(btn);
 
@@ -2185,6 +2287,7 @@
     }
 
     function salvarDadosAtendimento(btn) {
+      if (isSubmitting) return;
       const camposObrigatorios = ['atend-nome', 'atend-cargo', 'atend-cpf', 'atend-dia', 'atend-mes', 'atend-ano', 'atend-apolice', 'atend-premio', 'atend-tipo', 'atend-retido'];
       if (!validarCamposObrigatorios(camposObrigatorios)) {
         return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios destacados.');
@@ -2256,6 +2359,7 @@
     }
 
     function lancarPontosManuais(btn) {
+      if (isSubmitting) return;
       if (!validarCamposObrigatorios(['manual-pontos-valor', 'manual-pontos-motivo'])) {
         return abrirFeedback('modal-erro', 'Informe a quantidade e o motivo destacados.');
       }
@@ -2283,6 +2387,7 @@
     }
 
     function salvarEdicaoEquipe(btn) {
+      if (isSubmitting) return;
       if (!validarCamposObrigatorios(['edit-equipe-nome'])) {
         return abrirFeedback('modal-erro', 'O nome da equipe não pode ficar vazio!');
       }
@@ -2340,6 +2445,7 @@
     }
 
     function salvarEdicaoColaborador(btn) {
+      if (isSubmitting) return;
       if (!validarCamposObrigatorios(['edit-colab-nome', 'edit-colab-cargo', 'edit-colab-equipe'])) {
         return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios destacados!');
       }
@@ -2388,7 +2494,7 @@
         const pontos = parseFloat(row.getAttribute('data-pontos')) || 0;
         const matchBusca = nome.includes(busca);
         const matchTime = timeFiltro === '' || equipe === timeFiltro;
-        
+
         if (matchBusca && matchTime) {
           row.style.display = '';
           somaPontos += pontos;
@@ -2396,7 +2502,7 @@
           row.style.display = 'none';
         }
       });
-      
+
       const elTotal = document.getElementById('total-pontos-filtro-tab3');
       if (elTotal) elTotal.textContent = somaPontos;
     }
@@ -2595,39 +2701,83 @@
     function aplicarFiltroAtendimentos() {
       const inputBusca = document.getElementById('busca-atendimentos-input');
       const termo = inputBusca ? inputBusca.value.toLowerCase() : "";
+
+      const selectEquipe = document.getElementById('filtro-equipe-atendimentos');
+      const equipeFiltro = selectEquipe ? selectEquipe.value.toLowerCase().trim() : "";
+
+      const selectRetido = document.getElementById('filtro-retido-atendimentos');
+      const retidoFiltro = selectRetido ? selectRetido.value.toLowerCase().trim() : "";
+
       const tbody = document.querySelector('#tab1 .painel-atendimentos-box table tbody');
       if (!tbody) return;
       const linhas = tbody.querySelectorAll('tr');
 
+      let somaAtendimentos = 0;
       let somaRetidos = 0;
+      let somaNaoRetidos = 0;
       let somaPremio = 0;
       let somaPontos = 0;
 
       linhas.forEach(linha => {
         if (linha.classList.contains('row-placeholder') || linha.innerText.includes('Nenhum atendimento')) {
-          linha.style.display = termo === '' ? '' : 'none';
+          linha.style.display = (termo === '' && equipeFiltro === '' && retidoFiltro === '') ? '' : 'none';
           return;
         }
-        const textoLinha = linha.textContent.toLowerCase();
-        if (textoLinha.includes(termo)) {
-          linha.style.display = '';
-          const colunas = linha.querySelectorAll('td');
-          if (colunas.length >= 9) {
-            const premioStr = colunas[5].textContent.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+
+        const colunas = linha.querySelectorAll('td');
+        if (colunas.length >= 10) {
+          const textoLinha = linha.textContent.toLowerCase();
+          const equipeCol = colunas[2].textContent.toLowerCase().trim();
+          const retidoCol = colunas[8].textContent.toLowerCase().trim();
+
+          const matchBusca = textoLinha.includes(termo);
+          const matchEquipe = equipeFiltro === '' || equipeCol === equipeFiltro;
+          const matchRetido = retidoFiltro === '' || retidoCol === retidoFiltro;
+
+          if (matchBusca && matchEquipe && matchRetido) {
+            linha.style.display = '';
+            somaAtendimentos++;
+
+            const premioStr = colunas[6].textContent.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
             somaPremio += parseFloat(premioStr) || 0;
-            const retidoStr = colunas[7].textContent.trim().toLowerCase();
-            if (retidoStr === 'sim') somaRetidos += 1;
-            const pontosStr = colunas[8].textContent.trim();
+
+            if (retidoCol === 'sim') {
+              somaRetidos += 1;
+            } else if (retidoCol === 'não' || retidoCol === 'nao') {
+              somaNaoRetidos += 1;
+            }
+
+            const pontosStr = colunas[9].textContent.trim();
             somaPontos += parseFloat(pontosStr) || 0;
+          } else {
+            linha.style.display = 'none';
           }
-        } else {
-          linha.style.display = 'none';
         }
       });
-      const elRetidos = document.getElementById('totalRetidosFiltro'); const elPremio = document.getElementById('totalPremioFiltro'); const elPontos = document.getElementById('totalPontosFiltro');
+
+      const elAtendimentos = document.getElementById('totalAtendimentosFiltro');
+      const elRetidos = document.getElementById('totalRetidosFiltro');
+      const elNaoRetidos = document.getElementById('totalNaoRetidosFiltro');
+      const elPremio = document.getElementById('totalPremioFiltro');
+      const elPontos = document.getElementById('totalPontosFiltro');
+
+      if (elAtendimentos) elAtendimentos.textContent = somaAtendimentos;
       if (elRetidos) elRetidos.textContent = somaRetidos;
+      if (elNaoRetidos) elNaoRetidos.textContent = somaNaoRetidos;
       if (elPremio) elPremio.textContent = somaPremio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       if (elPontos) elPontos.textContent = somaPontos;
+    }
+
+    function limparFiltrosAtendimentos() {
+      const inputBusca = document.getElementById('busca-atendimentos-input');
+      const selectEquipe = document.getElementById('filtro-equipe-atendimentos');
+      const selectRetido = document.getElementById('filtro-retido-atendimentos');
+
+      if (inputBusca) inputBusca.value = '';
+      if (selectEquipe) selectEquipe.value = '';
+      if (selectRetido) selectRetido.value = '';
+
+      aplicarFiltroAtendimentos();
     }
 
     // ==========================================

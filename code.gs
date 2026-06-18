@@ -78,9 +78,13 @@ function buscarDadosIniciais() {
           fDate = Utilities.formatDate(rawDate, Session.getScriptTimeZone(), "dd/MM/yyyy");
         }
         
+        // Adicionado .trim() para garantir compatibilidade exata com o colabEquipeMap
+        var nomeAtend = atendimentosRaw[j][0] != null ? atendimentosRaw[j][0].toString().trim() : "";
+        
         atendimentos.push({
           linha: j + 1,
-          nome: atendimentosRaw[j][0] != null ? atendimentosRaw[j][0].toString() : "",
+          nome: nomeAtend,
+          equipe: colabEquipeMap[nomeAtend] || "Sem Equipe",
           cargo: atendimentosRaw[j][1] != null ? atendimentosRaw[j][1].toString() : "",
           cpf: atendimentosRaw[j][2] != null ? atendimentosRaw[j][2].toString() : "",
           dataContato: fDate,
@@ -88,6 +92,11 @@ function buscarDadosIniciais() {
           premio: atendimentosRaw[j][5] != null && atendimentosRaw[j][5] !== "" ? atendimentosRaw[j][5].toString() : "0,00",
           tipoContato: atendimentosRaw[j][6] != null && atendimentosRaw[j][6] !== "" ? atendimentosRaw[j][6].toString() : "-",
           retido: atendimentosRaw[j][7] != null ? atendimentosRaw[j][7].toString() : "",
+          
+          // --- FUTURA MELHORIA: Ler os dados de Analista e Transferência da planilha
+          // analista: atendimentosRaw[j][8] != null ? atendimentosRaw[j][8].toString() : "",
+          // transferencia: atendimentosRaw[j][9] != null ? atendimentosRaw[j][9].toString() : "",
+          // OBS: Após adicionar as colunas, o índice do "atendimentosRaw[j][8]" do campo pontos mudará para [10].
           pontos: atendimentosRaw[j][8] != null && atendimentosRaw[j][8] !== "" ? parseFloat(atendimentosRaw[j][8]) : 0
         });
       }
@@ -207,6 +216,9 @@ function salvarAtendimento(dados, linhaEdit) {
         dados.premio, 
         dados.tipoContato, 
         dados.retido, 
+        // --- FUTURA MELHORIA: Incluir as variáveis passadas pelo form no Sheets
+        // dados.analista,
+        // dados.transferencia,
         pontosCalculados, // Grava a pontuação exata gerada pela inteligência do script
         new Date()
       ];
@@ -301,6 +313,8 @@ function verificarESetupPlanilhas() {
   var ss = obterPlanilha();
   var estruturas = {
     "atendimento": ["Nome Colaborador", "Cargo", "CPF", "Data do Contato", "Nº da Apólice", "Valor do Prêmio", "Tipo de Contato", "Foi Retido?", "Pontuação Atendimento", "Data Registro"],
+    // --- FUTURA MELHORIA: A estrutura do atendimento passará a ter mais 2 colunas.
+    // "atendimento": ["Nome Colaborador", "Cargo", "CPF", "Data do Contato", "Nº da Apólice", "Valor do Prêmio", "Tipo de Contato", "Foi Retido?", "Nome do Analista", "Transferência", "Pontuação Atendimento", "Data Registro"],
     "pontuacao": ["Nome Colaborador", "Equipe", "Pontos Atribuídos", "Motivo", "Data do Lançamento"],
     "colaboradores": ["Nome Completo", "Cargo", "Equipe Associada"],
     "equipes": ["Nome da Equipe"]
