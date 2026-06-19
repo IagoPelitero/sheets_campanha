@@ -4,7 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Campanhas</title>
+  <title>Sistema de Campanhas - Copa</title>
+  <!-- Font Awesome: ícones usados na interface (fa-calendar-alt, fa-medal, etc.) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plh7eqjGnweFl2vkBdECCQhMjCQKg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Chart.js: biblioteca de gráficos usada na Aba 5 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <style>
     /* =======================================================
@@ -59,8 +63,7 @@
       padding: 24px 16px;
       text-align: center;
       font-weight: bold;
-      font-size: 1.2rem;
-      font-size: 0.75rem !important;
+      font-size: 0.95rem;
       text-overflow: ellipsis;
     }
 
@@ -97,14 +100,24 @@
     }
 
     /* =======================================================
-       3. ESTRUTURA: SEÇÕES E TABELAS
+       3. ESTRUTURA: WRAPPER PRINCIPAL + SEÇÕES E TABELAS
        ======================================================= */
+
+    /* <main> precisa ser flex-filho do body e flex-pai das seções */
+    main#conteudo-principal {
+      flex: 1;          /* ocupa todo o espaço ao lado da sidebar */
+      display: flex;    /* contéiner flex para as seções */
+      height: 100vh;
+      overflow: hidden; /* a seção ativa é quem rola, não o wrapper */
+      min-width: 0;     /* impede overflow em layouts flex */
+    }
+
     section {
       flex: 1;
       padding: 30px;
       display: none;
       overflow-y: auto;
-      height: 100vh;
+      height: 100%;
     }
 
     #tab1 {
@@ -134,21 +147,21 @@
       flex-direction: column;
     }
 
-    .painel-tabela-box h3,
-    .atendimentos-header-blue {
+    .painel-tabela-box h3 {
       padding: 12px 16px;
       font-weight: bold;
       font-size: 1rem;
       color: var(--branco);
-    }
-
-    .painel-tabela-box h3 {
       background-color: var(--verde);
     }
 
     .atendimentos-header-blue {
       background-color: var(--azul);
       border-radius: 12px 12px 0 0;
+      padding: 12px 16px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: var(--branco);
     }
 
     .table-wrapper {
@@ -174,10 +187,20 @@
     }
 
     td {
-      padding: 12px;
-      font-size: 0.85rem;
+      padding: 8px 10px;
+      font-size: 0.82rem;
       color: var(--texto-tabela);
       border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+      /* Impede que células estourem o layout de colunas fixas */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* As células de ação não devem ter ellipsis */
+    td:last-child {
+      white-space: normal;
+      overflow: visible;
     }
 
     tr:nth-child(even) {
@@ -801,11 +824,37 @@
     /* Blocos de estatísticas e rankings */
     .card-estatistica-filtro {
       background-color: #f9f9f9;
-      border-left: 5px solid var(--azul-brasil);
+      border-left: 5px solid var(--azul);
       padding: 12px 16px;
       margin-top: 15px;
       border-radius: 4px;
     }
+
+    /* ===================================
+     * Badges de status da tabela (pílulas coloridas)
+     * Usados na coluna Retido, Tipo de Contato e Transferência
+     * =================================== */
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    /* Retido = Sim */
+    .badge-sim      { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    /* Retido = Não */
+    .badge-nao      { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    /* Tipo de Contato = Potencial */
+    .badge-potencial     { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+    /* Tipo de Contato = Não potencial */
+    .badge-nao-potencial { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    /* Transferência = Devida */
+    .badge-devida    { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    /* Transferência = Indevida */
+    .badge-indevida  { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
     .card-estatistica-filtro h4 {
       margin: 0 0 8px 0;
@@ -865,6 +914,226 @@
       background-color: #ffeeee !important;
       transition: background-color 0.2s, outline 0.2s;
     }
+
+    /* =======================================================
+       Cards de resumo rápido (acima da tabela de auditados)
+       ======================================================= */
+    .painel-cards-resumo {
+      background: var(--fundo-tabela);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-top: 20px;
+      margin-bottom: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,39,118,0.08);
+    }
+
+    .painel-cards-resumo-titulo {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #888;
+      margin-bottom: 12px;
+    }
+
+    .cards-resumo-inner {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: stretch;
+    }
+    .card-status-rapido {
+      display: flex;
+      gap: 12px;
+      padding: 12px 12px 0 12px;
+      flex-wrap: wrap;
+      align-items: stretch;
+    }
+
+    .btn-status-filtro {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 2px solid rgba(0, 39, 118, 0.15);
+      cursor: pointer;
+      min-width: 90px;
+      background: var(--cinza-fundo);
+      color: #555;
+      transition: all 0.2s;
+      gap: 2px;
+      font-family: inherit;
+    }
+
+    .btn-status-filtro.ativo {
+      background: var(--azul);
+      color: var(--branco);
+      border-color: var(--azul);
+      box-shadow: 0 4px 12px rgba(0, 39, 118, 0.3);
+    }
+
+    .btn-status-filtro:not(.ativo):hover {
+      background: rgba(0, 39, 118, 0.08);
+      border-color: var(--azul);
+    }
+
+    .btn-status-filtro .num-grande {
+      font-size: 1.7rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .btn-status-filtro .label-card {
+      font-size: 0.75rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-stat-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: var(--cinza-fundo);
+      border: 2px solid rgba(0, 39, 118, 0.1);
+      color: var(--azul);
+      min-width: 90px;
+      gap: 2px;
+    }
+
+    .card-stat-info .num-grande {
+      font-size: 1.3rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .card-stat-info .label-card {
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* =======================================================
+       CARDS DE RESUMO — preenchimento total da largura
+       ======================================================= */
+    .btn-status-filtro { flex: 1; min-width: 0; }
+    .card-stat-info    { flex: 1.5; min-width: 0; }
+
+    /* =======================================================
+       CARD TIME LÍDER — Pontos em destaque acima do nome
+       ======================================================= */
+    .lider-pts-bloco {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--azul);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 24px;
+      box-shadow: 0 4px 14px rgba(0,39,118,0.35);
+      margin-bottom: 6px;
+    }
+    .lider-pts-numero {
+      font-size: 2.6rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .lider-pts-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.85;
+    }
+    .lider-nome {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--azul);
+      text-align: center;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+    .lider-badge {
+      font-size: 0.75rem;
+      color: #777;
+      margin-top: 4px;
+    }
+
+    /* =======================================================
+       ABA 5: GRÁFICOS
+       ======================================================= */
+    .graficos-filtros-bar {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      background: var(--fundo-tabela);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,39,118,0.08);
+    }
+    .graficos-filtros-bar label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--texto-titulos);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .graficos-filtros-bar input[type=date],
+    .graficos-filtros-bar select {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #333;
+      background: #fff;
+      outline: none;
+    }
+    .graficos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .grafico-box {
+      background: var(--fundo-tabela);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,39,118,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .grafico-box--largo { grid-column: 1 / -1; }
+    .grafico-box h3 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--texto-titulos);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      border-left: 4px solid var(--verde);
+      padding-left: 10px;
+      margin: 0;
+    }
+    .grafico-box canvas {
+      max-height: 280px;
+    }
+    @media (max-width: 768px) {
+      .graficos-grid { grid-template-columns: 1fr; }
+      .grafico-box--largo { grid-column: auto; }
+    }
   </style>
 </head>
 
@@ -876,6 +1145,7 @@
       <a href="#tab2"><span>🎧</span> Dados de Atendimento</a>
       <a href="#tab3"><span>🎯</span> Registro de Pontos</a>
       <a href="#tab4"><span>⚙️</span> Configurações</a>
+      <a href="#tab5"><span>📈</span> Gráficos</a>
     </nav>
     <div class="sidebar-footer">User_acessando</div>
   </aside>
@@ -963,6 +1233,10 @@
               <option value="Sim">Sim</option>
               <option value="Não">Não</option>
             </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>Analista responsável</label>
+            <input type="text" id="edit-atend-analista" required style="color:#333;">
           </div>
           <div class="form-group" style="margin-bottom: 12px;">
             <label>Pontuação do Atendimento (Calculado)</label>
@@ -1116,27 +1390,27 @@
 
   <div id="modal-filtro-data-aba1">
     <div class="modal-content-blue"
-      style="border-top: 6px solid #00a859; max-width: 450px; width: 95%; max-height: 90vh; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
+      style="border-top: 6px solid var(--verde); max-width: 450px; width: 95%; max-height: 90vh; background: var(--fundo-tabela); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
 
       <div class="modal-header"
-        style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #002266; color: #fff; border-top-left-radius: 2px; border-top-right-radius: 2px; flex-shrink: 0;">
+        style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--azul); color: #fff; border-top-left-radius: 2px; border-top-right-radius: 2px; flex-shrink: 0;">
         <h3 style="margin: 0; font-size: 1.2rem;">Filtrar Ranking de Pontuações</h3>
         <span class="close-modal" onclick="fecharModalFiltroAba1()"
           style="cursor: pointer; font-size: 1.5rem; font-weight: bold; color: #fff;">&times;</span>
       </div>
 
-      <div class="modal-body" style="padding: 15px; background-color: #f8f9fa; overflow-y: auto; flex: 1;">
+      <div class="modal-body" style="padding: 15px; background-color: var(--fundo-tabela); overflow-y: auto; flex: 1;">
         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
           <div class="form-group" style="flex: 1;">
             <label for="filtro-data-inicio"
-              style="display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #333;">Data
+              style="display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: var(--texto-titulos);">Data
               Inicial</label>
             <input type="date" id="filtro-data-inicio"
               style="width: 100%; padding: 8px; box-sizing: border-box; color: #333; border: 1px solid #ccc; border-radius: 4px;">
           </div>
           <div class="form-group" style="flex: 1;">
             <label for="filtro-data-fim"
-              style="display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #333;">Data
+              style="display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: var(--texto-titulos);">Data
               Final</label>
             <input type="date" id="filtro-data-fim"
               style="width: 100%; padding: 8px; box-sizing: border-box; color: #333; border: 1px solid #ccc; border-radius: 4px;">
@@ -1144,24 +1418,24 @@
         </div>
 
         <button class="btn-salvar"
-          style="width: 100%; margin-bottom: 15px; padding: 12px; font-weight: bold; cursor: pointer; background-color: #00a859; color: #fff; border: none; border-radius: 4px; font-size: 1rem;"
+          style="width: 100%; margin-bottom: 15px; padding: 12px; font-weight: bold; cursor: pointer; background-color: var(--verde); color: #fff; border: none; border-radius: 4px; font-size: 1rem;"
           onclick="processarFiltroPorData()">Buscar Dados</button>
 
         <div class="card-estatistica-filtro"
-          style="background: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; border-left: 5px solid #002266;">
-          <h4 style="margin-top: 0; margin-bottom: 15px; text-align: center; font-size: 1rem; color: #333;"><i
+          style="background: var(--fundo-tabela); padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; border-left: 5px solid var(--azul);">
+          <h4 style="margin-top: 0; margin-bottom: 15px; text-align: center; font-size: 1rem; color: var(--texto-titulos);"><i
               class="fas fa-medal"></i> Top 3 Colaboradores</h4>
           <ol id="top-atendentes-lista" class="ranking-atendentes-list"
             style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
           </ol>
         </div>
-        <p id="tbody-filtro-aba1" style="margin-top: 15px; text-align: center; color: #666;">Aguardando filtro</p>
+        <p id="tbody-filtro-aba1" style="margin-top: 15px; text-align: center; color: var(--texto-titulos);">Aguardando filtro</p>
       </div>
 
       <div class="modal-footer"
-        style="padding: 12px 15px; display: flex; justify-content: flex-end; border-top: 1px solid #dee2e6; background-color: #f1f3f5; flex-shrink: 0;">
+        style="padding: 12px 15px; display: flex; justify-content: flex-end; border-top: 1px solid #dee2e6; background-color: var(--fundo-tabela); flex-shrink: 0;">
         <button class="btn-vermelho"
-          style="padding: 8px 18px; cursor: pointer; background-color: #dc3545; color: white; border: none; border-radius: 4px; font-weight: bold;"
+          style="padding: 8px 18px; cursor: pointer; background-color: var(--vermelho); color: white; border: none; border-radius: 4px; font-weight: bold;"
           onclick="fecharModalFiltroAba1()">Fechar</button>
       </div>
     </div>
@@ -1175,7 +1449,10 @@
     </div>
   </div>
 
-  <section id="tab1">
+  <!-- CONTEÚDO PRINCIPAL: Abas de navegação do sistema -->
+  <main id="conteudo-principal" role="main">
+
+  <section id="tab1" role="tabpanel" aria-label="Placar Geral">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; width: 100%;">
       <h2 style="margin: 0;">Placar Geral</h2>
       <button class="btn-acao btn-azul-brasil" onclick="abrirModalFiltroAba1()">
@@ -1187,33 +1464,27 @@
       <div class="podio-container">
         <article class="card-podio">
           <div class="card-header-green">
-            <span class="icon-coroa">👑</span> Time com mais pontos
+            🏆 Time com mais pontos
           </div>
 
           <div class="card-body-yellow card-time-lider"
-            style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px; padding: 20px; flex: 1;">
+            style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px; padding: 20px; flex: 1;">
 
-            <p style="font-size: 1.8rem; margin: 0; line-height: 1;">👑</p>
+            <!-- Pontos em destaque — exibidos ACIMA do nome -->
+            <div class="lider-pts-bloco">
+              <span class="lider-pts-numero podio-pontos">0</span>
+              <span class="lider-pts-label">pontos totais</span>
+            </div>
 
-            <p class="podio-nome"
-              style="font-size: 1.35rem; font-weight: 800; color: #002776; margin: 0; white-space: normal; word-wrap: break-word; max-width: 100%; line-height: 1.2;">
-              Nenhum time cadastrado</p>
-
-            <p class="podio-pontos"
-              style="font-weight: 800; color: #002776; background-color: #ffffff; padding: 5px 14px; border-radius: 6px; font-size: 0.95rem; margin: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); white-space: nowrap;">
-              0 pontos</p>
+            <p class="lider-nome podio-nome">Nenhum time cadastrado</p>
+            <span class="lider-badge">🏆 Líder do Ranking</span>
 
           </div>
         </article>
 
         <article class="card-podio">
           <div class="card-header-green">
-            <div class="icon-podio-blocos">
-              <span class="bloco-2">2</span>
-              <span class="bloco-1">1</span>
-              <span class="bloco-3">3</span>
-            </div>
-            Pódio de pontuação
+            🥇 Pódio — Top 3 Individual
           </div>
           <div class="card-body-yellow podio-list">
 
@@ -1308,8 +1579,35 @@
       </div>
     </div>
 
+    <!-- Cards de resumo rápido — separados acima da tabela -->
+    <div class="painel-cards-resumo">
+      <p class="painel-cards-resumo-titulo">Resumo rápido &amp; filtro por retenção</p>
+      <div class="cards-resumo-inner">
+        <button class="btn-status-filtro ativo" id="btn-card-todos" data-valor="" onclick="filtrarPorStatusCard('')">
+          <span class="num-grande" id="card-num-total">0</span>
+          <span class="label-card">Total</span>
+        </button>
+        <button class="btn-status-filtro" id="btn-card-retidos" data-valor="sim" onclick="filtrarPorStatusCard('sim')">
+          <span class="num-grande" id="card-num-retidos">0</span>
+          <span class="label-card">Retidos</span>
+        </button>
+        <button class="btn-status-filtro" id="btn-card-nao-retidos" data-valor="não" onclick="filtrarPorStatusCard('não')">
+          <span class="num-grande" id="card-num-nao-retidos">0</span>
+          <span class="label-card">Não Retidos</span>
+        </button>
+        <div class="card-stat-info">
+          <span class="num-grande" id="card-total-pontos">0</span>
+          <span class="label-card">Pontos (visíveis)</span>
+        </div>
+        <div class="card-stat-info">
+          <span class="num-grande" id="card-total-premio">R$ 0,00</span>
+          <span class="label-card">Prêmio (visíveis)</span>
+        </div>
+      </div>
+    </div>
+
     <div class="painel-atendimentos-box"
-      style="background-color: var(--fundo-tabela); border-radius: 12px; overflow: hidden; margin-top: 24px;">
+      style="background-color: var(--fundo-tabela); border-radius: 12px; overflow: hidden; margin-top: 12px;">
       <div class="atendimentos-header-blue">
         <span>📋</span> Atendimentos auditados
       </div>
@@ -1333,36 +1631,50 @@
         </select>
         <button class="btn-limpar-filtros-painel" onclick="limparFiltrosAtendimentos()">Limpar</button>
       </div>
-      <div class="table-wrapper" style="max-height: 500px; overflow-y: auto; overflow-x: auto;">
-        <table style="min-width: 1100px;">
+      <!-- Os cards de resumo foram movidos para cima (fora desta caixa) -->
+      <div class="table-wrapper" style="overflow-x: auto; overflow-y: auto; max-height: 55vh;">
+        <table style="min-width: 1200px; table-layout: fixed; width: 100%;">
+          <colgroup>
+            <col style="width: 150px;">  <!-- Nome -->
+            <col style="width: 110px;">  <!-- Cargo -->
+            <col style="width: 110px;">  <!-- Equipe -->
+            <col style="width: 100px;">  <!-- CPF -->
+            <col style="width: 80px;">   <!-- Data -->
+            <col style="width: 80px;">   <!-- Apólice -->
+            <col style="width: 95px;">   <!-- Prêmio -->
+            <col style="width: 110px;">  <!-- Tipo -->
+            <col style="width: 80px;">   <!-- Retido -->
+            <col style="width: 110px;">  <!-- Analista -->
+            <col style="width: 90px;">   <!-- Transferência -->
+            <col style="width: 60px;">   <!-- Pontos -->
+            <col style="width: 125px;">  <!-- Ações -->
+          </colgroup>
           <thead style="position: sticky; top: 0; background: var(--fundo-tabela); z-index: 1;">
             <tr>
-              <th>Nome Colaborador</th>
+              <th>Colaborador</th>
               <th>Cargo</th>
               <th>Equipe</th>
-              <th>CPF do segurado</th>
-              <th>Data do contato</th>
-              <th>Nº da apólice</th>
-              <th>R$ do prêmio</th>
-              <th>Tipo de contato</th>
-              <th>Foi retido?</th>
-              <!-- FUTURA MELHORIA: Colunas Analista e Transferência
-              <th>Nome do Analista</th>
-              <th>Transferência</th>
-              -->
-              <th class="text-center" style="background-color: #eaf4ff;">Pontos</th>
+              <th>CPF</th>
+              <th>Data</th>
+              <th>Apólice</th>
+              <th class="text-right">Prêmio</th>
+              <th class="text-center">Tipo</th>
+              <th class="text-center">Retido?</th>
+              <th>Analista</th>
+              <th class="text-center">Transfer.</th>
+              <th class="text-center" style="background-color: #eaf4ff;">Pts</th>
               <th class="text-center">Ações</th>
             </tr>
           </thead>
           <tbody>
             <tr class="row-placeholder">
-              <td colspan="11" class="text-center">Nenhum atendimento foi auditado.</td>
+              <td colspan="13" class="text-center">Nenhum atendimento foi auditado.</td>
             </tr>
           </tbody>
         </table>
       </div>
       <div id="rodapeResumoFiltro"
-        style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 10px; background-color: #f1f5f9; padding: 15px; font-size: 1.1em; font-weight: 600; border-top: 3px solid #cbd5e1;">
+        style="display: none; flex-wrap: wrap; justify-content: space-around; gap: 10px; background-color: #f1f5f9; padding: 15px; font-size: 1.1em; font-weight: 600; border-top: 3px solid #cbd5e1;">
         <span>Total Atendimentos: <strong id="totalAtendimentosFiltro" style="color: #002776;">0</strong></span>
         <span>Atend. Retidos: <strong id="totalRetidosFiltro" style="color: #002776;">0</strong></span>
         <span>Não Retidos: <strong id="totalNaoRetidosFiltro" style="color: #002776;">0</strong></span>
@@ -1372,7 +1684,7 @@
     </div>
   </section>
 
-  <section id="tab2">
+  <section id="tab2" role="tabpanel" aria-label="Dados de Atendimento">
     <h2>Dados de Atendimento</h2>
     <div class="form-container-blue">
       <form id="form-atendimento">
@@ -1427,29 +1739,15 @@
             </select>
           </div>
           <div class="form-group">
+            <label>Analista responsável</label>
+            <input type="text" id="atend-analista" placeholder="Nome do analista" required>
+          </div>
+          <div class="form-group">
             <label>Pontuação do Atendimento (Calculado)</label>
             <input type="text" id="pontosAtendimento"
               style="color:#555; width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background-color: #e9ecef; cursor: not-allowed; font-weight: bold;"
               readonly value="0">
           </div>
-          <!-- FUTURA MELHORIA: Inputs de Analista e Transferência (Descomentar futuramente)
-          <div class="form-group">
-            <label>Nome do Analista</label>
-            <select id="atend-analista" required>
-              <option value="" disabled selected>Selecione o analista</option>
-              <option value="João Silva">João Silva</option>
-              <option value="Maria Souza">Maria Souza</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Transferência</label>
-            <select id="atend-transferencia" required>
-              <option value="" disabled selected>Selecione o status</option>
-              <option value="Devida">Devida</option>
-              <option value="Indevida">Indevida</option>
-            </select>
-          </div>
-          -->
         </div>
         <div class="form-actions">
           <button type="submit" class="btn-salvar">Salvar Novo Atendimento</button>
@@ -1459,7 +1757,7 @@
     </div>
   </section>
 
-  <section id="tab3">
+  <section id="tab3" role="tabpanel" aria-label="Registro de Pontos">
     <h2>Registro de Pontos</h2>
     <div class="barra-controle-pontos">
       <div class="grupo-busca">
@@ -1501,7 +1799,7 @@
     </div>
   </section>
 
-  <section id="tab4">
+  <section id="tab4" role="tabpanel" aria-label="Configurações do Sistema">
     <h2>Configurações do Sistema</h2>
     <div class="config-top-container">
       <div class="config-box-blue">
@@ -1582,10 +1880,76 @@
     </div>
   </section>
 
+  <!-- ================================================
+       ABA 5 — GRÁFICOS & ANÁLISES
+       ================================================ -->
+  <section id="tab5" role="tabpanel" aria-label="Gráficos e Análises">
+    <h2>Gráficos &amp; Análises</h2>
+
+    <!-- Barra de Filtros dos Gráficos -->
+    <div class="graficos-filtros-bar">
+      <div>
+        <label for="graf-data-inicio">Data início</label>
+        <input type="date" id="graf-data-inicio">
+      </div>
+      <div>
+        <label for="graf-data-fim">Data fim</label>
+        <input type="date" id="graf-data-fim">
+      </div>
+      <div>
+        <label for="graf-equipe">Equipe</label>
+        <select id="graf-equipe">
+          <option value="">Todas as Equipes</option>
+        </select>
+      </div>
+      <div style="display:flex; gap:8px; padding-top:18px;">
+        <button class="btn-azul-brasil" style="padding:8px 18px;" onclick="renderizarGraficos()">Aplicar</button>
+        <button class="btn-limpar-filtros" onclick="limparFiltrosGraficos()">Limpar</button>
+      </div>
+    </div>
+
+    <!-- Grade de Gráficos -->
+    <div class="graficos-grid">
+
+      <!-- Linha 1 -->
+      <div class="grafico-box">
+        <h3>📅 Atendimentos por Dia</h3>
+        <canvas id="chart-atend-dia" role="img" aria-label="Gráfico de atendimentos por dia"></canvas>
+      </div>
+
+      <div class="grafico-box">
+        <h3>💰 Prêmio Total por Dia (R$)</h3>
+        <canvas id="chart-premio-dia" role="img" aria-label="Gráfico de prêmio por dia"></canvas>
+      </div>
+
+      <!-- Linha 2 -->
+      <div class="grafico-box">
+        <h3>🔄 Transferências Devidas vs Indevidas</h3>
+        <canvas id="chart-transferencias" role="img" aria-label="Gráfico de transferências"></canvas>
+      </div>
+
+      <div class="grafico-box">
+        <h3>🔍 Atendimentos por Analista</h3>
+        <canvas id="chart-analista" role="img" aria-label="Gráfico de atendimentos por analista"></canvas>
+      </div>
+
+      <!-- Linha 3 — gráfico largo -->
+      <div class="grafico-box grafico-box--largo">
+        <h3>🏆 Pontos por Colaborador (Top 10)</h3>
+        <canvas id="chart-pontos" role="img" aria-label="Gráfico de pontos por colaborador"></canvas>
+      </div>
+
+    </div>
+  </section>
+
+  </main><!-- /#conteudo-principal -->
+
   <script>
-    // =====================================
+    // ================================================
     // ESTADO GLOBAL DO SISTEMA
-    // =====================================
+    // Armazena todos os dados carregados do servidor
+    // para evitar chamadas repetidas ao backend.
+    // ================================================
     var cacheDadosApp = {
       equipes: [],
       colaboradores: [],
@@ -1593,7 +1957,7 @@
       rankingTimes: [],
       rankingIndividual: []
     };
-    let isSubmitting = false; // Flag global para travar duplo clique
+    let isSubmitting = false; // Flag que impede duplo clique (trava o botão durante envio)
 
     document.addEventListener('DOMContentLoaded', () => {
       const links = document.querySelectorAll('#sidebar nav a');
@@ -1609,6 +1973,10 @@
           this.classList.add('ativo');
           const target = document.querySelector(this.getAttribute('href'));
           if (target) target.style.display = 'block';
+          // Renderiza gráficos quando a aba 5 é selecionada
+          if (this.getAttribute('href') === '#tab5') {
+            setTimeout(renderizarGraficos, 80);
+          }
         });
 
         // Listeners da Tab 2
@@ -1701,9 +2069,10 @@
       }
     });
 
-    // =====================================
+    // ================================================
     // PREENCHER DATA DE HOJE (ABA 2)
-    // =====================================
+    // Chamada ao inicializar e após reset do formulário.
+    // ================================================
     function preencherDataHoje() {
       const hoje = new Date();
       const elDia = document.getElementById('atend-dia');
@@ -1715,9 +2084,10 @@
       if (elAno) elAno.value = hoje.getFullYear();
     }
 
-    // =====================================
-    // BLINDAGEM TECLADO (APENAS NÚMEROS)
-    // =====================================
+    // ================================================
+    // BLINDAGEM DE TECLADO (SOMENTE NÚMEROS)
+    // Impede que letras sejam digitadas em campos numéricos.
+    // ================================================
     function bloquearCaracteresNaoNumericos(e) {
       // Permite teclas de controle (Backspace, Tab, Setas, Delete, etc)
       if (['Backspace', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End'].includes(e.key)) {
@@ -1733,9 +2103,10 @@
       }
     }
 
-    // =====================================
-    // MÁSCARA DE MOEDA
-    // =====================================
+    // ================================================
+    // MÁSCARA DE MOEDA (R$ 1.234,56)
+    // Formata o campo em tempo real conforme o usuário digita.
+    // ================================================
     function formatarInputMoeda(e) {
       let valor = e.target.value.replace(/\D/g, '');
       if (valor === '') {
@@ -1748,9 +2119,9 @@
       e.target.value = 'R$ ' + valor;
     }
 
-    // =====================================
-    // MÁSCARA DE CPF
-    // =====================================
+    // ================================================
+    // MÁSCARA DE CPF (000.000.000-00)
+    // ================================================
     function formatarInputCPF(e) {
       let valor = e.target.value.replace(/\D/g, ''); // Remove tudo que não for dígito
       if (valor.length > 11) valor = valor.substring(0, 11); // Limita a 11 números reais
@@ -1760,9 +2131,10 @@
       e.target.value = valor;
     }
 
-    // =====================================
-    // VALIDAÇÃO MATEMÁTICA DE CPF
-    // =====================================
+    // ================================================
+    // VALIDAÇÃO MATEMÁTICA DE CPF (dígitos verificadores)
+    // Retorna true se o CPF for matematicamente válido.
+    // ================================================
     function validarCPF(cpf) {
       cpf = cpf.replace(/[^\d]+/g, ''); // Remove formatação
       if (cpf === '') return false;
@@ -1790,9 +2162,10 @@
       return true;
     }
 
-    // =====================================
-    // CONFIGURAÇÃO DE CARGOS
-    // =====================================
+    // ================================================
+    // CONFIGURAÇÃO DOS CARGOS PERMITIDOS
+    // Popula selects de cargo com as opções válidas do sistema.
+    // ================================================
     function configurarCargosPermitidos() {
       const cargosPermitidos = ['Central Vida', 'Emissão VI'];
       const idsCargos = ['cad-colab-cargo', 'edit-colab-cargo', 'atend-cargo']; // Ajuste os IDs conforme o seu HTML
@@ -1807,9 +2180,11 @@
       });
     }
 
-    // =====================================
-    // FUNÇÕES DE MODAL E FEEDBACK
-    // =====================================
+    // ================================================
+    // MODAIS E FEEDBACKS DE INTERFACE
+    // Funções para abrir/fechar modais, exibir mensagens
+    // de sucesso/erro e solicitar confirmação do usuário.
+    // ================================================
     function validarCamposObrigatorios(listaIds) {
       let valido = true;
       listaIds.forEach(id => {
@@ -1893,9 +2268,12 @@
       fecharModalConfirmacao();
     });
 
-    // =====================================
-    // CARREGAR E RENDERIZAR DADOS
-    // =====================================
+    // ================================================
+    // CARREGAR E RENDERIZAR DADOS DO SERVIDOR
+    // carregarDadosSistema() busca tudo via google.script.run.
+    // renderizarPainelCompleto() consome o resultado e
+    // atualiza toda a UI: tabelas, selects, ranking e cards.
+    // ================================================
     function carregarDadosSistema() {
       if (typeof google !== 'undefined') {
         google.script.run
@@ -1939,16 +2317,19 @@
       const selectAtendNome = document.getElementById('atend-nome');
       const selectFiltroPainel = document.getElementById('filtro-painel-individual');
       const selectFiltroEquipeAtendimentos = document.getElementById('filtro-equipe-atendimentos');
+      const selectGrafEquipe = document.getElementById('graf-equipe');
 
       let optionsHtml = '<option value="" disabled selected>Selecione a equipe...</option>';
       let filterOptionsHtml = '<option value="">Todos os Times</option>';
       let filterEquipeAtendHtml = '<option value="">Todas as Equipes</option>';
+      let grafEquipeHtml = '<option value="">Todas as Equipes</option>';
       let atendNomeHtml = '<option value="" disabled selected>Selecione o colaborador...</option>';
 
       listaEquipes.forEach(eq => {
         optionsHtml += `<option value="${eq}">${eq}</option>`;
         filterOptionsHtml += `<option value="${eq}">${eq}</option>`;
         filterEquipeAtendHtml += `<option value="${eq}">${eq}</option>`;
+        grafEquipeHtml += `<option value="${eq}">${eq}</option>`;
       });
       listaColaboradores.forEach(c => {
         atendNomeHtml += `<option value="${c.nome}">${c.nome}</option>`;
@@ -1958,6 +2339,7 @@
       if (selectFiltroTime) selectFiltroTime.innerHTML = filterOptionsHtml;
       if (selectFiltroPainel) selectFiltroPainel.innerHTML = filterOptionsHtml;
       if (selectFiltroEquipeAtendimentos) selectFiltroEquipeAtendimentos.innerHTML = filterEquipeAtendHtml;
+      if (selectGrafEquipe) selectGrafEquipe.innerHTML = grafEquipeHtml;
       if (selectAtendNome) {
         selectAtendNome.innerHTML = atendNomeHtml;
         selectAtendNome.onchange = function () {
@@ -2018,7 +2400,8 @@
       const cardLiderPontos = document.querySelector('.card-time-lider .podio-pontos');
       if (listaRankingTimes.length > 0) {
         if (cardLiderNome) cardLiderNome.innerText = listaRankingTimes[0].nome;
-        if (cardLiderPontos) cardLiderPontos.innerText = `${listaRankingTimes[0].pontos} pontos`;
+        // O número de pontos é exibido sozinho (a label "pontos totais" está no HTML)
+        if (cardLiderPontos) cardLiderPontos.innerText = listaRankingTimes[0].pontos;
       }
 
       const podioP = document.querySelectorAll('.podio-list p');
@@ -2049,35 +2432,45 @@
                 </tr>`).join('');
       }
 
-      // TABELA PRINCIPAL ABA 1 - Ajustada com 10 Colunas (Pontos na 9ª e Botões perfeitamente abaixo de Ações)
+      // TABELA PRINCIPAL ABA 1 — Atendimentos Auditados com badges de status
       const tbodyAtend = document.querySelector('#tab1 .painel-atendimentos-box table tbody');
       if (tbodyAtend) {
         if (listaAtendimentos.length === 0) {
-          tbodyAtend.innerHTML = '<tr><td colspan="11" class="text-center">Nenhum atendimento registrado no banco de dados.</td></tr>';
+          tbodyAtend.innerHTML = '<tr><td colspan="13" class="text-center">Nenhum atendimento registrado no banco de dados.</td></tr>';
         } else {
           tbodyAtend.innerHTML = listaAtendimentos.map(a => {
-            let cargoExibicao = a.cargo === "Emissão VI" ? "Emissão VI" : (a.cargo === "Central Vida" ? "Central Vida" : a.cargo);
+            const cargoExibicao = a.cargo === "Emissão VI" ? "Emissão VI" : (a.cargo === "Central Vida" ? "Central Vida" : a.cargo);
+
+            // Badge de retenção (Sim = verde, Não = vermelho)
+            const retidoLower  = (a.retido || '').toLowerCase();
+            const badgeRetido  = `<span class="badge badge-${retidoLower === 'sim' ? 'sim' : 'nao'}">${a.retido || '-'}</span>`;
+
+            // Badge de tipo de contato (Potencial = azul, Não potencial = amarelo)
+            const badgeTipo    = a.tipoContato === 'Potencial'
+              ? `<span class="badge badge-potencial">Potencial</span>`
+              : `<span class="badge badge-nao-potencial">${a.tipoContato || '-'}</span>`;
+
+            // Transfer\u00eancia \u00e9 derivada do tipo de contato; exibe valor salvo ou calcula se vazio
+            const transVal     = a.transferencia || (a.tipoContato === 'Potencial' ? 'Devida' : 'Indevida');
+            const badgeTrans   = `<span class="badge badge-${transVal === 'Devida' ? 'devida' : 'indevida'}">${transVal}</span>`;
+
             return `
                 <tr>
-                    <td>${a.nome}</td>
-                    <td>${cargoExibicao}</td>
-                    <td>${a.equipe}</td>
+                    <td title="${a.nome}"><strong>${a.nome}</strong></td>
+                    <td title="${cargoExibicao}">${cargoExibicao}</td>
+                    <td title="${a.equipe}">${a.equipe}</td>
                     <td>${a.cpf}</td>
                     <td class="text-center">${a.dataContato}</td>
                     <td>${a.apolice}</td>
-                    <td class="text-right">R$${a.premio}</td>
-                    <td>${a.tipoContato}</td>
-                    <td class="text-center">${a.retido}</td>
-                    <!-- FUTURA MELHORIA: Dados de Analista e Transferência
-                    <td>\${a.analista || '-'}</td>
-                    <td>\${a.transferencia || '-'}</td>
-                    -->
-                    <td class="text-center" style="font-weight:bold; background-color: #eaf4ff;">${a.pontos}</td>
-                    <td class="text-center">
-                        <div style="display:flex; gap:6px; justify-content:center;">
-                            <button class="btn-azul-brasil" style="padding: 6px 12px; border:none; border-radius:4px; color:#fff; cursor:pointer;" onclick="acionarEdicaoAtendimentoNoModal(${a.linha})">Editar</button>
-                            <button class="btn-limpar" style="padding: 4px 10px; border:none; border-radius:4px; color:#fff; cursor:pointer; font-size:0.85rem;" onclick="excluirAtendimentoUnico(${a.linha})">Excluir</button>
-                        </div>
+                    <td class="text-right">${a.premio}</td>
+                    <td class="text-center">${badgeTipo}</td>
+                    <td class="text-center">${badgeRetido}</td>
+                    <td title="${a.analista || ''}">${a.analista || '<span style="color:#aaa;">—</span>'}</td>
+                    <td class="text-center">${badgeTrans}</td>
+                    <td class="text-center" style="font-weight:bold; color: var(--azul); background-color: #eaf4ff;">${a.pontos}</td>
+                    <td class="text-center" style="white-space:nowrap;">
+                        <button class="btn-azul-brasil" style="padding:4px 10px; font-size:0.78rem;" onclick="acionarEdicaoAtendimentoNoModal(${a.linha})">Editar</button>
+                        <button class="btn-limpar" style="padding:4px 8px; font-size:0.78rem;" onclick="excluirAtendimentoUnico(${a.linha})">Excluir</button>
                     </td>
                 </tr>
             `}).join('');
@@ -2112,9 +2505,10 @@
       filtrarTabelaPontos();
     }
 
-    // =====================================
-    // AÇÕES DE DADOS (C, U, D)
-    // =====================================
+    // ================================================
+    // AÇÕES DE DADOS (CRUD)
+    // Funções de cadastro, edição, exclusão e salvamento.
+    // ================================================
     function excluirAtendimentoUnico(linha) {
       confirmarAcao('Tem certeza que deseja excluir permanentemente este atendimento?', () => {
         google.script.run
@@ -2155,6 +2549,8 @@
       document.getElementById('edit-atend-premio').value = atend.premio !== "0,00" ? atend.premio : "";
       document.getElementById('edit-atend-tipo').value = atend.tipoContato !== "-" ? atend.tipoContato : "Potencial";
       document.getElementById('edit-atend-retido').value = atend.retido !== "" ? atend.retido : "Sim";
+      document.getElementById('edit-atend-analista').value = atend.analista || "";
+      // Transferência é calculada automaticamente pelo servidor — não é exibida como campo editável
 
       // Força o recalculo do mostrador visual de pontos ao carregar o modal
       atualizarPontosModalEdicao();
@@ -2163,7 +2559,7 @@
 
     function salvarEdicaoAtendimento(btn) {
       if (isSubmitting) return;
-      const camposObrigatorios = ['edit-atend-nome', 'edit-atend-cargo', 'edit-atend-cpf', 'edit-atend-dia', 'edit-atend-mes', 'edit-atend-ano', 'edit-atend-apolice', 'edit-atend-premio', 'edit-atend-tipo', 'edit-atend-retido'];
+      const camposObrigatorios = ['edit-atend-nome', 'edit-atend-cargo', 'edit-atend-cpf', 'edit-atend-dia', 'edit-atend-mes', 'edit-atend-ano', 'edit-atend-apolice', 'edit-atend-premio', 'edit-atend-tipo', 'edit-atend-retido', 'edit-atend-analista'];
       if (!validarCamposObrigatorios(camposObrigatorios)) {
         return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios destacados.');
       }
@@ -2179,6 +2575,9 @@
       const premio = document.getElementById('edit-atend-premio').value;
       const tipoContato = document.getElementById('edit-atend-tipo').value;
       const retido = document.getElementById('edit-atend-retido').value;
+      const analista = document.getElementById('edit-atend-analista').value;
+      // Transferência é derivada do tipo de contato: Potencial = Devida | Não potencial = Indevida
+      const transferencia = tipoContato === 'Potencial' ? 'Devida' : 'Indevida';
 
       if (!validarCPF(cpf)) {
         document.getElementById('edit-atend-cpf').classList.add('input-erro');
@@ -2198,7 +2597,7 @@
       }
 
       const dataContato = `${dia}/${mes}/${ano}`;
-      const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido };
+      const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido, analista, transferencia };
 
       showLoading(btn);
       google.script.run
@@ -2288,7 +2687,7 @@
 
     function salvarDadosAtendimento(btn) {
       if (isSubmitting) return;
-      const camposObrigatorios = ['atend-nome', 'atend-cargo', 'atend-cpf', 'atend-dia', 'atend-mes', 'atend-ano', 'atend-apolice', 'atend-premio', 'atend-tipo', 'atend-retido'];
+      const camposObrigatorios = ['atend-nome', 'atend-cargo', 'atend-cpf', 'atend-dia', 'atend-mes', 'atend-ano', 'atend-apolice', 'atend-premio', 'atend-tipo', 'atend-retido', 'atend-analista'];
       if (!validarCamposObrigatorios(camposObrigatorios)) {
         return abrirFeedback('modal-erro', 'Preencha todos os campos obrigatórios destacados.');
       }
@@ -2322,7 +2721,10 @@
       }
 
       const dataContato = `${dia}/${mes}/${ano}`;
-      const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido };
+      const analista = document.getElementById('atend-analista').value;
+      // Transferência é derivada do tipo de contato: Potencial = Devida | Não potencial = Indevida
+      const transferencia = tipoContato === 'Potencial' ? 'Devida' : 'Indevida';
+      const payload = { nome, cargo, cpf, dataContato, apolice, premio, tipoContato, retido, analista, transferencia };
 
       showLoading(btn);
       google.script.run
@@ -2476,9 +2878,12 @@
         .atualizarColaboradorNoSheets(nomeAntigo, nomeNovo, cargoNovo, equipeNova);
     }
 
-    // =======================================================
-    // FILTROS
-    // =======================================================
+    // ================================================
+    // FILTROS INTERATIVOS
+    // Funções que filtram as tabelas em tempo real.
+    // filtrarPorStatusCard() sincroniza os card-buttons
+    // com o select de filtro de retenção.
+    // ================================================
     function filtrarTabelaPontos() {
       const elBusca = document.getElementById('busca-colaborador');
       const elTime = document.getElementById('filtro-time');
@@ -2589,12 +2994,9 @@
         podioLista.innerHTML = '<li style="text-align: center; padding: 15px; color: #777; list-style: none;">Escolha o período e clique em Buscar.</li>';
       }
 
-      // 3. Segurança para manter compatibilidade se esses elementos ainda existirem em outro lugar
+      // 3. Limpa o rodapé residual caso estivesse visível
       const tbody = document.getElementById('tbody-filtro-aba1');
       if (tbody) tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 15px; color: #777;"></td></tr>';
-
-      const containerMetricas = document.getElementById('metricas-filtro-container');
-      if (containerMetricas) containerMetricas.style.display = 'none';
 
       // 4. Abre o modal exibindo em modo Flexo
       const modal = document.getElementById('modal-filtro-data-aba1');
@@ -2725,7 +3127,7 @@
         }
 
         const colunas = linha.querySelectorAll('td');
-        if (colunas.length >= 10) {
+        if (colunas.length >= 12) {  // 13 colunas no total (0-12), verificamos pelo menos 12
           const textoLinha = linha.textContent.toLowerCase();
           const equipeCol = colunas[2].textContent.toLowerCase().trim();
           const retidoCol = colunas[8].textContent.toLowerCase().trim();
@@ -2747,7 +3149,7 @@
               somaNaoRetidos += 1;
             }
 
-            const pontosStr = colunas[9].textContent.trim();
+            const pontosStr = colunas[11].textContent.trim();
             somaPontos += parseFloat(pontosStr) || 0;
           } else {
             linha.style.display = 'none';
@@ -2766,6 +3168,22 @@
       if (elNaoRetidos) elNaoRetidos.textContent = somaNaoRetidos;
       if (elPremio) elPremio.textContent = somaPremio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       if (elPontos) elPontos.textContent = somaPontos;
+
+      // Rodapé de resumo: só aparece quando há algum filtro ativo
+      const temFiltro = termo !== '' || equipeFiltro !== '' || retidoFiltro !== '';
+      const rodape = document.getElementById('rodapeResumoFiltro');
+      if (rodape) rodape.style.display = temFiltro ? 'flex' : 'none';
+
+      const elCardTotal = document.getElementById('card-num-total');
+      const elCardRetidos = document.getElementById('card-num-retidos');
+      const elCardNaoRetidos = document.getElementById('card-num-nao-retidos');
+      const elCardPontos = document.getElementById('card-total-pontos');
+      const elCardPremio = document.getElementById('card-total-premio');
+      if (elCardTotal) elCardTotal.textContent = somaAtendimentos;
+      if (elCardRetidos) elCardRetidos.textContent = somaRetidos;
+      if (elCardNaoRetidos) elCardNaoRetidos.textContent = somaNaoRetidos;
+      if (elCardPontos) elCardPontos.textContent = somaPontos;
+      if (elCardPremio) elCardPremio.textContent = somaPremio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
     function limparFiltrosAtendimentos() {
@@ -2777,14 +3195,61 @@
       if (selectEquipe) selectEquipe.value = '';
       if (selectRetido) selectRetido.value = '';
 
+      // Reativa o card "Total" e reexibe ambos os cards de retenção
+      document.querySelectorAll('.btn-status-filtro').forEach(btn => btn.classList.remove('ativo'));
+      const btnTodos = document.getElementById('btn-card-todos');
+      if (btnTodos) btnTodos.classList.add('ativo');
+
+      const cardRetidos = document.getElementById('btn-card-retidos');
+      const cardNaoRetidos = document.getElementById('btn-card-nao-retidos');
+      if (cardRetidos) cardRetidos.style.display = '';
+      if (cardNaoRetidos) cardNaoRetidos.style.display = '';
+
       aplicarFiltroAtendimentos();
     }
 
-    // ==========================================
-    // CONFIGURAÇÃO DOS LISTENERS DE CÁLCULO AUTOMÁTICO
-    // ==========================================
+    function filtrarPorStatusCard(valor) {
+      // Sincroniza o select de retenção com o card clicado
+      const selectRetido = document.getElementById('filtro-retido-atendimentos');
+      if (selectRetido) selectRetido.value = valor;
 
-    // Função auxiliar para calcular pontos no front-end em tempo real
+      // Marca o card ativo
+      document.querySelectorAll('.btn-status-filtro').forEach(btn => btn.classList.remove('ativo'));
+      const btnAlvo = document.querySelector(`.btn-status-filtro[data-valor="${valor}"]`);
+      if (btnAlvo) btnAlvo.classList.add('ativo');
+
+      // Esconde o card oposto para não exibir informação irrelevante
+      const cardRetidos    = document.getElementById('btn-card-retidos');
+      const cardNaoRetidos = document.getElementById('btn-card-nao-retidos');
+      if (cardRetidos && cardNaoRetidos) {
+        if (valor === 'sim') {
+          // Filtrando retidos: oculta o card de não retidos
+          cardNaoRetidos.style.display = 'none';
+          cardRetidos.style.display    = '';
+        } else if (valor === 'não') {
+          // Filtrando não retidos: oculta o card de retidos
+          cardRetidos.style.display    = 'none';
+          cardNaoRetidos.style.display = '';
+        } else {
+          // "Total" selecionado: mostra ambos
+          cardRetidos.style.display    = '';
+          cardNaoRetidos.style.display = '';
+        }
+      }
+
+      aplicarFiltroAtendimentos();
+    }
+
+    // ================================================
+    // CÁLCULO DE PONTOS NO FRONT-END (PREVIEW AO VIVO)
+    // Espelha a lógica do servidor para mostrar a pontuação
+    // estimada antes de salvar.
+    // ================================================
+
+    /**
+     * Calcula pontos com as 3 regras de negócio.
+     * Deve ser mantida sincronizada com calcularPontosAutomatizados() no code.gs.
+     */
     function calcularPontosNoFront(tipoContato, retido, premioStr) {
       let totalPontos = 0;
 
@@ -2834,6 +3299,231 @@
       if (inputPontos) {
         inputPontos.value = calcularPontosNoFront(tipo, retido, premio);
       }
+    }
+
+    // ================================================
+    // ABA 5 — GRÁFICOS & ANÁLISES
+    // Instâncias dos gráficos Chart.js (destruídas antes de recriar)
+    // ================================================
+    var chartsInstances = {};
+
+    /**
+     * Renderiza todos os gráficos da Aba 5 aplicando os filtros
+     * de data e equipe selecionados pelo usuário.
+     */
+    function renderizarGraficos() {
+      var dataInicio  = (document.getElementById('graf-data-inicio') || {}).value || '';
+      var dataFim     = (document.getElementById('graf-data-fim')    || {}).value || '';
+      var equipe      = (document.getElementById('graf-equipe')      || {}).value || '';
+
+      // Cópia dos atendimentos com filtros aplicados
+      var dados = (cacheDadosApp.atendimentos || []).slice();
+
+      function parseDataBR(str) {
+        // Aceita DD/MM/YYYY ou YYYY-MM-DD
+        if (!str) return null;
+        var partes;
+        if (str.indexOf('/') !== -1) {
+          partes = str.split('/');
+          return new Date(parseInt(partes[2], 10), parseInt(partes[1], 10) - 1, parseInt(partes[0], 10));
+        }
+        partes = str.split('-');
+        return new Date(parseInt(partes[0], 10), parseInt(partes[1], 10) - 1, parseInt(partes[2], 10));
+      }
+
+      if (dataInicio) {
+        var inicio = parseDataBR(dataInicio);
+        dados = dados.filter(function(a) {
+          var d = parseDataBR(a.dataContato);
+          return d && d >= inicio;
+        });
+      }
+      if (dataFim) {
+        var fim = parseDataBR(dataFim);
+        dados = dados.filter(function(a) {
+          var d = parseDataBR(a.dataContato);
+          return d && d <= fim;
+        });
+      }
+      if (equipe) {
+        dados = dados.filter(function(a) { return a.equipe === equipe; });
+      }
+
+      // --- Gráfico 1: Atendimentos por Dia ---
+      var mapaAtend = {};
+      dados.forEach(function(a) {
+        var k = a.dataContato || 'Sem data';
+        mapaAtend[k] = (mapaAtend[k] || 0) + 1;
+      });
+      var diasKeys = Object.keys(mapaAtend).sort(function(a, b) {
+        var da = parseDataBR(a), db = parseDataBR(b);
+        return (da || 0) - (db || 0);
+      });
+      criarGrafico('chart-atend-dia', 'bar',
+        diasKeys,
+        diasKeys.map(function(k) { return mapaAtend[k]; }),
+        'Atendimentos', '#002776', null, false
+      );
+
+      // --- Gráfico 2: Prêmio por Dia ---
+      var mapaPremio = {};
+      dados.forEach(function(a) {
+        var k   = a.dataContato || 'Sem data';
+        var raw = (a.premio || '0').toString()
+                    .replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+        var val = parseFloat(raw) || 0;
+        mapaPremio[k] = (mapaPremio[k] || 0) + val;
+      });
+      criarGrafico('chart-premio-dia', 'line',
+        diasKeys,
+        diasKeys.map(function(k) { return +(mapaPremio[k] || 0).toFixed(2); }),
+        'Prêmio (R$)', '#009B3A', null, false
+      );
+
+      // --- Gráfico 3: Transferências (doughnut) ---
+      var devidas = 0, indevidas = 0;
+      dados.forEach(function(a) {
+        var t = a.transferencia || (a.tipoContato === 'Potencial' ? 'Devida' : 'Indevida');
+        if (t === 'Devida') devidas++; else indevidas++;
+      });
+      criarGraficoPizza('chart-transferencias',
+        ['Devidas', 'Indevidas'],
+        [devidas, indevidas],
+        ['#009B3A', '#E53935']
+      );
+
+      // --- Gráfico 4: Atendimentos por Analista ---
+      var mapaAnalista = {};
+      dados.forEach(function(a) {
+        var nome = a.analista || 'Sem analista';
+        mapaAnalista[nome] = (mapaAnalista[nome] || 0) + 1;
+      });
+      var analistasKeys = Object.keys(mapaAnalista).sort(function(a, b) {
+        return mapaAnalista[b] - mapaAnalista[a];
+      });
+      criarGrafico('chart-analista', 'bar',
+        analistasKeys,
+        analistasKeys.map(function(k) { return mapaAnalista[k]; }),
+        'Atendimentos', '#FEDF00', '#002776', false
+      );
+
+      // --- Gráfico 5: Top 10 colaboradores por pontos ---
+      var rankFiltrado = (cacheDadosApp.rankingIndividual || [])
+        .filter(function(r) { return !equipe || r.equipe === equipe; })
+        .slice(0, 10);
+      criarGrafico('chart-pontos', 'bar',
+        rankFiltrado.map(function(r) { return r.nome; }),
+        rankFiltrado.map(function(r) { return r.pontos; }),
+        'Pontos', '#002776', null, false
+      );
+    }
+
+    /**
+     * Cria (ou recria) um gráfico de barras ou linha no canvas informado.
+     * @param {string} id          - ID do elemento <canvas>
+     * @param {string} tipo        - 'bar' | 'line'
+     * @param {Array}  labels      - Rótulos do eixo X
+     * @param {Array}  valores     - Valores numéricos
+     * @param {string} label       - Nome do dataset
+     * @param {string} cor         - Cor HEX principal
+     * @param {string|null} corTexto - Cor dos labels do eixo X (opcional)
+     * @param {boolean} fill       - Preencher área sob a linha (apenas 'line')
+     */
+    function criarGrafico(id, tipo, labels, valores, label, cor, corTexto, fill) {
+      if (chartsInstances[id]) { chartsInstances[id].destroy(); }
+      var ctx = document.getElementById(id);
+      if (!ctx) return;
+      chartsInstances[id] = new Chart(ctx, {
+        type: tipo,
+        data: {
+          labels: labels,
+          datasets: [{
+            label: label,
+            data: valores,
+            backgroundColor: cor + (tipo === 'line' ? '33' : 'BB'),
+            borderColor: cor,
+            borderWidth: 2,
+            fill: fill || false,
+            tension: 0.35,
+            borderRadius: tipo === 'bar' ? 4 : 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: { mode: 'index', intersect: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { color: '#555', font: { size: 11 } },
+              grid: { color: 'rgba(0,0,0,0.06)' }
+            },
+            x: {
+              ticks: {
+                color: corTexto || '#555',
+                font: { size: 11 },
+                maxRotation: 40,
+                minRotation: 0
+              },
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    /**
+     * Cria (ou recria) um gráfico doughnut (pizza) no canvas informado.
+     * @param {string} id     - ID do <canvas>
+     * @param {Array}  labels - Rótulos das fatias
+     * @param {Array}  valores - Valores numéricos de cada fatia
+     * @param {Array}  cores  - Array de cores HEX
+     */
+    function criarGraficoPizza(id, labels, valores, cores) {
+      if (chartsInstances[id]) { chartsInstances[id].destroy(); }
+      var ctx = document.getElementById(id);
+      if (!ctx) return;
+      chartsInstances[id] = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: valores,
+            backgroundColor: cores,
+            borderWidth: 3,
+            borderColor: '#fff',
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          cutout: '62%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { font: { size: 12 }, padding: 16, usePointStyle: true }
+            },
+            tooltip: { mode: 'index' }
+          }
+        }
+      });
+    }
+
+    /**
+     * Limpa os filtros da Aba 5 e re-renderiza todos os gráficos.
+     */
+    function limparFiltrosGraficos() {
+      var elInicio = document.getElementById('graf-data-inicio');
+      var elFim    = document.getElementById('graf-data-fim');
+      var elEq     = document.getElementById('graf-equipe');
+      if (elInicio) elInicio.value = '';
+      if (elFim)    elFim.value    = '';
+      if (elEq)     elEq.value     = '';
+      renderizarGraficos();
     }
   </script>
 </body>

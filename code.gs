@@ -1,19 +1,55 @@
 /**
- * Sistema de Campanhas Integrado - Backend Google Apps Script
+ * =========================================================================
+ * Sistema de Campanhas Integrado — Backend Google Apps Script
+ * =========================================================================
+ *
+ * Responsabilidades:
+ *   - Servir a interface web (doGet)
+ *   - Ler e processar dados das abas do Sheets (buscarDadosIniciais)
+ *   - Salvar, editar e excluir registros (salvarAtendimento, excluir...)
+ *   - Calcular pontuações automaticamente (calcularPontosAutomatizados)
+ *   - Garantir a estrutura correta das abas (verificarESetupPlanilhas)
+ *
+ * Estrutura de colunas da aba "atendimento":
+ *   [0]  Nome Colaborador      [1]  Cargo
+ *   [2]  CPF                   [3]  Data do Contato
+ *   [4]  Nº da Apólice         [5]  Valor do Prêmio
+ *   [6]  Tipo de Contato       [7]  Foi Retido?
+ *   [8]  Nome do Analista      [9]  Transferência
+ *   [10] Pontuação Atendimento [11] Data Registro
+ * =========================================================================
  */
 
-const SPREADSHEET_ID = "1kS-cCzgiUD5XS0WYEkYnpIQzS8qC7pt5hclCvoN7E70";
+/** ID fixo da planilha. Altere aqui se mover para outra planilha. */
+var SPREADSHEET_ID = "1kS-cCzgiUD5XS0WYEkYnpIQzS8qC7pt5hclCvoN7E70";
 
+/**
+ * Ponto de entrada da aplicação web.
+ * Serve o arquivo HTML 'Index' como interface para o usuário.
+ */
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('Index')
       .setTitle('Sistema de Campanhas - Copa')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
+/**
+ * Abre a planilha pelo ID fixo definido em SPREADSHEET_ID.
+ * Usar openById() é mais seguro que getActiveSpreadsheet() em web apps,
+ * pois garante que o script sempre encontre a planilha correta.
+ * @returns {GoogleAppsScript.Spreadsheet.Spreadsheet}
+ */
 function obterPlanilha() {
   return SpreadsheetApp.openById(SPREADSHEET_ID);
 }
 
+/**
+ * Busca uma aba (sheet) pelo nome de forma insensível a maiúsculas/minúsculas.
+ * Útil para evitar erros caso o usuário renomeie a aba com capitalização diferente.
+ * @param {GoogleAppsScript.Spreadsheet.Spreadsheet} ss - A planilha.
+ * @param {string} nomeDesejado - Nome da aba a localizar.
+ * @returns {GoogleAppsScript.Spreadsheet.Sheet|null} A aba encontrada ou null.
+ */
 function obterAbaSegura(ss, nomeDesejado) {
   var sheets = ss.getSheets();
   for (var i = 0; i < sheets.length; i++) {
@@ -21,10 +57,17 @@ function obterAbaSegura(ss, nomeDesejado) {
       return sheets[i];
     }
   }
-  return null;
+  return null; // Aba não encontrada
 }
 
+/**
+ * Função principal chamada pelo front-end ao inicializar a página.
+ * Lê todas as abas, processa os dados e retorna um objeto consolidado
+ * com equipes, colaboradores, atendimentos e rankings calculados.
+ * @returns {Object} { usuario, equipes, colaboradores, atendimentos, rankingIndividual, rankingTimes }
+ */
 function buscarDadosIniciais() {
+  // Garante que todas as abas necessárias existam antes de tentar ler
   verificarESetupPlanilhas();
   
   var ss = obterPlanilha();
@@ -40,7 +83,7 @@ function buscarDadosIniciais() {
   var atendimentosRaw = sheetAtendimento ? sheetAtendimento.getDataRange().getValues() : [];
   var pontuacoesRaw = sheetPontuacao ? sheetPontuacao.getDataRange().getValues() : [];
   
-  // 1. Processar Equipes
+  // --- 1. Processar lista de Equipes ---
   var equipes = [];
   if (equipesRaw.length > 1) {
     for (var e = 1; e < equipesRaw.length; e++) {
@@ -48,7 +91,7 @@ function buscarDadosIniciais() {
     }
   }
 
-  // 2. Processar Colaboradores e criar mapa de equipes
+  // --- 2. Processar Colaboradores e criar mapa nome → equipe ---
   var colaboradores = [];
   var colabEquipeMap = {};
   if (colaboradoresRaw.length > 1) {
@@ -66,7 +109,7 @@ function buscarDadosIniciais() {
     }
   }
   
-  // 3. Processar Atendimentos para exibição (📋 Atendimentos Auditados)
+  // --- 3. Processar Atendimentos para exibição na tabela (últimos 50 registros) ---
   var atendimentos = [];
   if (atendimentosRaw.length > 1) {
     var limite = Math.max(1, atendimentosRaw.length - 50);
@@ -92,21 +135,19 @@ function buscarDadosIniciais() {
           premio: atendimentosRaw[j][5] != null && atendimentosRaw[j][5] !== "" ? atendimentosRaw[j][5].toString() : "0,00",
           tipoContato: atendimentosRaw[j][6] != null && atendimentosRaw[j][6] !== "" ? atendimentosRaw[j][6].toString() : "-",
           retido: atendimentosRaw[j][7] != null ? atendimentosRaw[j][7].toString() : "",
-          
-          // --- FUTURA MELHORIA: Ler os dados de Analista e Transferência da planilha
-          // analista: atendimentosRaw[j][8] != null ? atendimentosRaw[j][8].toString() : "",
-          // transferencia: atendimentosRaw[j][9] != null ? atendimentosRaw[j][9].toString() : "",
-          // OBS: Após adicionar as colunas, o índice do "atendimentosRaw[j][8]" do campo pontos mudará para [10].
-          pontos: atendimentosRaw[j][8] != null && atendimentosRaw[j][8] !== "" ? parseFloat(atendimentosRaw[j][8]) : 0
+          analista: atendimentosRaw[j][8] != null ? atendimentosRaw[j][8].toString() : "",
+          transferencia: atendimentosRaw[j][9] != null ? atendimentosRaw[j][9].toString() : "",
+          pontos: atendimentosRaw[j][10] != null && atendimentosRaw[j][10] !== "" ? parseFloat(atendimentosRaw[j][10]) : 0
         });
       }
     }
   }
 
-  // 4. Processar Rankings (Unificação das duas origens de pontos)
-  var scoreIndividualMap = {};
-  var scoreTeamMap = {};
-  
+  // --- 4. Calcular Rankings (unifica pontos de atendimento + lançamentos manuais) ---
+  var scoreIndividualMap = {}; // { nomePessoa: { pontos, equipe } }
+  var scoreTeamMap       = {}; // { nomeEquipe: totalPontos }
+
+  // Inicializa todos com zero para garantir que apareçam no ranking mesmo sem pontos
   colaboradores.forEach(function(c) {
     scoreIndividualMap[c.nome] = { pontos: 0, equipe: c.equipe };
   });
@@ -114,11 +155,12 @@ function buscarDadosIniciais() {
     scoreTeamMap[eq] = 0;
   });
 
-  // A) Somar pontos vindos diretamente da aba ATENDIMENTO
+  // A) Somar pontos vindos diretamente da aba ATENDIMENTO (coluna 10 = Pontuação)
   if (atendimentosRaw.length > 1) {
     for (var m = 1; m < atendimentosRaw.length; m++) {
       var aNome = atendimentosRaw[m][0] ? atendimentosRaw[m][0].toString().trim() : null;
-      var aPts = parseFloat(atendimentosRaw[m][8]) || 0;
+      // CORRIGIDO: índice [10] = Pontuação Atendimento (anteriormente [8] era o Nome do Analista)
+      var aPts = parseFloat(atendimentosRaw[m][10]) || 0;
       if (!aNome) continue;
       
       var aEquipe = colabEquipeMap[aNome] || "";
@@ -157,6 +199,7 @@ function buscarDadosIniciais() {
     }
   }
 
+  // Remove possíveis cabeçalhos que podem ter sido incluídos acidentalmente
   delete scoreIndividualMap["Nome Completo"];
   delete scoreIndividualMap["Nome Colaborador"];
   delete scoreTeamMap["Nome da Equipe"];
@@ -180,16 +223,28 @@ function buscarDadosIniciais() {
   };
 }
 
-// ========================
-// FUNÇÕES DE ESCRITA E DELEÇÃO
-// ========================
+// =========================================================================
+// FUNÇÕES DE ESCRITA (CREATE / UPDATE / DELETE)
+// =========================================================================
 
+/**
+ * Adiciona uma nova equipe na aba "equipes".
+ * @param {string} nome - Nome da equipe.
+ * @returns {boolean}
+ */
 function incluirEquipe(nome) {
   var sheet = obterAbaSegura(obterPlanilha(), "equipes");
   if (sheet) { sheet.appendRow([nome]); return true; }
   return false;
 }
 
+/**
+ * Adiciona um novo colaborador na aba "colaboradores".
+ * @param {string} nome   - Nome completo.
+ * @param {string} cargo  - Cargo (ex: "Emissão VI", "Central Vida").
+ * @param {string} equipe - Nome da equipe.
+ * @returns {boolean}
+ */
 function incluirColaborador(nome, cargo, equipe) {
   var sheet = obterAbaSegura(obterPlanilha(), "colaboradores");
   if (sheet) { sheet.appendRow([nome, cargo, equipe]); return true; }
@@ -197,30 +252,41 @@ function incluirColaborador(nome, cargo, equipe) {
 }
 
 /**
- * Salva ou edita um atendimento incluindo o novo campo de pontuação direta.
+ * Salva ou edita um atendimento na aba "atendimento".
+ *
+ * Regra de negócio: a Transferência é derivada automaticamente do Tipo de Contato:
+ *   - "Potencial"     → Transferência = "Devida"
+ *   - "Não potencial" → Transferência = "Indevida"
+ * O campo não é aceito do formulário — é sempre recalculado aqui no servidor.
+ *
+ * @param {Object}      dados     - Dados enviados pelo front-end.
+ * @param {number|null} linhaEdit - Linha da planilha para editar; null para inserir.
+ * @returns {boolean}
  */
 function salvarAtendimento(dados, linhaEdit) {
   try {
     var sheet = obterAbaSegura(obterPlanilha(), "atendimento");
     if (sheet) {
-      
-      // Força o cálculo automatizado direto no servidor baseado nas regras informadas
+
+      // Pontuação calculada no servidor — é a fonte da verdade, não aceita do front-end
       var pontosCalculados = calcularPontosAutomatizados(dados.tipoContato, dados.retido, dados.premio);
-      
+
+      // Transferência derivada do tipo de contato (regra de negócio automática)
+      var transferenciaCalculada = (dados.tipoContato === "Potencial") ? "Devida" : "Indevida";
+
       var rowData = [
-        dados.nome, 
-        dados.cargo, 
-        dados.cpf, 
+        dados.nome,
+        dados.cargo,
+        dados.cpf,
         dados.dataContato,
-        dados.apolice, 
-        dados.premio, 
-        dados.tipoContato, 
-        dados.retido, 
-        // --- FUTURA MELHORIA: Incluir as variáveis passadas pelo form no Sheets
-        // dados.analista,
-        // dados.transferencia,
-        pontosCalculados, // Grava a pontuação exata gerada pela inteligência do script
-        new Date()
+        dados.apolice,
+        dados.premio,
+        dados.tipoContato,
+        dados.retido,
+        dados.analista || "",
+        transferenciaCalculada,  // Calculada automaticamente — não vem do formulário
+        pontosCalculados,
+        new Date()               // Timestamp de registro
       ];
       
       if (linhaEdit) {
@@ -237,15 +303,29 @@ function salvarAtendimento(dados, linhaEdit) {
   }
 }
 
+/**
+ * Registra um lançamento manual de pontos na aba "pontuacao".
+ * @param {string} nome   - Colaborador que recebe os pontos.
+ * @param {string} equipe - Equipe do colaborador.
+ * @param {number} pontos - Quantidade (pode ser negativo para penalidade).
+ * @param {string} motivo - Justificativa do lançamento.
+ * @returns {boolean}
+ */
 function lancarPontuacao(nome, equipe, pontos, motivo) {
   var sheet = obterAbaSegura(obterPlanilha(), "pontuacao");
-  if (sheet) { 
-    sheet.appendRow([nome, equipe, pontos, motivo, new Date()]); 
-    return true; 
+  if (sheet) {
+    sheet.appendRow([nome, equipe, pontos, motivo, new Date()]);
+    return true;
   }
   return false;
 }
 
+/**
+ * Exclui uma equipe e todos os colaboradores vinculados a ela.
+ * A varredura é feita de baixo para cima para não deslocar os índices de linha.
+ * @param {string} nomeEquipe - Nome da equipe a excluir.
+ * @returns {boolean} true se encontrou e excluiu.
+ */
 function excluirEquipeSheets(nomeEquipe) {
   var ss = obterPlanilha();
   var sheetEquipes = obterAbaSegura(ss, "equipes");
@@ -278,6 +358,11 @@ function excluirEquipeSheets(nomeEquipe) {
   return sucesso;
 }
 
+/**
+ * Exclui um colaborador da aba "colaboradores" pelo nome.
+ * @param {string} nomeColab - Nome do colaborador.
+ * @returns {boolean}
+ */
 function excluirColaboradorSheets(nomeColab) {
   var sheet = obterAbaSegura(obterPlanilha(), "colaboradores");
   if (!sheet) return false;
@@ -294,6 +379,11 @@ function excluirColaboradorSheets(nomeColab) {
   return false;
 }
 
+/**
+ * Exclui uma linha da aba "atendimento" pelo número da linha (1-based).
+ * @param {number} linha - Número da linha na planilha.
+ * @returns {boolean}
+ */
 function excluirAtendimentoSheets(linha) {
   try {
     var sheet = obterAbaSegura(obterPlanilha(), "atendimento");
@@ -306,15 +396,14 @@ function excluirAtendimentoSheets(linha) {
 }
 
 /**
- * Alinha e garante a estrutura correta de colunas de todas as abas.
- * Nova coluna inserida: "Pontuação Atendimento" na aba de atendimentos.
+ * Verifica se todas as abas necessárias existem e as cria se estiver faltando.
+ * Também define o cabeçalho formatado (negrito, fundo azul, texto branco).
+ * Deve ser chamada no início de buscarDadosIniciais() como verificação de saúde.
  */
 function verificarESetupPlanilhas() {
   var ss = obterPlanilha();
   var estruturas = {
-    "atendimento": ["Nome Colaborador", "Cargo", "CPF", "Data do Contato", "Nº da Apólice", "Valor do Prêmio", "Tipo de Contato", "Foi Retido?", "Pontuação Atendimento", "Data Registro"],
-    // --- FUTURA MELHORIA: A estrutura do atendimento passará a ter mais 2 colunas.
-    // "atendimento": ["Nome Colaborador", "Cargo", "CPF", "Data do Contato", "Nº da Apólice", "Valor do Prêmio", "Tipo de Contato", "Foi Retido?", "Nome do Analista", "Transferência", "Pontuação Atendimento", "Data Registro"],
+    "atendimento": ["Nome Colaborador", "Cargo", "CPF", "Data do Contato", "Nº da Apólice", "Valor do Prêmio", "Tipo de Contato", "Foi Retido?", "Nome do Analista", "Transferência", "Pontuação Atendimento", "Data Registro"],
     "pontuacao": ["Nome Colaborador", "Equipe", "Pontos Atribuídos", "Motivo", "Data do Lançamento"],
     "colaboradores": ["Nome Completo", "Cargo", "Equipe Associada"],
     "equipes": ["Nome da Equipe"]
@@ -330,12 +419,16 @@ function verificarESetupPlanilhas() {
   });
 }
 
-/**
- * =========================================================================
- * FUNÇÕES DE EDIÇÃO E ATUALIZAÇÃO (CONFIGURAÇÕES)
- * =========================================================================
- */
+// =========================================================================
+// FUNÇÕES DE ATUALIZAÇÃO (EDIÇÃO DE EQUIPES E COLABORADORES)
+// =========================================================================
 
+/**
+ * Renomeia uma equipe e atualiza o vínculo de todos os colaboradores associados.
+ * @param {string} nomeAntigo - Nome atual da equipe.
+ * @param {string} novoNome   - Novo nome desejado.
+ * @returns {{ sucesso: boolean, mensagem: string }}
+ */
 function atualizarEquipeNoSheets(nomeAntigo, novoNome) {
   try {
     var ss = obterPlanilha();
@@ -369,6 +462,14 @@ function atualizarEquipeNoSheets(nomeAntigo, novoNome) {
   }
 }
 
+/**
+ * Atualiza os dados de um colaborador existente (nome, cargo e equipe).
+ * @param {string} nomeAntigo - Nome atual para localizar o registro.
+ * @param {string} nomeNovo   - Novo nome.
+ * @param {string} cargoNovo  - Novo cargo.
+ * @param {string} equipeNova - Nova equipe.
+ * @returns {{ sucesso: boolean, mensagem: string }}
+ */
 function atualizarColaboradorNoSheets(nomeAntigo, nomeNovo, cargoNovo, equipeNova) {
   try {
     var ss = obterPlanilha();
@@ -403,105 +504,104 @@ function atualizarColaboradorNoSheets(nomeAntigo, nomeNovo, cargoNovo, equipeNov
   }
 }
 
+// =========================================================================
+// FILTRO DE RANKING POR PERÍODO
+// =========================================================================
+
 /**
- * Realiza o filtro dinâmico por datas integrando a pontuação unificada.
- * Agora incluindo o contador de Atendimentos Retidos.
+ * Retorna o Top 3 de colaboradores por pontuação em um período filtrado.
+ * Une pontos da aba "atendimento" com lançamentos manuais da aba "pontuacao".
+ * Também conta quantos atendimentos foram retidos por colaborador no período.
+ *
+ * @param {string} dataInicioStr - Data inicial no formato "YYYY-MM-DD".
+ * @param {string} dataFimStr    - Data final no formato "YYYY-MM-DD".
+ * @returns {{ sucesso: boolean, topAtendentes: Array }|{ erro: string }}
  */
 function obterDadosFiltradosAba1(dataInicioStr, dataFimStr) {
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheetAtendimentos = ss.getSheetByName("atendimento");
-    const sheetPontuacao = ss.getSheetByName("pontuacao");
-    const sheetColabs = ss.getSheetByName("colaboradores");
-    
+    var ss                = obterPlanilha();
+    var sheetAtendimentos = obterAbaSegura(ss, "atendimento");
+    var sheetPontuacao    = obterAbaSegura(ss, "pontuacao");
+    var sheetColabs       = obterAbaSegura(ss, "colaboradores");
+
     if (!sheetAtendimentos || !sheetPontuacao) {
       return { erro: "As abas necessárias não foram encontradas." };
     }
-    
-    const dadosAtend = sheetAtendimentos.getDataRange().getValues();
-    const dadosPont = sheetPontuacao.getDataRange().getValues();
-    
-    const dataInicio = new Date(dataInicioStr + "T00:00:00");
-    const dataFim = new Date(dataFimStr + "T23:59:59");
-    
-    let mapaColabEquipeMaster = {};
+
+    var dadosAtend  = sheetAtendimentos.getDataRange().getValues();
+    var dadosPont   = sheetPontuacao.getDataRange().getValues();
+    var dataInicio  = new Date(dataInicioStr + "T00:00:00");
+    var dataFim     = new Date(dataFimStr    + "T23:59:59");
+
+    var mapaColabEquipeMaster = {};
     if (sheetColabs) {
-      const dadosColabs = sheetColabs.getDataRange().getValues();
-      for (let c = 1; c < dadosColabs.length; c++) {
-        let nomeC = dadosColabs[c][0] ? dadosColabs[c][0].toString().trim() : "";
-        let eqC = dadosColabs[c][2] ? dadosColabs[c][2].toString().trim() : "";
+      var dadosColabs = sheetColabs.getDataRange().getValues();
+      for (var c = 1; c < dadosColabs.length; c++) {
+        var nomeC = dadosColabs[c][0] ? dadosColabs[c][0].toString().trim() : "";
+        var eqC   = dadosColabs[c][2] ? dadosColabs[c][2].toString().trim() : "";
         if (nomeC) mapaColabEquipeMaster[nomeC] = eqC;
       }
     }
-    
-    let mapaPontosAtendentes = {};
-    let mapaEquipeDoAtendente = {};
-    let mapaRetidosAtendentes = {}; // NOVO: Contador de retenções
-    
-    // Processa os pontos manuais da aba pontuação
+
+    var mapaPontosAtendentes  = {};
+    var mapaEquipeDoAtendente = {};
+    var mapaRetidosAtendentes = {};
+
+    // Pontos manuais da aba pontuacao
     if (dadosPont.length > 1) {
-      for (let p = 1; p < dadosPont.length; p++) {
-        let linhaPont = dadosPont[p];
+      for (var p = 1; p < dadosPont.length; p++) {
+        var linhaPont = dadosPont[p];
         if (!linhaPont[4]) continue;
-        let dataLancamento = new Date(linhaPont[4]);
-        
+        var dataLancamento = new Date(linhaPont[4]);
         if (dataLancamento >= dataInicio && dataLancamento <= dataFim) {
-          let nomeAt = linhaPont[0] ? linhaPont[0].toString().trim() : null;
-          let nomeEq = linhaPont[1] ? linhaPont[1].toString().trim() : mapaColabEquipeMaster[nomeAt] || "Sem Equipe";
-          let pts = Number(linhaPont[2]) || 0;
-          
+          var nomeAt = linhaPont[0] ? linhaPont[0].toString().trim() : null;
+          var nomeEq = linhaPont[1] ? linhaPont[1].toString().trim() : (mapaColabEquipeMaster[nomeAt] || "Sem Equipe");
+          var pts    = Number(linhaPont[2]) || 0;
           if (nomeAt) {
-            mapaPontosAtendentes[nomeAt] = (mapaPontosAtendentes[nomeAt] || 0) + pts;
+            mapaPontosAtendentes[nomeAt]  = (mapaPontosAtendentes[nomeAt]  || 0) + pts;
             mapaEquipeDoAtendente[nomeAt] = nomeEq;
           }
         }
       }
     }
-    
-    // Processa os pontos e as retenções da aba atendimento
+
+    // Pontos e retenções da aba atendimento
     if (dadosAtend.length > 1) {
-      for (let a = 1; a < dadosAtend.length; a++) {
-        let linha = dadosAtend[a];
-        if (!linha[3]) continue;
-        let dataLinha = new Date(linha[3]);
-        
+      for (var a = 1; a < dadosAtend.length; a++) {
+        var linhaA = dadosAtend[a];
+        if (!linhaA[3]) continue;
+        var dataLinha = new Date(linhaA[3]);
         if (dataLinha >= dataInicio && dataLinha <= dataFim) {
-          let colabName   = linha[0] ? linha[0].toString().trim() : null;
-          let ptsAtend    = Number(linha[8]) || 0;
-          let nomeEq      = mapaColabEquipeMaster[colabName] || "Sem Equipe";
-          
-          // Verifica se a coluna "Foi Retido?" (índice 7) é "Sim"
-          let isRetido    = linha[7] && linha[7].toString().trim().toLowerCase() === "sim"; 
-          
+          var colabName = linhaA[0] ? linhaA[0].toString().trim() : null;
+          var ptsAtend  = Number(linhaA[10]) || 0;
+          var nomeEqA   = mapaColabEquipeMaster[colabName] || "Sem Equipe";
+          var isRetido  = linhaA[7] && linhaA[7].toString().trim().toLowerCase() === "sim";
           if (colabName) {
-            mapaPontosAtendentes[colabName] = (mapaPontosAtendentes[colabName] || 0) + ptsAtend;
-            mapaEquipeDoAtendente[colabName] = nomeEq;
-            
-            // Soma +1 no contador se o atendimento foi retido
+            mapaPontosAtendentes[colabName]  = (mapaPontosAtendentes[colabName]  || 0) + ptsAtend;
+            mapaEquipeDoAtendente[colabName] = nomeEqA;
             if (isRetido) {
-                mapaRetidosAtendentes[colabName] = (mapaRetidosAtendentes[colabName] || 0) + 1;
+              mapaRetidosAtendentes[colabName] = (mapaRetidosAtendentes[colabName] || 0) + 1;
             }
           }
         }
       }
     }
-    
-    // Prepara o array final para enviar ao front-end
-    let arrayAtendentes = [];
-    for (let at in mapaPontosAtendentes) {
+
+    var arrayAtendentes = [];
+    for (var at in mapaPontosAtendentes) {
       if (mapaPontosAtendentes[at] !== 0) {
         arrayAtendentes.push({
-          nome: at,
-          equipe: mapaEquipeDoAtendente[at] || "Sem Equipe",
-          pontos: mapaPontosAtendentes[at],
-          retidos: mapaRetidosAtendentes[at] || 0 // Envia os retidos calculados
+          nome:    at,
+          equipe:  mapaEquipeDoAtendente[at] || "Sem Equipe",
+          pontos:  mapaPontosAtendentes[at],
+          retidos: mapaRetidosAtendentes[at] || 0
         });
       }
     }
-    arrayAtendentes.sort((a, b) => b.pontos - a.pontos);
-    
+    arrayAtendentes.sort(function(a, b) { return b.pontos - a.pontos; });
+
     return {
-      sucesso: true,
+      sucesso:       true,
       topAtendentes: arrayAtendentes.slice(0, 3)
     };
     
@@ -511,31 +611,52 @@ function obterDadosFiltradosAba1(dataInicioStr, dataFimStr) {
   }
 }
 
-// LÓGICA DE SOMA AUTOMÁTICA REQUISITADA
+// =========================================================================
+// REGRAS DE NEGÓCIO — CÁLCULO DE PONTUAÇÃO
+// =========================================================================
+
+/**
+ * Calcula a pontuação de um atendimento com base em 3 regras:
+ *
+ *   Regra 1 — Tipo de Contato:
+ *     - "Potencial"     → +10 pts
+ *     - "Não potencial" → -5 pts
+ *
+ *   Regra 2 — Retenção:
+ *     - "Sim" (retido)  → +25 pts
+ *
+ *   Regra 3 — Bônus por prêmio alto (aplica SOMENTE se Potencial + Retido):
+ *     - Prêmio > R$ 3.000 → +10 pts adicionais
+ *
+ * @param {string} tipoContato - "Potencial" ou "Não potencial".
+ * @param {string} retido      - "Sim" ou "Não".
+ * @param {string} premioStr   - Valor do prêmio como string (ex: "R$ 3.500,00").
+ * @returns {number} Total de pontos calculados.
+ */
 function calcularPontosAutomatizados(tipoContato, retido, premioStr) {
   var totalPontos = 0;
-  
-  // Regra 1: Potencial (+10) ou Não Potencial (-5)
+
+  // Regra 1: Tipo de Contato
   if (tipoContato === "Potencial") {
     totalPontos += 10;
   } else if (tipoContato === "Não potencial") {
     totalPontos -= 5;
   }
-  
-  // Regra 2: Retido (+25) ou Não Retido (0)
+
+  // Regra 2: Retenção
   if (retido === "Sim") {
     totalPontos += 25;
   }
-  
-  // Regra 3: Prêmio acima de R$3.000 (+10)
+
+  // Regra 3: Bônus por prêmio alto (somente quando Potencial E Retido)
   if (premioStr) {
-    // Remove "R$", pontos de milhar e converte a vírgula decimal para ponto
+    // Remove "R$", pontos de milhar e converte vírgula decimal para ponto
     var limpo = premioStr.toString().replace("R$", "").replace(/\./g, "").replace(",", ".").trim();
     var valorPremio = parseFloat(limpo) || 0;
     if (valorPremio > 3000 && retido === "Sim" && tipoContato === "Potencial") {
       totalPontos += 10;
     }
   }
-  
+
   return totalPontos;
 }
